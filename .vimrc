@@ -53,7 +53,7 @@ set fileformats=unix,dos,mac
 
 " □とか○の文字があってもカーソル位置がずれないようにする
 if exists('&ambiwidth')
-		  set ambiwidth=double
-		  endif
+        set ambiwidth=double
+endif
 
 
