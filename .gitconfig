@@ -1,0 +1,20 @@
+[user]
+    name  = shifumin
+    email = shifumin4230@gmail.com
+[color]
+    status = auto
+    diff   = auto
+    branch = auto
+    interactive = auto
+    grep   = auto
+[core]
+    excludesfile = ~/.gitignore  # globalな.gitignoreの指定
+    autocrlf = input             # CRLFを自動変換
+    editor = vim
+    quotepath = false
+
+[alias]
+    bi = branch
+    ci = commit
+    co = checkout
+    st = status
