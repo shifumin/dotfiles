@@ -1,4 +1,5 @@
 
+
 set title "編集中のファイル名を表示
 syntax on "コードの色分け
 set tabstop=4 "画面上でタブ文字が占める幅
