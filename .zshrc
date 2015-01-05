@@ -169,3 +169,9 @@ case ${OSTYPE} in
 esac
 
 # vim:set ft=zsh:
+
+
+
+# rbenvの設定
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
