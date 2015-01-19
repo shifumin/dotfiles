@@ -3,4 +3,9 @@
 *.swp
 
 
+# Bundler関係
+.bundle/
+vendor/bundle
+
+
 test.rb
