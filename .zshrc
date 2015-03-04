@@ -136,6 +136,9 @@ alias mysqldump='/Applications/MAMP/Library/bin/mysqldump'
 # sudo の後のコマンドでエイリアスを有効にする
 alias sudo='sudo '
 
+# crontabの誤消去防止
+alias crontab='crontab -i' 
+
 # グローバルエイリアス
 alias -g L='| less'
 alias -g G='| grep'
@@ -175,3 +178,4 @@ esac
 # rbenvの設定
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
+
