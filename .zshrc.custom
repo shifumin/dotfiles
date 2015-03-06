@@ -91,6 +91,18 @@ setopt noautoremoveslash
 setopt nolistbeep
 
 
+
+# エラーメッセージ本文出力に色付け
+e_normal=`echo -e "¥033[0;30m"`
+e_RED=`echo -e "¥033[1;31m"`
+e_BLUE=`echo -e "¥033[1;36m"`
+
+
+# C-M-h でチートシートを表示する
+cheat-sheet () { zle -M "`cat ~/dotfiles/.zsh/cheat-sheet`" }
+zle -N cheat-sheet
+
+
 # alias設定
 [ -f ~/dotfiles/.zshrc.alias ] && source ~/dotfiles/.zshrc.alias
 
