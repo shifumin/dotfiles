@@ -1,0 +1,18 @@
+# Terminal Colorの設定
+export CLICOLOR=1
+export LSCOLORS=ExFxCxDxBxegedabagacad
+
+
+alias ls='ls -alh --color'
+if [ -f "/usr/local/bin/vim" ] ; then
+  alias vi='/usr/local/bin/vim'
+  alias vim='/usr/local/bin/vim'
+fi
+
+export PATH
+
+
+# rbenv
+export PATH="$HOME/.rbenv/bin:$PATH"
+if which rbenv > /dev/null 2>&1 ; then eval "$(rbenv init -)"; fi
+
