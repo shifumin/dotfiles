@@ -92,6 +92,29 @@ setopt nolistbeep
 
 
 
+# ^でcd ..する
+function cdup() {
+  echo
+  cd ..
+  zle reset-prompt
+}
+zle -N cdup
+# bindkey '\^' cdup
+
+# ctrl-w, ctrl-bキーで単語移動
+bindkey "^W" forward-word
+bindkey "^B" backward-word
+
+# back-wordでの単語境界の設定
+autoload -Uz select-word-style
+select-word-style default
+zstyle ':zle:*' word-chars " _-./;@"
+zstyle ':zle:*' word-style unspecified
+
+# URLをコピペしたときに自動でエスケープ
+autoload -Uz url-quote-magic
+zle -N self-insert url-quote-magic
+
 # エラーメッセージ本文出力に色付け
 e_normal=`echo -e "¥033[0;30m"`
 e_RED=`echo -e "¥033[1;31m"`
