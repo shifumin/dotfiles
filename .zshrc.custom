@@ -162,3 +162,11 @@ linux*)
   ;;
 esac
 
+
+# Mosh
+compdef mosh=ssh
+
+# z
+# . `brew --prefix`/etc/profile.d/z.sh
+source $HOME/dotfiles/z.sh
+
