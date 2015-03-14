@@ -1,5 +1,12 @@
 # エイリアス
 
+# nocorrect
+
+alias cp="nocorrect cp -irp"
+alias git='nocorrect git'
+alias vim='nocorrect vim'
+
+
 # git
 alias g="git"
 alias gi="git"
@@ -35,7 +42,6 @@ alias ccat="pygmentize -O style=vim -f console256 -g"
 
 alias c="cd"
 alias g="git"
-alias cp="nocorrect cp -irp"
 alias mv="mv -i"
 alias rm="rm -i"
 alias mkdir="mkdir -p"
