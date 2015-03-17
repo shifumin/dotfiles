@@ -3,7 +3,7 @@
 # nocorrect
 
 alias cp="nocorrect cp -irp"
-alias git='nocorrect git'
+# alias git='nocorrect git'
 alias vim='nocorrect vim'
 
 
