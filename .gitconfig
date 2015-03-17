@@ -169,13 +169,33 @@
   chpk = cherry-pick
 
 
+  # git-flow関連
+  ff  = flow feature
+  ffl = flow feature list
+  ffs = flow feature start
+  fff = flow feature finish
+  ffc = flow feature checkout
+  ffp = flow feature publish
+  fr  = flow release
+  fh  = flow hotfix
+  fhl = flow hotfix list
+  fhs = flow hotfix start
+  fhf = flow hotfix finish
+  fhp = flow hotfix publish
+  fs  = flow support
+
+  fizzbuzz = "!f() { seq "$@" | awk '$0=NR%15?NR%5?NR%3?$0:\"Fizz\":\"Buzz\":\"FizzBuzz\"' ;}; f"
 
 [http]
   sslVerify = false
 
+[tig "bind"]
+  generic = g move-first-line
+  generic = G move-last-line
+  generic = ^F move-page-down
+  generic = ^B move-page-up
 
-[filter "media"]
-	required = true
-	clean = git media clean %f
-	smudge = git media smudge %f
+[ghq]
+        #root = /Users/ozaki/src
+
 
