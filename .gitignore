@@ -1,11 +1,31 @@
-.DS_Store
+" https://github.com/yuroyoro/dotfiles/blob/master/.gitignore
+
+
+*.o
+\#*#
+*#
+.#*
+.*~
 *~
-*.swp
+.DS_Store
+*.sw[po]
+tags
+TAGS
+Session.vim
+.svn
+*.dSYM
+*.log
+*.dvi
+*.aux
+*.elc
+.zshrc.local
+samples
+
+.vim/bundle/
+.vim/.netrwhist
+.vimrc_sample
 
 
 # Bundler関係
 .bundle/
 vendor/bundle
-
-
-test.rb
