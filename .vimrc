@@ -99,7 +99,7 @@ set list                " 不可視文字の可視化
 set number              " 行番号の表示
 set wrap                " 長いテキストの折り返し
 set textwidth=0         " 自動的に改行が入るのを無効化
-set colorcolumn=80      " その代わり80文字目にラインを入れる
+" set colorcolumn=80      " その代わり80文字目にラインを入れる
 
 " 前時代的スクリーンベルを無効化
 set t_vb=
@@ -155,8 +155,34 @@ set noswapfile
 
 
 
+"
+" http://yuroyoro.hatenablog.com/entry/20120211/1328930819
+"
 
+  " カーソル行をハイライト
+  set cursorline
+  " カレントウィンドウにのみ罫線を引く
+  augroup cch
+    autocmd! cch
+    autocmd WinLeave * set nocursorline
+    autocmd WinEnter,BufRead * set cursorline
+  augroup END
 
-set nocompatible " vi互換の動作を無効にする
+hi clear CursorLine
+hi CursorLine gui=underline
+highlight CursorLine ctermbg=black guibg=black
+
+"Escの2回押しでハイライト消去
+nmap <ESC><ESC> :nohlsearch<CR><ESC>
+
+" Ctrl-iでヘルプ
+nnoremap <C-i>  :<C-u>help<Space>
+" カーソル下のキーワードをヘルプでひく
+nnoremap <C-i><C-i> :<C-u>help<Space><C-r><C-w><Enter>
+
+" 保存時に行末の空白を除去する
+autocmd BufWritePre * :%s/\s\+$//ge
+" 保存時にtabをスペースに変換する
+autocmd BufWritePre * :%s/\t/  /ge
 
 
