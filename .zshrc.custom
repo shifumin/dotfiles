@@ -141,6 +141,16 @@ e_RED=`echo -e "¥033[1;31m"`
 e_BLUE=`echo -e "¥033[1;36m"`
 
 
+# export
+
+export EDITOR=vim
+export PATH=$PATH:$HOME/local/bin:/usr/local/git/bin
+export PATH=$PATH:$HOME/dotfiles/bin
+export PATH=$PATH:$HOME/bin
+export PATH=$PATH:/sbin:/usr/local/bin
+export MANPATH=$MANPATH:/opt/local/man:/usr/local/share/man
+
+
 # C-M-h でチートシートを表示する
 cheat-sheet () { zle -M "`cat ~/dotfiles/.zsh/cheat-sheet`" }
 zle -N cheat-sheet
