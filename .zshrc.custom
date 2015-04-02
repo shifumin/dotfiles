@@ -141,6 +141,18 @@ e_RED=`echo -e "¥033[1;31m"`
 e_BLUE=`echo -e "¥033[1;36m"`
 
 
+case "${OSTYPE}" in
+freebsd*|darwin*)
+    alias ls="ls -alG"
+    zle -N expand-to-home-or-insert
+    bindkey "@"  expand-to-home-or-insert
+    ;;
+linux*)
+    alias la="ls -al"
+    ;;
+esac
+
+
 # export
 
 export EDITOR=vim
@@ -149,6 +161,15 @@ export PATH=$PATH:$HOME/dotfiles/bin
 export PATH=$PATH:$HOME/bin
 export PATH=$PATH:/sbin:/usr/local/bin
 export MANPATH=$MANPATH:/opt/local/man:/usr/local/share/man
+
+
+expand-to-home-or-insert () {
+        if [ "$LBUFFER" = "" -o "$LBUFFER[-1]" = " " ]; then
+                LBUFFER+="~/"
+        else
+                zle self-insert
+        fi
+}
 
 
 # C-M-h でチートシートを表示する
