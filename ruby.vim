@@ -1,4 +1,4 @@
-#  ~/.vim/indent/ruby.vim
+" ~/.vim/indent/ruby.vim
 
 " tabstop: TABキーに対応する空白数を設定
 " shiftwidth: 自動インデントや"<<"、">>"で動く幅の設定
