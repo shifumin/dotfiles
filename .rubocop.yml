@@ -1,0 +1,68 @@
+AllCops:
+  Includes:
+    - Rakefile
+    - Gemfile
+  Exclude:
+    - 'vendor/**/*'
+    - bin/*
+    - lib/monkey_patches/*
+    - db/schema.rb
+  RunRailsCops: true
+  DisplayCopNames: true
+
+
+# Ruby - Rubocopを使ってコーディングルールへの準拠チェックを自動化 - Qiita
+# http://qiita.com/yaotti/items/4f69a145a22f9c8f8333
+
+# Use UTF-8 as the source file encoding.
+Encoding:
+  Enabled: false
+
+# Limit lines to 80 characters.
+LineLength:
+  Enabled: false
+
+# Avoid methods longer than 10 lines of code
+MethodLength:
+  Enabled: false
+
+# Favor modifier if/unless usage when you have a single-line body.
+IfUnlessModifier:
+  Enabled: false
+
+# Favor modifier while/until usage when you have a single-line body.
+WhileUntilModifier:
+  Enabled: false
+
+# Preferred collection methods.
+CollectionMethods:
+  Enabled: false
+
+# Avoid Perl-style regex back references.
+AvoidPerlBackrefs:
+  Enabled: false
+
+# Don't interpolate global, instance and class variables directly in strings.
+VariableInterpolation:
+  Enabled: false
+
+# Don't use semicolons to terminate expressions.
+Semicolon:
+  AllowBeforeEndInOneLineMethods: false
+
+# Use only ascii symbols in comments.
+AsciiComments:
+  Enabled: false
+
+# TODO: Change it to true when $redis and $mixpanel is removed
+#
+# Do not introduce global variables.
+AvoidGlobalVars:
+  Enabled: false
+
+
+# Document classes and non-namespace modules.
+Documentation:
+  Enabled: false
+
+
