@@ -24,15 +24,15 @@ Style/AndOr:
 
 # Use only ascii symbols in comments.
 Style/AsciiComments:
-  Enabled: true
+  Enabled: false
 
 # Document classes and non-namespace modules.
 Style/Documentation:
-  Enabled: true
+  Enabled: false
 
 # Favor modifier if/unless usage when you have a single-line body.
 Style/IfUnlessModifier:
-  Enabled: true
+  Enabled: false
 
 # Favor modifier while/until usage when you have a single-line body.
 Style/WhileUntilModifier:
