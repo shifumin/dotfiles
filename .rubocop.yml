@@ -41,6 +41,10 @@ Style/WhileUntilModifier:
 
 ###### Metrics ######
 
+# A calculated magnitude based on number of assignments, branches, and conditions.
+Metrics/AbcSize:
+  Max: 30
+
 # Limit lines to 80 characters.
 Metrics/LineLength:
   Enabled: false

@@ -29,3 +29,6 @@ samples
 # Bundler関係
 .bundle/
 vendor/bundle
+
+# 環境変数
+.env
