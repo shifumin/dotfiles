@@ -34,6 +34,16 @@ Style/Documentation:
 Style/IfUnlessModifier:
   Enabled: false
 
+Style/PredicateName:
+  # Predicate name prefices.
+  NamePrefix:
+    - is_
+    - have_
+  # Predicate name prefices that should be removed.
+  NamePrefixBlacklist:
+    - is_
+    - have_
+
 # Favor modifier while/until usage when you have a single-line body.
 Style/WhileUntilModifier:
   Enabled: false
