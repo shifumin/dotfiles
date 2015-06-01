@@ -34,6 +34,7 @@ Style/Documentation:
 Style/IfUnlessModifier:
   Enabled: false
 
+# Check the names of predicate methods.
 Style/PredicateName:
   # Predicate name prefices.
   NamePrefix:
@@ -43,6 +44,10 @@ Style/PredicateName:
   NamePrefixBlacklist:
     - is_
     - have_
+
+# Checks if uses of quotes match the configured preference.
+Style/StringLiterals:
+  Enabled: false
 
 # Favor modifier while/until usage when you have a single-line body.
 Style/WhileUntilModifier:
