@@ -25,6 +25,7 @@ samples
 .vim/.netrwhist
 .vimrc_sample
 
+test.rb
 
 # Bundler関係
 .bundle/
