@@ -1,6 +1,5 @@
 # https://github.com/yuroyoro/dotfiles/blob/master/.gitignore
 
-
 *.o
 \#*#
 *#
@@ -20,6 +19,8 @@ Session.vim
 *.elc
 .zshrc.local
 samples
+
+/temp
 
 .vim/bundle/
 .vim/.netrwhist
