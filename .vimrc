@@ -141,7 +141,7 @@ set backspace=indent,eol,start
 " 'unnamedplus'が存在しているかどうかで設定を分ける必要がある
 if has('unnamedplus')
     " set clipboard& clipboard+=unnamedplus " 2013-07-03 14:30 unnamed 追加
-    set clipboard& clipboard+=unnamedplus,unnamed 
+    set clipboard& clipboard+=unnamedplus,unnamed
 else
     " set clipboard& clipboard+=unnamed,autoselect 2013-06-24 10:00 autoselect 削除
     set clipboard& clipboard+=unnamed
@@ -186,3 +186,7 @@ autocmd BufWritePre * :%s/\s\+$//ge
 autocmd BufWritePre * :%s/\t/  /ge
 
 
+" 追加
+
+set tabstop=2 " インデントをスペース4つ分に設定する
+set shiftwidth=2 " 自動インデントの幅
