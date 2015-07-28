@@ -2,7 +2,6 @@
 export CLICOLOR=1
 export LSCOLORS=ExFxCxDxBxegedabagacad
 
-
 alias ls='ls -alh --color'
 if [ -f "/usr/local/bin/vim" ] ; then
   alias vi='/usr/local/bin/vim'
