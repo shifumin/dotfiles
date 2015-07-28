@@ -190,3 +190,4 @@ autocmd BufWritePre * :%s/\t/  /ge
 
 set tabstop=2 " インデントをスペース4つ分に設定する
 set shiftwidth=2 " 自動インデントの幅
+
