@@ -46,7 +46,7 @@ DISABLE_AUTO_TITLE="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 
-plugins=(brew bundler coffee command-not-found gem git git-flow github heroku history history-substring-search node npm osx pip python rails rake rbenv rsync ruby vagrant vi-mode vundle yum)
+plugins=(brew brew-cask bundler coffee command-not-found gem git git-flow github heroku history history-substring-search node npm osx pip python rails rake rbenv rsync ruby tig tmux vagrant vi-mode vundle yum)
 
 # User configuration
 
