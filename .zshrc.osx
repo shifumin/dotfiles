@@ -5,9 +5,3 @@ export PATH=/opt/local/bin:/opt/local/sbin:~/bin:$PATH
 # Terminal Colorの設定
 export CLICOLOR=1
 export LSCOLORS=ExFxCxDxBxegedabagacad
-
-
-# Ruby
-# if [[ -s /Users/ozaki/.rvm/scripts/rvm ]] ; then source $HOME/.rvm/scripts/rvm ; fi
-# export RBENV_ROOT=/usr/local/var/rbenv
-if which rbenv > /dev/null 2>&1 ; then eval "$(rbenv init -)"; fi
