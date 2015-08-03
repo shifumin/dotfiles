@@ -35,6 +35,10 @@ NeoBundle 'szw/vim-tags'
 " 自動で閉じる
 NeoBundle 'tpope/vim-endwise'
 
+" 自動paste mode
+NeoBundle 'ConradIrwin/vim-bracketed-paste'
+
+
 call neobundle#end()
 
 NeoBundleCheck
