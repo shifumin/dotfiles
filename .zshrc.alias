@@ -1,11 +1,10 @@
-# エイリアス
-
 # nocorrect
-
 alias cp="nocorrect cp -irp"
-# alias git='nocorrect git'
 alias vim='nocorrect vim'
 
+# bundle
+alias bundle='nocorrect bundle'
+alias be='bundle exec'
 
 # git
 alias g="git"
@@ -46,7 +45,6 @@ alias mv="mv -i"
 alias rm="rm -i"
 alias mkdir="mkdir -p"
 
-alias be="bundle exec"
 
 # グローバルエイリアス
 alias -g G="| grep"
