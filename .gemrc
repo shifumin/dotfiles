@@ -1,2 +1,12 @@
-install: --no-document
+---
+:backtrace: false
+:benchmark: false
+:bulk_threshold: 1000
+:update_sources: true
+:verbose: true
+:sources:
+- http://gems.github.com
+- http://gems.rubyforge.org
+- http://rubygems.org/
+iinstall: --no-document
 update: --no-document
