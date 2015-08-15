@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOT_FILES=( .gemrc .gitconfig .gitignore .rubocop.yml .tmux.conf .vimrc .zshrc .zshrc.custom )
+DOT_FILES=( .ansible.cfg .gemrc .gitconfig .gitignore .rubocop.yml .tmux.conf .vimrc .zshrc .zshrc.custom )
 
 for file in ${DOT_FILES[@]}
 do
