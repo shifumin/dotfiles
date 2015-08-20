@@ -38,6 +38,10 @@ NeoBundle 'tpope/vim-endwise'
 " 自動paste mode
 NeoBundle 'ConradIrwin/vim-bracketed-paste'
 
+" vim-ansible-yaml
+" https://github.com/chase/vim-ansible-yaml
+NeoBundle 'chase/vim-ansible-yaml'
+
 
 call neobundle#end()
 
