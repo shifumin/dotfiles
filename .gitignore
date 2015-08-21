@@ -20,17 +20,16 @@ Session.vim
 .zshrc.local
 samples
 
-/temp
-
 .vim/bundle/
 .vim/.netrwhist
 .vimrc_sample
 
-test.rb
-
-# Bundler関係
-.bundle/
+# Bundler
+.bundle
 vendor/bundle
+
+# Vagrant
+.vagrant
 
 # 環境変数
 .env
