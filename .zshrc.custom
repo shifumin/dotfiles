@@ -1,6 +1,5 @@
 # users generic .zshrc file for zsh(1)
 
-
 ## Environment variable configuration
 #
 # LANG
@@ -20,7 +19,6 @@ bindkey "^?" backward-delete-char
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
-
 
 
 # setopt
