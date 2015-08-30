@@ -50,7 +50,13 @@ NeoBundleCheck
 " -------------------------------
 " Rsense
 " -------------------------------
-let g:rsenseHome = '/usr/local/lib/rsense-0.3'
+if has('unix')
+  let g:rsenseHome = '/usr/local/lib/rsense-0.3'
+endif
+if has('mac')
+  let g:rsenseHome = '/usr/local/opt/rsense'
+endif
+
 let g:rsenseUseOmniFunc = 1
 
 " --------------------------------
@@ -162,7 +168,6 @@ set nobackup
 set noswapfile
 
 
-
 "
 " http://yuroyoro.hatenablog.com/entry/20120211/1328930819
 "
@@ -193,9 +198,6 @@ autocmd BufWritePre * :%s/\s\+$//ge
 " 保存時にtabをスペースに変換する
 autocmd BufWritePre * :%s/\t/  /ge
 
-
 " 追加
-
 set tabstop=2 " インデントをスペース4つ分に設定する
 set shiftwidth=2 " 自動インデントの幅
-
