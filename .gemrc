@@ -8,5 +8,5 @@
 - http://gems.github.com
 - http://gems.rubyforge.org
 - http://rubygems.org/
-iinstall: --no-document
+install: --no-document
 update: --no-document
