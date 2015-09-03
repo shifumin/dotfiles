@@ -16,6 +16,14 @@ AllCops:
 # https://gist.github.com/onk/38bfbd78899d892e0e83
 
 
+##################### Lint ##################################
+
+#Lint/AssignmentInCondition:
+#  Description: "Don't use assignment in conditions."
+#  StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#safe-assignment-in-condition'
+#  Enabled: false
+
+
 ###### Style ######
 
 # Whether `and` and `or` are banned only in conditionals (conditionals) or completely (always).
