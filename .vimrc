@@ -35,6 +35,9 @@ NeoBundle 'szw/vim-tags'
 " 自動で閉じる
 NeoBundle 'tpope/vim-endwise'
 
+" Solarized
+NeoBundle 'altercation/vim-colors-solarized'
+
 " 自動paste mode
 NeoBundle 'ConradIrwin/vim-bracketed-paste'
 
@@ -81,14 +84,18 @@ let g:syntastic_ruby_checkers = ['rubocop']
 " --------------------------------
 " 基本設定
 " --------------------------------
+
+" Colorscheme Solarized
+syntax enable
+set background=dark
+colorscheme solarized
+
+
 " vim内部で使われる文字エンコーディングをutf-8に設定する
 set encoding=utf-8
 
 " 想定される改行コードの指定する
 set fileformats=unix,dos,mac
-
-" ハイライトを有効化する
-syntax enable
 
 " 挿入モードでTABを挿入するとき、代わりに適切な数の空白を使う
 set expandtab
