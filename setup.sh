@@ -14,6 +14,9 @@ do
     ln -s $HOME/dotfiles/$file /usr/local/bin/$file
 done
 
+# install .vim/indent/ruby.vim
+[ ! -d ~/.vim/indent ] && mkdir ~/.vim/indent && ln -s $HOME/dotfiles/ruby.vim $HOME/.vim/indent/ruby.vim
+
 # install oh-my-zsh
 [ ! -d ~/.oh-my-zsh ] && git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
 
