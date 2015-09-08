@@ -1,4 +1,5 @@
 " -------------------------------
+" Rubyプログラミングが快適になるVim環境を0から構築する - Qiita
 " http://qiita.com/mogulla3/items/42a7f6c73fa4a90b1df3
 " -------------------------------
 
@@ -35,14 +36,15 @@ NeoBundle 'szw/vim-tags'
 " 自動で閉じる
 NeoBundle 'tpope/vim-endwise'
 
+
+""" My NeoBundle
 " Solarized
 NeoBundle 'altercation/vim-colors-solarized'
-
+" Unite and create user interfaces
+NeoBundle 'Shougo/unite.vim'
 " 自動paste mode
 NeoBundle 'ConradIrwin/vim-bracketed-paste'
-
-" vim-ansible-yaml
-" https://github.com/chase/vim-ansible-yaml
+" Add additional support for Ansible in Vim
 NeoBundle 'chase/vim-ansible-yaml'
 
 
@@ -57,7 +59,7 @@ if has('unix')
   let g:rsenseHome = '/usr/local/lib/rsense-0.3'
 endif
 if has('mac')
-  let g:rsenseHome = '/usr/local/opt/rsense'
+  let g:rsenseHome = '/usr/local/opt/rsense/libexec/'
 endif
 
 let g:rsenseUseOmniFunc = 1
@@ -84,13 +86,6 @@ let g:syntastic_ruby_checkers = ['rubocop']
 " --------------------------------
 " 基本設定
 " --------------------------------
-
-" Colorscheme Solarized
-syntax enable
-set background=dark
-colorscheme solarized
-
-
 " vim内部で使われる文字エンコーディングをutf-8に設定する
 set encoding=utf-8
 
@@ -108,6 +103,11 @@ set autoindent
 " ファイル形式別インデントのロードを有効化する
 filetype plugin indent on
 
+
+" Colorscheme Solarized
+syntax enable
+set background=dark
+colorscheme solarized
 
 
 " -------------------------------
