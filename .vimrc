@@ -1,3 +1,6 @@
+set encoding=utf-8
+scriptencoding utf-8
+
 " -------------------------------
 " Rubyプログラミングが快適になるVim環境を0から構築する - Qiita
 " http://qiita.com/mogulla3/items/42a7f6c73fa4a90b1df3
@@ -38,12 +41,16 @@ NeoBundle 'tpope/vim-endwise'
 
 
 """ My NeoBundle
+
 " Solarized
 NeoBundle 'altercation/vim-colors-solarized'
+
 " Unite and create user interfaces
 NeoBundle 'Shougo/unite.vim'
-" 自動paste mode
+
+" Handles bracketed-paste-mode in vim (aka. automatic `:set paste`)
 NeoBundle 'ConradIrwin/vim-bracketed-paste'
+
 " Add additional support for Ansible in Vim
 NeoBundle 'chase/vim-ansible-yaml'
 
@@ -84,10 +91,22 @@ let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['ruby'] }
 let g:syntastic_ruby_checkers = ['rubocop']
 
 " --------------------------------
+" Unite
+" --------------------------------
+let g:unite_enable_start_insert=1
+let g:unite_source_history_yank_enable =1
+let g:unite_source_file_mru_limit = 200
+nnoremap <silent> ,uy :<C-u>Unite history/yank<CR>
+nnoremap <silent> ,ub :<C-u>Unite buffer<CR>
+nnoremap <silent> ,uf :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
+nnoremap <silent> ,ur :<C-u>Unite -buffer-name=register register<CR>
+nnoremap <silent> ,uu :<C-u>Unite file_mru buffer<CR>
+
+" --------------------------------
 " 基本設定
 " --------------------------------
 " vim内部で使われる文字エンコーディングをutf-8に設定する
-set encoding=utf-8
+"set encoding=utf-8
 
 " 想定される改行コードの指定する
 set fileformats=unix,dos,mac
