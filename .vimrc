@@ -1,3 +1,4 @@
+" Encoding
 set encoding=utf-8
 scriptencoding utf-8
 
@@ -92,15 +93,30 @@ let g:syntastic_ruby_checkers = ['rubocop']
 
 " --------------------------------
 " Unite
+" 一日18時間VimでRailsを開発している僕が選ぶVim Tips 10選 | 柿の種とピスタチオ
+" http://kakipy.com/articles/5
 " --------------------------------
-let g:unite_enable_start_insert=1
-let g:unite_source_history_yank_enable =1
-let g:unite_source_file_mru_limit = 200
-nnoremap <silent> ,uy :<C-u>Unite history/yank<CR>
-nnoremap <silent> ,ub :<C-u>Unite buffer<CR>
-nnoremap <silent> ,uf :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
-nnoremap <silent> ,ur :<C-u>Unite -buffer-name=register register<CR>
-nnoremap <silent> ,uu :<C-u>Unite file_mru buffer<CR>
+let g:unite_enable_start_insert = 1
+let g:unite_enable_split_vertically = 0
+let g:unite_winwidth = 40
+nnoremap <silent> ,uf :<C-u>UniteWithBufferDir -buffer-name=files file file/new<CR>
+nnoremap <silent> ,um :<C-u>Unite  file_mru <CR>
+nnoremap <silent> ,urc :<C-u>Unite file_rec/async:app/controllers/ <CR>
+nnoremap <silent> ,urfc :<C-u>Unite file file/new -input=app/controllers/ <CR>
+nnoremap <silent> ,urm :<C-u>Unite file_rec/async:app/models/ <CR>
+nnoremap <silent> ,urfm :<C-u>Unite file file/new -input=app/models/ <CR>
+nnoremap <silent> ,urv :<C-u>Unite file_rec/async:app/views/ <CR>
+nnoremap <silent> ,urfv :<C-u>Unite file file/new -input=app/views/ <CR>
+nnoremap <silent> ,urs :<C-u>Unite file_rec/async:app/assets/stylesheets/ <CR>
+nnoremap <silent> ,urfs :<C-u>Unite file file/new -input=app/assets/stylesheets/ <CR>
+nnoremap <silent> ,urj :<C-u>Unite file_rec/async:app/assets/javascripts/ <CR>
+nnoremap <silent> ,urfj :<C-u>Unite file file/new -input=app/assets/javascripts/ <CR>
+nnoremap <silent> ,uro :<C-u>Unite file_rec/async:config/ <CR>
+nnoremap <silent> ,urfo :<C-u>Unite file file/new -input=config/ <CR>
+nnoremap <silent> ,url :<C-u>Unite file_rec/async:lib/ <CR>
+nnoremap <silent> ,urfl :<C-u>Unite file file/new -input=lib/ <CR>
+nnoremap <silent> ,urr :<C-u>Unite file_rec/async:spec/ <CR>
+nnoremap <silent> ,urfr :<C-u>Unite file file/new -input=spec/ <CR>
 
 " --------------------------------
 " 基本設定
