@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # install dotfiles
-DOT_FILES=( .ansible.cfg .gemrc .gitconfig .gitignore .rubocop.yml .tmux.conf .vimrc .zshrc .zshrc.custom )
+DOT_FILES=( .ansible.cfg .ctags .gemrc .gitconfig .gitignore .rubocop.yml .tmux.conf .vimrc .vimrc.neobundle .zshrc .zshrc.custom .zshenv)
 for file in ${DOT_FILES[@]}
 do
     ln -s $HOME/dotfiles/$file $HOME/$file
