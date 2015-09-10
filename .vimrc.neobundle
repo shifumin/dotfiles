@@ -1,0 +1,191 @@
+" -------------------------------
+" Rubyプログラミングが快適になるVim環境を0から構築する - Qiita
+" http://qiita.com/mogulla3/items/42a7f6c73fa4a90b1df3
+" -------------------------------
+
+""""""""""""""""""""""""""""""
+" 脱初心者を目指すVimmerにオススメしたいVimプラグインや.vimrcの設定 - Qiita
+" http://qiita.com/jnchito/items/5141b3b01bced9f7f48f
+" dotfiles/.vimrc · JunichiIto/dotfiles
+" https://github.com/JunichiIto/dotfiles/blob/master/.vimrc
+""""""""""""""""""""""""""""""
+
+" -------------------------------
+" NeoBundle
+" -------------------------------
+""""""""""""""""""""""""""""""
+" プラグインのセットアップ
+""""""""""""""""""""""""""""""
+if has('vim_starting')
+  set nocompatible               " Be iMproved
+
+  " Required:
+  set runtimepath+=~/.vim/bundle/neobundle.vim/
+endif
+
+" Required:
+call neobundle#begin(expand('~/.vim/bundle/'))
+
+" Let NeoBundle manage NeoBundle
+" Required:
+NeoBundleFetch 'Shougo/neobundle.vim'
+""""""""""""""""""""""""""""""
+
+" コード補完
+NeoBundle 'Shougo/neocomplete.vim'
+NeoBundle 'marcus/rsense'
+NeoBundle 'supermomonga/neocomplete-rsense.vim'
+
+" 静的解析
+NeoBundle 'scrooloose/syntastic'
+
+" ドキュメント参照
+NeoBundle 'thinca/vim-ref'
+NeoBundle 'yuku-t/vim-ref-ri'
+
+" メソッド定義元へのジャンプ
+NeoBundle 'szw/vim-tags'
+
+" 自動で閉じる
+NeoBundle 'tpope/vim-endwise'
+
+
+""""""""""""""""""""""""""""""
+" 脱初心者を目指すVimmerにオススメしたいVimプラグインや.vimrcの設定 - Qiita
+" http://qiita.com/jnchito/items/5141b3b01bced9f7f48f
+""""""""""""""""""""""""""""""
+" Unite and create user interfaces
+NeoBundle 'Shougo/unite.vim'
+
+" MRU plugin includes unite.vim MRU sources
+NeoBundle 'Shougo/neomru.vim'
+
+" A tree explorer plugin for vim
+NeoBundle 'scrooloose/nerdtree'
+
+" A Git wrapper so awesome, it should be illegal
+NeoBundle 'tpope/vim-fugitive'
+
+" Ruby on Rails: easy file navigation, enhanced syntax highlighting, and more
+NeoBundle 'tpope/vim-rails'
+
+" An extensible & universal comment plugin that also handles embedded filetypes
+NeoBundle 'tomtom/tcomment_vim'
+
+" Delete/change/add parentheses/quotes/XML-tags/much more with ease
+NeoBundle 'tpope/vim-surround'
+
+" A Vim plugin for visually displaying indent levels in code
+NeoBundle 'nathanaelkane/vim-indent-guides'
+
+" ansi escape sequences concealed, but highlighted as specified (conceal)
+NeoBundle 'vim-scripts/AnsiEsc.vim'
+
+" Highlights trailing whitespace in red and provides :FixWhitespace to fix it
+NeoBundle 'bronson/vim-trailing-whitespace'
+""""""""""""""""""""""""""""""
+
+
+""" My NeoBundle
+
+" Interactive command execution in Vim
+NeoBundle 'Shougo/vimproc', {
+  \ 'build' : {
+  \     'windows' : 'make -f make_mingw32.mak',
+  \     'cygwin' : 'make -f make_cygwin.mak',
+  \     'mac' : 'make -f make_mac.mak',
+  \     'unix' : 'make -f make_unix.mak',
+  \    },
+  \ }
+
+" Powerful shell implemented by vim
+NeoBundle 'Shougo/vimshell'
+
+" a unite.vim plugin for rails
+NeoBundle 'basyura/unite-rails'
+
+" Solarized
+NeoBundle 'altercation/vim-colors-solarized'
+
+" Handles bracketed-paste-mode in vim (aka. automatic `:set paste`)
+NeoBundle 'ConradIrwin/vim-bracketed-paste'
+
+" Add additional support for Ansible in Vim
+NeoBundle 'chase/vim-ansible-yaml'
+
+
+""""""""""""""""""""""""""""""
+call neobundle#end()
+
+" Required:
+filetype plugin indent on
+
+" If there are uninstalled bundles found on startup,
+" this will conveniently prompt you to install them.
+NeoBundleCheck
+""""""""""""""""""""""""""""""
+
+
+" -------------------------------
+" Rsense
+" -------------------------------
+if has('unix')
+  let g:rsenseHome = '/usr/local/lib/rsense-0.3'
+endif
+if has('mac')
+  let g:rsenseHome = '/usr/local/opt/rsense/libexec/'
+endif
+
+let g:rsenseUseOmniFunc = 1
+
+" --------------------------------
+" neocomplete.vim
+" --------------------------------
+let g:acp_enableAtStartup = 0
+let g:neocomplete#enable_at_startup = 1
+let g:neocomplete#enable_smart_case = 1
+if !exists('g:neocomplete#force_omni_input_patterns')
+  let g:neocomplete#force_omni_input_patterns = {}
+endif
+let g:neocomplete#force_omni_input_patterns.ruby = '[^.*\t]\.\w*\|\h\w*::'
+
+" --------------------------------
+" rubocop
+" --------------------------------
+" syntastic_mode_mapをactiveにするとバッファ保存時にsyntasticが走る
+" active_filetypesに、保存時にsyntasticを走らせるファイルタイプを指定する
+let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['ruby'] }
+let g:syntastic_ruby_checkers = ['rubocop']
+
+
+""""""""""""""""""""""""""""""
+" vimを立ち上げたときに、自動的にvim-indent-guidesをオンにする
+let g:indent_guides_enable_on_vim_startup = 1
+
+" grep検索の実行後にQuickFix Listを表示する
+autocmd QuickFixCmdPost *grep* cwindow
+
+" http://blog.remora.cx/2010/12/vim-ref-with-unite.html
+""""""""""""""""""""""""""""""
+" Unit.vimの設定
+""""""""""""""""""""""""""""""
+" 入力モードで開始する
+let g:unite_enable_start_insert=1
+" バッファ一覧
+noremap <C-P> :Unite buffer<CR>
+" ファイル一覧
+noremap <C-N> :Unite -buffer-name=file file<CR>
+" 最近使ったファイルの一覧
+noremap <C-Z> :Unite file_mru<CR>
+" sourcesを「今開いているファイルのディレクトリ」とする
+noremap :uff :<C-u>UniteWithBufferDir file -buffer-name=file<CR>
+" ウィンドウを分割して開く
+au FileType unite nnoremap <silent> <buffer> <expr> <C-J> unite#do_action('split')
+au FileType unite inoremap <silent> <buffer> <expr> <C-J> unite#do_action('split')
+" ウィンドウを縦に分割して開く
+au FileType unite nnoremap <silent> <buffer> <expr> <C-K> unite#do_action('vsplit')
+au FileType unite inoremap <silent> <buffer> <expr> <C-K> unite#do_action('vsplit')
+" ESCキーを2回押すと終了する
+au FileType unite nnoremap <silent> <buffer> <ESC><ESC> :q<CR>
+au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>:q<CR>
+""""""""""""""""""""""""""""""
