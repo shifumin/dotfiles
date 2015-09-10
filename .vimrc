@@ -2,142 +2,25 @@
 set encoding=utf-8
 scriptencoding utf-8
 
-" -------------------------------
-" Rubyプログラミングが快適になるVim環境を0から構築する - Qiita
-" http://qiita.com/mogulla3/items/42a7f6c73fa4a90b1df3
-" -------------------------------
+""""""""""""""""""""""""""""""
+" 脱初心者を目指すVimmerにオススメしたいVimプラグインや.vimrcの設定 - Qiita
+" http://qiita.com/jnchito/items/5141b3b01bced9f7f48f
+" dotfiles/.vimrc · JunichiIto/dotfiles
+" https://github.com/JunichiIto/dotfiles/blob/master/.vimrc
+""""""""""""""""""""""""""""""
 
-" -------------------------------
-" NeoBundle
-" -------------------------------
-if has('vim_starting')
-  if &compatible
-    set nocompatible
-  endif
+" 挙動を vi 互換ではなく、Vim のデフォルト設定にする
+set nocompatible
+" 一旦ファイルタイプ関連を無効化する
+filetype off
 
-  set runtimepath+=~/.vim/bundle/neobundle.vim/
+" source .vimrc.neobundle
+if filereadable(expand('~/.vimrc.neobundle'))
+  source ~/.vimrc.neobundle
 endif
-
-call neobundle#begin(expand('~/.vim/bundle'))
-
-NeoBundleFetch 'Shougo/neobundle.vim'
-
-" コード補完
-NeoBundle 'Shougo/neocomplete.vim'
-NeoBundle 'marcus/rsense'
-NeoBundle 'supermomonga/neocomplete-rsense.vim'
-
-" 静的解析
-NeoBundle 'scrooloose/syntastic'
-
-" ドキュメント参照
-NeoBundle 'thinca/vim-ref'
-NeoBundle 'yuku-t/vim-ref-ri'
-
-" メソッド定義元へのジャンプ
-NeoBundle 'szw/vim-tags'
-
-" 自動で閉じる
-NeoBundle 'tpope/vim-endwise'
-
-
-""" My NeoBundle
-
-" Solarized
-NeoBundle 'altercation/vim-colors-solarized'
-
-" Unite and create user interfaces
-NeoBundle 'Shougo/unite.vim'
-
-" Handles bracketed-paste-mode in vim (aka. automatic `:set paste`)
-NeoBundle 'ConradIrwin/vim-bracketed-paste'
-
-" Add additional support for Ansible in Vim
-NeoBundle 'chase/vim-ansible-yaml'
-
-
-call neobundle#end()
-
-NeoBundleCheck
-
-" -------------------------------
-" Rsense
-" -------------------------------
-if has('unix')
-  let g:rsenseHome = '/usr/local/lib/rsense-0.3'
-endif
-if has('mac')
-  let g:rsenseHome = '/usr/local/opt/rsense/libexec/'
-endif
-
-let g:rsenseUseOmniFunc = 1
-
-" --------------------------------
-" neocomplete.vim
-" --------------------------------
-let g:acp_enableAtStartup = 0
-let g:neocomplete#enable_at_startup = 1
-let g:neocomplete#enable_smart_case = 1
-if !exists('g:neocomplete#force_omni_input_patterns')
-  let g:neocomplete#force_omni_input_patterns = {}
-endif
-let g:neocomplete#force_omni_input_patterns.ruby = '[^.*\t]\.\w*\|\h\w*::'
-
-" --------------------------------
-" rubocop
-" --------------------------------
-" syntastic_mode_mapをactiveにするとバッファ保存時にsyntasticが走る
-" active_filetypesに、保存時にsyntasticを走らせるファイルタイプを指定する
-let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['ruby'] }
-let g:syntastic_ruby_checkers = ['rubocop']
-
-" --------------------------------
-" Unite
-" 一日18時間VimでRailsを開発している僕が選ぶVim Tips 10選 | 柿の種とピスタチオ
-" http://kakipy.com/articles/5
-" --------------------------------
-let g:unite_enable_start_insert = 1
-let g:unite_enable_split_vertically = 0
-let g:unite_winwidth = 40
-nnoremap <silent> ,uf :<C-u>UniteWithBufferDir -buffer-name=files file file/new<CR>
-nnoremap <silent> ,um :<C-u>Unite  file_mru <CR>
-nnoremap <silent> ,urc :<C-u>Unite file_rec/async:app/controllers/ <CR>
-nnoremap <silent> ,urfc :<C-u>Unite file file/new -input=app/controllers/ <CR>
-nnoremap <silent> ,urm :<C-u>Unite file_rec/async:app/models/ <CR>
-nnoremap <silent> ,urfm :<C-u>Unite file file/new -input=app/models/ <CR>
-nnoremap <silent> ,urv :<C-u>Unite file_rec/async:app/views/ <CR>
-nnoremap <silent> ,urfv :<C-u>Unite file file/new -input=app/views/ <CR>
-nnoremap <silent> ,urs :<C-u>Unite file_rec/async:app/assets/stylesheets/ <CR>
-nnoremap <silent> ,urfs :<C-u>Unite file file/new -input=app/assets/stylesheets/ <CR>
-nnoremap <silent> ,urj :<C-u>Unite file_rec/async:app/assets/javascripts/ <CR>
-nnoremap <silent> ,urfj :<C-u>Unite file file/new -input=app/assets/javascripts/ <CR>
-nnoremap <silent> ,uro :<C-u>Unite file_rec/async:config/ <CR>
-nnoremap <silent> ,urfo :<C-u>Unite file file/new -input=config/ <CR>
-nnoremap <silent> ,url :<C-u>Unite file_rec/async:lib/ <CR>
-nnoremap <silent> ,urfl :<C-u>Unite file file/new -input=lib/ <CR>
-nnoremap <silent> ,urr :<C-u>Unite file_rec/async:spec/ <CR>
-nnoremap <silent> ,urfr :<C-u>Unite file file/new -input=spec/ <CR>
-
-" --------------------------------
-" 基本設定
-" --------------------------------
-" vim内部で使われる文字エンコーディングをutf-8に設定する
-"set encoding=utf-8
 
 " 想定される改行コードの指定する
 set fileformats=unix,dos,mac
-
-" 挿入モードでTABを挿入するとき、代わりに適切な数の空白を使う
-set expandtab
-
-" 新しい行を開始したとき、新しい行のインデントを現在行と同じにする
-set autoindent
-
-" ファイル形式の検出の有効化する
-" ファイル形式別プラグインのロードを有効化する
-" ファイル形式別インデントのロードを有効化する
-filetype plugin indent on
-
 
 " Colorscheme Solarized
 syntax enable
@@ -240,6 +123,151 @@ autocmd BufWritePre * :%s/\s\+$//ge
 " 保存時にtabをスペースに変換する
 autocmd BufWritePre * :%s/\t/  /ge
 
-" 追加
-set tabstop=2 " インデントをスペース4つ分に設定する
-set shiftwidth=2 " 自動インデントの幅
+
+""""""""""""""""""""""""""""""
+" 脱初心者を目指すVimmerにオススメしたいVimプラグインや.vimrcの設定 - Qiita
+" http://qiita.com/jnchito/items/5141b3b01bced9f7f48f
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" 各種オプションの設定
+""""""""""""""""""""""""""""""
+" タグファイルの指定(でもタグジャンプは使ったことがない)
+set tags=~/.tags
+" スワップファイルは使わない(ときどき面倒な警告が出るだけで役に立ったことがない)
+set noswapfile
+" カーソルが何行目の何列目に置かれているかを表示する
+set ruler
+" コマンドラインに使われる画面上の行数
+"set cmdheight=2
+" エディタウィンドウの末尾から2行目にステータスラインを常時表示させる
+set laststatus=2
+" ステータス行に表示させる情報の指定(どこからかコピペしたので細かい意味はわかっていない)
+set statusline=%<%f\ %m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=%l,%c%V%8P
+" ステータス行に現在のgitブランチを表示する
+set statusline+=%{fugitive#statusline()}
+" ウインドウのタイトルバーにファイルのパス情報等を表示する
+set title
+" コマンドラインモードで<Tab>キーによるファイル名補完を有効にする
+set wildmenu
+" 入力中のコマンドを表示する
+set showcmd
+" バックアップディレクトリの指定(でもバックアップは使ってない)
+set backupdir=$HOME/.vimbackup
+" バッファで開いているファイルのディレクトリでエクスクローラを開始する(でもエクスプローラって使ってない)
+set browsedir=buffer
+" 小文字のみで検索したときに大文字小文字を無視する
+set smartcase
+" 検索結果をハイライト表示する
+set hlsearch
+" 暗い背景色に合わせた配色にする
+set background=dark
+" タブ入力を複数の空白入力に置き換える
+set expandtab
+" 検索ワードの最初の文字を入力した時点で検索を開始する
+set incsearch
+" 保存されていないファイルがあるときでも別のファイルを開けるようにする
+set hidden
+" 不可視文字を表示する
+set list
+" タブと行の続きを可視化する
+set listchars=tab:>\ ,extends:<
+" 行番号を表示する
+set number
+" 対応する括弧やブレースを表示する
+set showmatch
+" 改行時に前の行のインデントを継続する
+set autoindent
+" 改行時に入力された行の末尾に合わせて次の行のインデントを増減する
+set smartindent
+" タブ文字の表示幅
+set tabstop=2
+" Vimが挿入するインデントの幅
+set shiftwidth=2
+" 行頭の余白内で Tab を打ち込むと、'shiftwidth' の数だけインデントする
+set smarttab
+" カーソルを行頭、行末で止まらないようにする
+set whichwrap=b,s,h,l,<,>,[,]
+" 構文毎に文字色を変化させる
+syntax on
+" カラースキーマの指定
+"colorscheme desert
+" 行番号の色
+highlight LineNr ctermfg=darkyellow
+""""""""""""""""""""""""""""""
+
+
+" http://inari.hatenablog.com/entry/2014/05/05/231307
+""""""""""""""""""""""""""""""
+" 全角スペースの表示
+""""""""""""""""""""""""""""""
+function! ZenkakuSpace()
+    highlight ZenkakuSpace cterm=underline ctermfg=lightblue guibg=darkgray
+endfunction
+
+if has('syntax')
+    augroup ZenkakuSpace
+        autocmd!
+        autocmd ColorScheme * call ZenkakuSpace()
+        autocmd VimEnter,WinEnter,BufRead * let w:m1=matchadd('ZenkakuSpace', '　')
+    augroup END
+    call ZenkakuSpace()
+endif
+""""""""""""""""""""""""""""""
+
+" https://sites.google.com/site/fudist/Home/vim-nihongo-ban/-vimrc-sample
+""""""""""""""""""""""""""""""
+" 挿入モード時、ステータスラインの色を変更
+""""""""""""""""""""""""""""""
+let g:hi_insert = 'highlight StatusLine guifg=darkblue guibg=darkyellow gui=none ctermfg=blue ctermbg=yellow cterm=none'
+
+if has('syntax')
+  augroup InsertHook
+    autocmd!
+    autocmd InsertEnter * call s:StatusLine('Enter')
+    autocmd InsertLeave * call s:StatusLine('Leave')
+  augroup END
+endif
+
+let s:slhlcmd = ''
+function! s:StatusLine(mode)
+  if a:mode == 'Enter'
+    silent! let s:slhlcmd = 'highlight ' . s:GetHighlight('StatusLine')
+    silent exec g:hi_insert
+  else
+    highlight clear StatusLine
+    silent exec s:slhlcmd
+  endif
+endfunction
+
+function! s:GetHighlight(hi)
+  redir => hl
+  exec 'highlight '.a:hi
+  redir END
+  let hl = substitute(hl, '[\r\n]', '', 'g')
+  let hl = substitute(hl, 'xxx', '', '')
+  return hl
+endfunction
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" 最後のカーソル位置を復元する
+""""""""""""""""""""""""""""""
+if has("autocmd")
+    autocmd BufReadPost *
+    \ if line("'\"") > 0 && line ("'\"") <= line("$") |
+    \   exe "normal! g'\"" |
+    \ endif
+endif
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" 自動的に閉じ括弧を入力
+""""""""""""""""""""""""""""""
+imap { {}<LEFT>
+imap [ []<LEFT>
+imap ( ()<LEFT>
+""""""""""""""""""""""""""""""
+
+" filetypeの自動検出
+filetype on
