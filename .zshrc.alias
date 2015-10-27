@@ -46,16 +46,17 @@ alias rm="rm -i"
 alias mkdir="mkdir -p"
 
 
-# グローバルエイリアス
-alias -g G="| grep"
-alias -g L="| less"
+# global aliases
+alias -g L='| less'
+alias -g G='| grep'
+alias -g H='| head'
+alias -g M='| more'
+alias -g T='| tail'
 alias -g REPOALL="--enablerepo=remi,epel,ius,rpmforge"
-
 
 # sudo の後のコマンドでエイリアスを有効にする
 alias sudo="sudo "
 
 # crontabの誤消去防止
 alias crontab="crontab -i"
-
 
