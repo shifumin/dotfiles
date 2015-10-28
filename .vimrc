@@ -27,6 +27,9 @@ syntax enable
 set background=dark
 colorscheme solarized
 
+" O で空行を挿入得する
+nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
+
 
 " -------------------------------
 " http://lambdalisue.hatenablog.com/entry/2013/06/23/071344
