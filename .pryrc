@@ -15,3 +15,11 @@ Pry.config.commands.alias_command "lM", "ls -M"
 Pry.config.commands.alias_command 'w', 'whereami'
 # Clear Screen
 Pry.config.commands.alias_command '.clr', '.clear'
+
+# awesome_print
+begin
+  require 'awesome_print'
+rescue LoadError
+else
+  AwesomePrint.pry!
+end
