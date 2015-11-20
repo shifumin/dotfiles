@@ -20,6 +20,6 @@ Pry.config.commands.alias_command '.clr', '.clear'
 begin
   require "awesome_print"
   AwesomePrint.pry!
-rescue LoadError => err
-  puts "no awesome_print :("
+rescue LoadError => e
+  puts "no awesome_print"
 end
