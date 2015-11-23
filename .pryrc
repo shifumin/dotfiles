@@ -15,6 +15,10 @@ Pry.config.commands.alias_command "lM", "ls -M"
 Pry.config.commands.alias_command 'w', 'whereami'
 # Clear Screen
 Pry.config.commands.alias_command '.clr', '.clear'
+# binding.pry
+Pry.config.commands.alias_command 'c', 'continue'
+Pry.config.commands.alias_command 's', 'step'
+Pry.config.commands.alias_command 'n', 'next'
 
 # awesome_print
 begin
