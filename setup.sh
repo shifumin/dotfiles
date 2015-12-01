@@ -17,6 +17,9 @@ done
 # install .vim/indent/ruby.vim
 [ ! -d ~/.vim/indent ] && mkdir ~/.vim/indent && ln -s $HOME/dotfiles/ruby.vim $HOME/.vim/indent/ruby.vim
 
+# install .vim/indent/php.vim
+ln -s $HOME/dotfiles/php.vim $HOME/.vim/indent/php.vim
+
 # install oh-my-zsh
 [ ! -d ~/.oh-my-zsh ] && git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
 
