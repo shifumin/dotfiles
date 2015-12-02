@@ -19,7 +19,7 @@ alias gci="git commit -a"
 alias gr="grep --color=auto -ERUIn"
 
 # less
-alias less="less -r"
+alias less="less -qR"
 
 # ls
 alias la="ls -a"
