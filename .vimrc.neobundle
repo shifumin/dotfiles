@@ -117,6 +117,14 @@ NeoBundle 'chase/vim-ansible-yaml'
 NeoBundle 'sudo.vim'
 
 
+""" PHP
+" neo-snippet plugin contains neocomplcache snippets source
+NeoBundle 'Shougo/neosnippet'
+
+" The standard snippets repository for neosnippet
+NeoBundle 'Shougo/neosnippet-snippets'
+
+
 """"""""""""""""""""""""""""""
 call neobundle#end()
 
