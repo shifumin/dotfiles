@@ -124,6 +124,8 @@ NeoBundle 'Shougo/neosnippet'
 " The standard snippets repository for neosnippet
 NeoBundle 'Shougo/neosnippet-snippets'
 
+" Utility for CakePHP developers.
+NeoBundle 'violetyk/cake.vim'
 
 """"""""""""""""""""""""""""""
 call neobundle#end()
