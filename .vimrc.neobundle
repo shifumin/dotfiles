@@ -202,3 +202,11 @@ au FileType unite inoremap <silent> <buffer> <expr> <C-K> unite#do_action('vspli
 au FileType unite nnoremap <silent> <buffer> <ESC><ESC> :q<CR>
 au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>:q<CR>
 """"""""""""""""""""""""""""""
+
+
+" PHP Settings
+" --------------------------------
+" cake.vim
+" --------------------------------
+let g:cakephp_enable_fix_mode = 1
+let g:cakephp_enable_auto_mode = 1
