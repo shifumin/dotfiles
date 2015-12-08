@@ -33,7 +33,9 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 
 " コード補完
 NeoBundle 'Shougo/neocomplete.vim'
-NeoBundle 'marcus/rsense'
+" http://nigorojr.com/articles/19
+"NeoBundle 'marcus/rsense'
+NeoBundle 'NigoroJr/rsense'
 NeoBundle 'supermomonga/neocomplete-rsense.vim'
 
 " 静的解析
