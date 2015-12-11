@@ -119,15 +119,19 @@ NeoBundle 'chase/vim-ansible-yaml'
 NeoBundle 'sudo.vim'
 
 
-""" PHP
+""" PHP settings
 " neo-snippet plugin contains neocomplcache snippets source
 NeoBundle 'Shougo/neosnippet'
 
 " The standard snippets repository for neosnippet
 NeoBundle 'Shougo/neosnippet-snippets'
 
+" The neocomplete source for PHP
+NeoBundle 'violetyk/neocomplete-php.vim'
+
 " Utility for CakePHP developers.
 NeoBundle 'violetyk/cake.vim'
+
 
 """"""""""""""""""""""""""""""
 call neobundle#end()
@@ -233,3 +237,8 @@ endif
 " --------------------------------
 let g:cakephp_enable_fix_mode = 1
 let g:cakephp_enable_auto_mode = 1
+
+" --------------------------------
+" neocomplete-php.vim
+" --------------------------------
+let g:neocomplete_php_locale = 'ja'
