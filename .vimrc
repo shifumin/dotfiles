@@ -284,6 +284,9 @@ let g:php_sql_query     = 1
 " $VIMRUNTIME/syntax/sql.vim
 let g:sql_type_default = 'mysql' " MySQLの場合
 
+" 辞書ファイルの読込
+autocmd FileType php,ctp :set dictionary=~/.vim/dict/php.dict
+
 
 " filetypeの自動検出
 filetype on
