@@ -265,21 +265,66 @@ endif
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
-" 自動的に閉じ括弧を入力
+" key mapping
 """"""""""""""""""""""""""""""
-imap { {}<LEFT>
-imap [ []<LEFT>
-imap ( ()<LEFT>
+" [Vim] インサートモード時の便利キーマップ - Qiita
+" http://qiita.com/y_uuki/items/14389dbaaa43d25f3254
 """"""""""""""""""""""""""""""
+" insertモードから抜ける
+inoremap <silent> jj <ESC>
+inoremap <silent> <C-j> j
+inoremap <silent> kk <ESC>
+inoremap <silent> <C-k> k
+
+" 行頭・行末移動方向をキーの相対位置にあわせる
+nnoremap 0 $
+nnoremap 1 0
+
+" 挿入モードでのカーソル移動
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-h> <Left>
+inoremap <C-l> <Right>
+
+" カーソル前の文字削除
+inoremap <silent> <C-h> <C-g>u<C-h>
+" カーソル後の文字削除
+inoremap <silent> <C-d> <Del>
+" カーソルから行頭まで削除
+inoremap <silent> <C-d>e <Esc>lc^
+" カーソルから行末まで削除
+inoremap <silent> <C-d>0 <Esc>lc$
+" カーソルから行頭までヤンク
+inoremap <silent> <C-y>e <Esc>ly0<Insert>
+" カーソルから行末までヤンク
+inoremap <silent> <C-y>0 <Esc>ly$<Insert>
+
+" 引用符, 括弧の設定
+inoremap { {}<Left>
+inoremap [ []<Left>
+inoremap ( ()<Left>
+inoremap " ""<Left>
+inoremap ' ''<Left>
+inoremap <> <><Left>
 
 
-""" PHP Settings
+""""""""""""""""""""""""""""""
+" PHP settings
+""""""""""""""""""""""""""""""
+" VimでPHP開発環境を作成 - Qiita
+" http://qiita.com/NanohaAsOnKai/items/0188fb3b60e8a79656a0
+""""""""""""""""""""""""""""""
 
 " $VIMRUNTIME/syntax/php.vim
 let g:php_baselib       = 1
 let g:php_htmlInStrings = 1
 let g:php_noShortTags   = 1
 let g:php_sql_query     = 1
+
+" <? をハイライト除外にする
+let g:php_noShortTags         = 1
+" カッコが閉じていない場合にハイライト
+let g:php_parent_error_close  = 1
 
 " $VIMRUNTIME/syntax/sql.vim
 let g:sql_type_default = 'mysql' " MySQLの場合
