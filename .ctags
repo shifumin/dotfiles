@@ -1,1 +1,8 @@
 --regex-ruby=/^[\t ]*([A-Z][-_A-Za-z0-9]*::)*([A-Z][-_A-Za-z0-9]*)[\t ]*=/\2/C,constant/
+--exclude=.git
+--exclude=.svn
+--recurse=yes
+--sort=yes
+--langmap=PHP:+.inc.tpl
+--regex-PHP=/const\s+([^ \t=]+)/\1/d/
+--php-kinds=cfd
