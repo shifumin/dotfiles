@@ -265,6 +265,19 @@ endif
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
+" Linuxの場合はviminfoを用いてヤンクデータを共有
+" http://shirakiya.hatenablog.com/entry/2015/01/30/025257
+""""""""""""""""""""""""""""""
+let OSTYPE = system('uname')
+if OSTYPE == "Linux\n"
+    noremap y y:wv<CR>
+    noremap p :rv!<CR>p
+endif
+
+set viminfo='50,\"3000,:0,n~/.viminfo
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
 " key mapping
 """"""""""""""""""""""""""""""
 " [Vim] インサートモード時の便利キーマップ - Qiita
@@ -277,8 +290,8 @@ inoremap <silent> kk <ESC>
 inoremap <silent> <C-k> k
 
 " 行頭・行末移動方向をキーの相対位置にあわせる
-nnoremap 0 $
-nnoremap 1 0
+" nnoremap 0 $
+" nnoremap 1 0
 
 " 挿入モードでのカーソル移動
 inoremap <C-j> <Down>
