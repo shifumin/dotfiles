@@ -148,13 +148,10 @@ NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundleLazy 'vim-scripts/taglist.vim', {'commands': 'Tlist'}
 
 " Async syntax checking.
-NeoBundleLazy 'osyo-manga/vim-watchdogs', {'depends': 'osyo-manga/shabadou.vim', 'insert': 1}
+"NeoBundleLazy 'osyo-manga/vim-watchdogs', {'depends': 'osyo-manga/shabadou.vim', 'insert': 1}
 
 " Use fabpot/PHP-CS-Fixer
-NeoBundleLazy 'stephpy/vim-php-cs-fixer', {'functions': 'PhpCsFixerFixFile'}
-
-" Utility for CakePHP developers.
-NeoBundle 'violetyk/cake.vim'
+"NeoBundleLazy 'stephpy/vim-php-cs-fixer', {'functions': 'PhpCsFixerFixFile'}
 
 
 """"""""""""""""""""""""""""""
@@ -288,12 +285,6 @@ endif
 
 let g:neosnippet#snippets_directory='~/.vim/bundle/neosnippet-snippets/snippets'
 
-
-" --------------------------------
-" cake.vim
-" --------------------------------
-let g:cakephp_enable_fix_mode = 1
-let g:cakephp_enable_auto_mode = 1
 
 " --------------------------------
 " neocomplete.vim for PHP
