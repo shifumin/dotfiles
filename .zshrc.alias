@@ -40,6 +40,7 @@ alias ccat="pygmentize -O style=vim -f console256 -g"
 
 
 alias c="cd"
+alias cl="clear"
 alias g="git"
 alias mv="mv -i"
 alias rm="rm -i"
