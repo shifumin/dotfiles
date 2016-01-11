@@ -13,4 +13,8 @@ cd /usr/local/src/git-${GIT_VER}
 [ ! -e /usr/local/bin/git ] && sudo ./configure --prefix=/usr/local/
 [ ! -e /usr/local/bin/git ] && sudo make && sudo make install
 
+# CentOS
 sudo ln -s /usr/local/src/git-${GIT_VER}/contrib/diff-highlight/diff-highlight /usr/local/bin/diff-highlight
+# Ubuntu
+# sudo chmod 755 /usr/share/doc/git/contrib/diff-highlight/diff-highlight
+# sudo ln -s /usr/local/src/git-${GIT_VER}/contrib/diff-highlight/diff-highlight /usr/local/bin/diff-highlight
