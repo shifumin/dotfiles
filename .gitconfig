@@ -198,4 +198,5 @@
 [ghq]
         #root = /Users/ozaki/src
 
-
+[commit]
+  template = ~/.gitmessage.txt
