@@ -230,6 +230,12 @@ autocmd QuickFixCmdPost *grep* cwindow
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
+" NERDTree settings
+""""""""""""""""""""""""""""""
+nnoremap <silent> ,nt :NERDTreeToggle<CR>
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
 " PHP settings
 """"""""""""""""""""""""""""""
 " VimでPHP開発環境を作成 - Qiita
