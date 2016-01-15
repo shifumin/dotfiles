@@ -223,13 +223,6 @@ au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>:q<CR>
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
-" fugitive.vim settings
-""""""""""""""""""""""""""""""
-" grep検索の実行後にQuickFix Listを表示する
-autocmd QuickFixCmdPost *grep* cwindow
-""""""""""""""""""""""""""""""
-
-""""""""""""""""""""""""""""""
 " NERDTree settings
 """"""""""""""""""""""""""""""
 nnoremap <silent> ,nt :NERDTreeToggle<CR>
