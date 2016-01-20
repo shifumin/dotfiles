@@ -311,6 +311,10 @@ inoremap " ""<Left>
 inoremap ' ''<Left>
 inoremap <> <><Left>
 
+" Ctags用タグスタックを戻るキーバインド
+nnoremap <c-[> :pop<CR>
+
+
 """"""""""""""""""""""""""""""
 " vimgrep
 """"""""""""""""""""""""""""""
