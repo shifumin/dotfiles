@@ -1,5 +1,10 @@
+# Waningを消すための設定
+# bind generic <Ctrl-F> scroll-page-down
+# bind generic <Ctrl-B> scroll-page-up
 
-## 表示制御
+
+## やけに丁寧なtigの設定ガイド（表示制御編） - Qiita
+## http://qiita.com/yoshikazusawa/items/d99e8b5d6f6a45aa6e2e
 # main viewの左端にコミットIDを表示する
 set main-view = id date author commit-title:graph=yes,refs=yes
 # デフォルト
@@ -17,3 +22,17 @@ set split-view-height = 80%
 
 # 差分の前後の表示行数（diff-context)を指定
 set diff-context = 6
+
+## Git - やけに丁寧なtigのキーバインド設定ガイド - Qiita
+## http://qiita.com/yoshikazusawa/items/3eaa6db78fa348d38bfe
+# デフォルトの bind generic G !git gc を無効化する
+bind generic G none
+bind generic g move-first-line
+bind generic G move-last-line
+
+# git checkout -b branch_name
+bind branch n !git checkout -b %(prompt) %(branch)
+
+# git checkout commit_id
+bind main C !git checkout %(commit)
+
