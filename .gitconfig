@@ -74,7 +74,6 @@
   ram = "!f() { git rebase-and-merge $1 $2 ;}; f"
 
   # comit
-  ad  = add
   c   = commit
   ci  = commit -a           # modifiedなファイルを全てstageへ
   cam = commit -a --amend   # 直前のcommitを修正
@@ -84,14 +83,27 @@
   cm  = checkout master
   cd  = checkout develop
 
-  # branch関連
-  br  = branch
+  # add
+  a   = add
+  ad  = add
+  ap  = add -p
+
+  # branch
+  # br  = branch
+  b   = branch -vv
+  br  = branch -vv
   ba  = branch -a           # originも含めた全てのbranchを表示
   bm  = branch --merged     # merge済みのbranchを表示
   bn  = branch --no-merged  # mergeしてないbranchを表示
   bo  = branch -r           # remote branchを表示
 
   # log関連
+  # git logにブランチ名を表示する git log --oneline --graph --decorate=fullのススメ - Qiita
+  # http://qiita.com/masarufuruya/items/7480854d4bc2f0443fc1
+  l     = log
+  graph = log --graph --oneline --decorate=full
+  g     = log --graph --date=short --format=\"%C(yellow)%h%C(reset) %C(magenta)[%ad]%C(reset)%C(auto)%d%C(reset) %s %C(cyan)@%an%C(reset)\"
+
   edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
   wc  = whatchanged         # logに変更されたファイルも一緒に出す
   ls  = log --stat          # logに変更されたファイルも一緒に出す
@@ -130,6 +142,7 @@
   cancel = !git commit -a -m 'Temporary commit for cancel' && git reset --hard HEAD~
 
   # diff関連
+  d  = diff
   di = diff
   dm = diff master           # masterとのdiff
   dw = diff --color-words    # 単語単位でいろつけてdiff
