@@ -73,15 +73,6 @@
   rebase-and-merge = "!f() { git checkout $2 && git rebase --merge --no-ff $1 && git checkout $1 && git merge --no-ff $2 && echo '' && echo \"branch $2 is rebased onto $1 and merged into $1\"; }; f"
   ram = "!f() { git rebase-and-merge $1 $2 ;}; f"
 
-  # comit
-  c   = commit
-  ci  = commit -a           # modifiedなファイルを全てstageへ
-  cam = commit -a --amend   # 直前のcommitを修正
-  co  = checkout
-  cb  = checkout -b         # branch切ってcheckoutする
-  ct  = checkout --track    # remoteのbranchを追跡
-  cm  = checkout master
-  cd  = checkout develop
 
   # add
   a   = add
@@ -89,13 +80,24 @@
   ap  = add -p
 
   # branch
-  # br  = branch
-  b   = branch -vv
-  br  = branch -vv
+  b   = branch
+  br  = branch
+  bv  = branch -vv
   ba  = branch -a           # originも含めた全てのbranchを表示
   bm  = branch --merged     # merge済みのbranchを表示
   bn  = branch --no-merged  # mergeしてないbranchを表示
   bo  = branch -r           # remote branchを表示
+
+  # comit
+  c   = commit
+  cm  = commit
+  ci  = commit -a           # modifiedなファイルを全てstageへ
+  cam = commit -a --amend   # 直前のcommitを修正
+  co  = checkout
+  cb  = checkout -b         # branch切ってcheckoutする
+  ct  = checkout --track    # remoteのbranchを追跡
+  # cm  = checkout master
+  cd  = checkout develop
 
   # log関連
   # git logにブランチ名を表示する git log --oneline --graph --decorate=fullのススメ - Qiita
