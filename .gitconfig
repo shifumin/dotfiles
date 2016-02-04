@@ -144,17 +144,18 @@
   cancel = !git commit -a -m 'Temporary commit for cancel' && git reset --hard HEAD~
 
   # diff関連
-  d  = diff
-  di = diff
-  dm = diff master           # masterとのdiff
-  dw = diff --color-words    # 単語単位でいろつけてdiff
-  dc = diff --cached         # addされているものとのdiff
-  ds = diff --staged         # 同上(1.6.1移行)
-  d1 = diff HEAD~            # HEADから1つ前とdiff
-  d2 = diff HEAD~~           # HEADから2つ前とdiff
-  d3 = diff HEAD~~~          # HEADから3つ前とdiff
-  d4 = diff HEAD~~~~         # HEADから4つ前とdiff
-  d5 = diff HEAD~~~~~        # HEADから5つ前とdiff
+  d   = diff
+  di  = diff
+  dif = diff
+  dm  = diff master           # masterとのdiff
+  dw  = diff --color-words    # 単語単位でいろつけてdiff
+  dc  = diff --cached         # addされているものとのdiff
+  ds  = diff --staged         # 同上(1.6.1移行)
+  d1  = diff HEAD~            # HEADから1つ前とdiff
+  d2  = diff HEAD~~           # HEADから2つ前とdiff
+  d3  = diff HEAD~~~          # HEADから3つ前とdiff
+  d4  = diff HEAD~~~~         # HEADから4つ前とdiff
+  d5  = diff HEAD~~~~~        # HEADから5つ前とdiff
   d10 = diff HEAD~~~~~~~~~~  # HEADから10前とdiff
 
   # edit関連
