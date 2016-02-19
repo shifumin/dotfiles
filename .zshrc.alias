@@ -16,8 +16,12 @@ alias -g REPOALL="--enablerepo=remi,epel,ius,rpmforge"
 alias be='bundle exec'
 
 # git
-alias g="git"
-alias gi="git"
+alias g='git'
+alias gi='git'
+alias gb='git branch -vv'
+alias gd='git diff'
+alias gl='git log'
+alias gs='git status'
 
 # grep
 alias gr="grep --color=auto -ERUIn"
