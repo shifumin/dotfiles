@@ -39,23 +39,6 @@
 
 
 [alias]
-  s   = status
-  st  = status
-  ss  = status -s
-  sh  = show
-  so  = remote show origin
-
-  # pull/push/fetch
-  ft  = fetch
-  ftp = fetch --prune
-  up  = pull --rebase       # pull rebase
-  po  = push origin         # push origin
-  pof = push -f origin      # force
-  pu  = push -u origin      # push origin and set upstream
-
-  # push current branch to origin with --upstream
-  puc = "!f() { git push origin -u `git symbolic-ref --short HEAD` ;}; f"
-
   # rebase
   rbm = rebase --merge master       # masterへのrebaseはよく使うのでalias
   rbd = rebase --merge develop
@@ -88,16 +71,29 @@
   bn  = branch --no-merged  # mergeしてないbranchを表示
   bo  = branch -r           # remote branchを表示
 
+  # checkuout
+  o   = checkout
+  co  = checkout
+  cb  = checkout -b         # branch切ってcheckoutする
+  ct  = checkout --track    # remoteのbranchを追跡
+  cd  = checkout develop
+
   # comit
   c   = commit
   cm  = commit
   ci  = commit -a           # modifiedなファイルを全てstageへ
   cam = commit -a --amend   # 直前のcommitを修正
-  co  = checkout
-  cb  = checkout -b         # branch切ってcheckoutする
-  ct  = checkout --track    # remoteのbranchを追跡
-  # cm  = checkout master
-  cd  = checkout develop
+  cv  = commit -v
+
+  # pull push
+  p   = pull
+  pu  = push
+  puu = push -u
+
+  # status
+  s   = status
+  st  = status
+  ss  = status -s
 
   # log関連
   # git logにブランチ名を表示する git log --oneline --graph --decorate=fullのススメ - Qiita
