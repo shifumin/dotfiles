@@ -118,6 +118,15 @@ NeoBundle 'chase/vim-ansible-yaml'
 " sudo.vim : Allows one to edit a file with prevledges from an unprivledged session.
 NeoBundle 'sudo.vim'
 
+""""""""""""""""""""""""""""""
+" Puyopuyo
+""""""""""""""""""""""""""""""
+" This is Game Engine for Vim script
+NeoBundle 'rbtnn/game_engine.vim'
+
+" Puyo on Vim
+NeoBundle 'rbtnn/puyo.vim'
+""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
 " PHP settings
