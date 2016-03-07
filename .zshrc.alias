@@ -23,6 +23,12 @@ alias gd='git diff'
 alias gl='git log'
 alias gs='git status'
 
+# peco と alias -g で git に便利革命おきた - Qiita
+# http://qiita.com/Kuniwak/items/b711d6c3e402dfd9356b
+alias -g B='`git branch -a | peco --prompt "GIT BRANCH>" | head -n 1 | sed -e "s/^\*\s*//g"`'
+alias -g R='`git remote | peco --prompt "GIT REMOTE>" | head -n 1`'
+alias -g D='`echo S | sed "s/\([0-9a-f]*\)/\1..\1^/" | xargs git diff --name-only | peco --prompt "GIT DIFF FILE>" | head -n 1 | sed "s/^\(\S*\).*/\1/"`'
+
 # grep
 alias gr="grep --color=auto -ERUIn"
 
@@ -37,6 +43,12 @@ alias lla="ls -la"
 
 # su
 alias su="su -l"
+
+# Tig
+
+alias t='tig'
+alias ti='tig'
+alias ta='tig --all'
 
 # vim
 alias v="vim"
