@@ -5,7 +5,7 @@ TIG_VER="2.1.1"
 
 # Git
 sudo yum -y remove git
-sudo yum install -y gcc curl-devel expat-devel gettext-devel openssl-devel zlib-devel perl-ExtUtils-MakeMaker
+sudo yum install -y gcc curl-devel expat-devel gettext-devel ncurses-devel openssl-devel zlib-devel perl-ExtUtils-MakeMaker
 
 cd /usr/local/src
 [ ! -e /usr/local/src/git-${GIT_VER}.tar.gz ] && sudo wget https://www.kernel.org/pub/software/scm/git/git-${GIT_VER}.tar.gz
