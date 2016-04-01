@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GIT_VER="2.7.0"
+GIT_VER="2.8.0"
 TIG_VER="2.1.1"
 
 # Git
