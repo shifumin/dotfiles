@@ -12,4 +12,5 @@ cd /usr/local/src/zsh-${ZSH_VER}
 [ ! -e /usr/local/bin/zsh ] && sudo ./configure
 [ ! -e /usr/local/bin/zsh ] && sudo make && sudo make install
 
+sudo sh -c "echo '/usr/local/bin/zsh' >> /etc/shells"
 chsh -s /usr/local/bin/zsh
