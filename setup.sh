@@ -20,6 +20,9 @@ done
 # install .vim/indent/php.vim
 ln -s $HOME/dotfiles/php.vim $HOME/.vim/indent/php.vim
 
+# install .vim/ftdetect/smarty.vim
+[ ! -d ~/.vim/syntax ] && mkdir ~/.vim/syntax && ln -s $HOME/dotfiles/smarty.vim $HOME/.vim/syntax/smarty.vim
+
 # install oh-my-zsh
 [ ! -d ~/.oh-my-zsh ] && git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh
 
