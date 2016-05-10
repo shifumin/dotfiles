@@ -352,6 +352,16 @@ let g:sql_type_default = 'mysql' " MySQLの場合
 " 辞書ファイルの読込
 autocmd FileType php,ctp :set dictionary=~/.vim/dict/php.dict
 
+""""""""""""""""""""""""""""""
+" 実践Vim
+""""""""""""""""""""""""""""""
+
+" 記録するコマンド履歴検索履歴の数
+set history=200
+
+" 履歴からコマンドを呼び戻すときにカーソルキーを使わない
+cnoremap <C-p> <Up>
+cnoremap <C-n> <Down>
 
 " filetypeの自動検出
 filetype on
