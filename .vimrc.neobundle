@@ -238,6 +238,7 @@ au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>:q<CR>
 " NERDTree settings
 """"""""""""""""""""""""""""""
 nnoremap <silent> ,nt :NERDTreeToggle<CR>
+nnoremap :tree :NERDTreeToggle
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
