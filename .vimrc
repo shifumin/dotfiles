@@ -304,12 +304,12 @@ inoremap <silent> <C-y>e <Esc>ly0<Insert>
 inoremap <silent> <C-y>0 <Esc>ly$<Insert>
 
 " 引用符, 括弧の設定
-inoremap { {}<Left>
-inoremap [ []<Left>
-inoremap ( ()<Left>
-inoremap " ""<Left>
-inoremap ' ''<Left>
-inoremap <> <><Left>
+" inoremap { {}<Left>
+" inoremap [ []<Left>
+" inoremap ( ()<Left>
+" inoremap " ""<Left>
+" inoremap ' ''<Left>
+" inoremap <> <><Left>
 
 " Ctags用タグスタックを戻るキーバインド
 nnoremap <c-[> :pop<CR>
@@ -362,6 +362,19 @@ set history=200
 " 履歴からコマンドを呼び戻すときにカーソルキーを使わない
 cnoremap <C-p> <Up>
 cnoremap <C-n> <Down>
+
+""
+" Original
+""
+" ヤンクした内容が消えないようにする
+noremap PP "0p
+noremap x "_x
+
+" 閉じ括弧補完
+inoremap {<Enter> {}<Left><CR><ESC><S-o>
+inoremap [<Enter> []<Left><CR><ESC><S-o>
+inoremap (<Enter> ()<Left><CR><ESC><S-o>
+
 
 " filetypeの自動検出
 filetype on
