@@ -7,9 +7,11 @@ alias vim='nocorrect vim'
 # global aliases
 alias -g L='| less'
 alias -g G='| grep'
-alias -g H='| head'
+# alias -g H='| head'
 alias -g M='| more'
 alias -g T='| tail'
+alias -g P='| peco'
+alias -g H='history | peco'
 alias -g REPOALL="--enablerepo=remi,epel,ius,rpmforge"
 
 # bundle
