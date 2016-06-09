@@ -115,8 +115,8 @@ NeoBundle 'ConradIrwin/vim-bracketed-paste'
 " Add additional support for Ansible in Vim
 NeoBundle 'chase/vim-ansible-yaml'
 
-" sudo.vim : Allows one to edit a file with prevledges from an unprivledged session.
-NeoBundle 'sudo.vim'
+" submode : Create your own submodes
+NeoBundle 'kana/vim-submode'
 
 """"""""""""""""""""""""""""""
 " Puyopuyo
