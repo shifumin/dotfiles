@@ -386,7 +386,7 @@ let g:php_noShortTags         = 1
 let g:php_parent_error_close  = 1
 
 " $VIMRUNTIME/syntax/sql.vim
-let g:sql_type_default = 'mysql' " MySQLの場合
+let g:sql_type_default = 'mysql'
 
 " 辞書ファイルの読込
 autocmd FileType php,ctp :set dictionary=~/.vim/dict/php.dict
