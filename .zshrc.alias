@@ -50,6 +50,7 @@ alias su="su -l"
 alias t='tig'
 alias ti='tig'
 alias ta='tig --all'
+alias tb='tig blame -w'
 
 # vim
 alias v="vim"
