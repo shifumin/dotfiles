@@ -165,6 +165,9 @@ NeoBundleLazy 'vim-scripts/taglist.vim', {'commands': 'Tlist'}
 " Use fabpot/PHP-CS-Fixer
 "NeoBundleLazy 'stephpy/vim-php-cs-fixer', {'functions': 'PhpCsFixerFixFile'}
 
+" Multi-language DBGP debugger client for Vim
+NeoBundle 'joonty/vdebug'
+
 
 """"""""""""""""""""""""""""""
 call neobundle#end()
@@ -425,3 +428,9 @@ function! s:hooks.on_source(bundle) abort "{{{
     let g:php_cs_fixer_php_path               = 'php'
     let g:php_cs_fixer_verbose                = 0
 endfunction
+
+" --------------------------------
+" Vdebug
+" --------------------------------
+let g:vdebug_force_ascii = 1
+let g:vdebug_features = {'max_children': 128}
