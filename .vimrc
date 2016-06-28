@@ -418,6 +418,16 @@ inoremap {<Enter> {}<Left><CR><ESC><S-o>
 inoremap [<Enter> []<Left><CR><ESC><S-o>
 inoremap (<Enter> ()<Left><CR><ESC><S-o>
 
+" LeaderをSpaceキーにする
+let mapleader = "\<Space>"
+nnoremap <Leader>w :w<CR>
+nnoremap <Leader>q :q<CR>
+nnoremap <Leader>n :NERDTreeToggle <CR>
+nnoremap <Leader>t :<C-u>Tlist<CR>
+nmap <Leader><Leader> V
+
+map q: :q
+
 
 " filetypeの自動検出
 filetype on
