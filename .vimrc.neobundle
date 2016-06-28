@@ -264,6 +264,7 @@ let s:hooks = neobundle#get_hooks('vim-ref')
 "endfunction
 let g:ref_cache_dir      = $HOME .'/.vim/vim-ref/cache'
 let g:ref_phpmanual_path = $HOME .'/.vim/vim-ref/php-chunked-xhtml'
+nnoremap :rp :Ref<Space>phpmanual<Space>
 
 " --------------------------------
 " UltiSnips
