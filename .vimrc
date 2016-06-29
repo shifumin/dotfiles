@@ -357,6 +357,7 @@ nnoremap tv :vsplit<CR> :exe("tjump ".expand('<cword>'))<CR>
 nnoremap ts :split<CR> :exe("tjump ".expand('<cword>'))<CR>
 " 新しいタブを開いてジャンプ
 nnoremap <F3> :<C-u>tab stj <C-R>=expand('<cword>')<CR><CR>
+nnoremap tw :<C-u>tab stj <C-R>=expand('<cword>')<CR><CR>
 
 """"""""""""""""""""""""""""""
 " vimgrep
