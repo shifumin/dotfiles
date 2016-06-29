@@ -424,6 +424,7 @@ let mapleader = "\<Space>"
 nnoremap <Leader>w :w<CR>
 nnoremap <Leader>q :q<CR>
 nnoremap <Leader>n :NERDTreeToggle <CR>
+nnoremap <Leader>u :<C-u>Unite file_mru buffer<CR>
 nnoremap <Leader>t :<C-u>Tlist<CR>
 nmap <Leader><Leader> V
 
