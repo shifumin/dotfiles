@@ -419,15 +419,26 @@ inoremap {<Enter> {}<Left><CR><ESC><S-o>
 inoremap [<Enter> []<Left><CR><ESC><S-o>
 inoremap (<Enter> ()<Left><CR><ESC><S-o>
 
+
+""""""""""""""""""""""""""""""
+" Leader key settings
+""""""""""""""""""""""""""""""
 " LeaderをSpaceキーにする
 let mapleader = "\<Space>"
+nmap <Leader><Leader> V
 nnoremap <Leader>w :w<CR>
 nnoremap <Leader>q :q<CR>
+nnoremap <Leader>i <C-i>
+nnoremap <Leader>o <C-o>
 nnoremap <Leader>n :NERDTreeToggle <CR>
 nnoremap <Leader>u :<C-u>Unite file_mru buffer<CR>
 nnoremap <Leader>t :<C-u>Tlist<CR>
-nmap <Leader><Leader> V
-
+nnoremap <Leader>g :Ggrep<Space>
+nnoremap <Leader>co :copen<CR>
+nnoremap <Leader>cc :cclose<CR>
+nnoremap <Leader>cn :cnewer<CR>
+nnoremap <Leader>cp :colder<CR>
+nnoremap <Leader>z :<C-u>sp ~/project/trash.txt<CR>
 map q: :q
 
 
