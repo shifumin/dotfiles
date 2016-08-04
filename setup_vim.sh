@@ -12,7 +12,7 @@ rbenv rehash
 rbenv global ${RUBY_VER}
 
 cd /usr/local/src
-sudo hg clone https://vim.googlecode.com/hg vim
+sudo hg clone https://bitbucket.org/vim-mirror/vim
 cd vim
 sudo hg pull
 sudo hg update
