@@ -20,7 +20,7 @@ sudo make distclean
 
 # --prefix=/usr/local でもいいかも
 # --with-ruby-command=~/.rbenv/shims/ruby RubyのPATH
-sudo ./configure --prefix=/opt/vim  --with-features=huge --enable-multibyte --enable-rubyinterp --enable-pythoninterp --enable-luainterp --enable-cscope --enable-fail-if-missing --with-ruby-command=~/.rbenv/shims/ruby --with-lua-prefix=/usr
+sudo ./configure --prefix=/opt/vim  --with-features=huge --enable-multibyte --enable-rubyinterp --enable-pythoninterp --enable-luainterp --enable-cscope --enable-fail-if-missing --with-ruby-command=~/.rbenv/shims/ruby  --with-python-config-dir=/usr/lib64/python2.6/config --with-lua-prefix=/usr
 sudo make
 sudo make install
 
