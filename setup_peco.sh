@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PECO_VER="0.3.5"
+PECO_VER="0.3.6"
 
 cd /usr/local/src
 
