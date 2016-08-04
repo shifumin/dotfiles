@@ -1,13 +1,15 @@
 #!/bin/bash
 
+RUBY_VER="2.3.1"
+
 sudo yum remove -y vim-common vim-enhanced
 sudo yum install -y mercurial lua-devel ncurses-devel readline-devel
 
 git clone git@github.com:sstephenson/rbenv.git ~/.rbenv
 git clone git@github.com:sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
-rbenv install 2.3.0
+rbenv install ${RUBY_VER}
 rbenv rehash
-rbenv global 2.3.0
+rbenv global ${RUBY_VER}
 
 cd /usr/local/src
 sudo hg clone https://vim.googlecode.com/hg vim
