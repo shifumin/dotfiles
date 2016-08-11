@@ -188,13 +188,11 @@ linux*)
   ;;
 esac
 
-
 ## Mosh
 compdef mosh=ssh
 
 ## z
 source $HOME/dotfiles/z.sh
-
 
 ## ターミナルマルチプレクサ tmux をカスタマイズする - Qiita
 ## http://qiita.com/b4b4r07/items/01359e8a3066d1c37edc
@@ -261,7 +259,6 @@ function tmux_automatically_attach_session()
 }
 tmux_automatically_attach_session
 
-
 # .ctags
 # VimでPHP開発環境を作成 - Qiita
 # http://qiita.com/NanohaAsOnKai/items/0188fb3b60e8a79656a0
@@ -272,22 +269,42 @@ tagsVariable="$tagsVariable cd $HOME/sample2; $tagsCmd $HOME/.vim/tags/sample2.t
 tagsVariable="$tagsVariable cd;"
 alias TAGS=$tagsVariable
 
-# Peco
-# pecoを導入してzshのhistoryに使うようにした - さよならインターネット
-# http://blog.kenjiskywalker.org/blog/2014/06/12/peco/
-function peco-select-history() {
-    local tac
-    if which tac > /dev/null; then
-        tac="tac"
-    else
-        tac="tail -r"
-    fi
-    BUFFER=$(\history -n 1 | \
-        eval $tac | \
-        peco --query "$LBUFFER")
-    CURSOR=$#BUFFER
-    zle clear-screen
-}
-zle -N peco-select-history
-bindkey '^r' peco-select-history
+## anyframe
+## zshでpecoと連携するためのanyframeというプラグインを作った - Qiita
+## http://qiita.com/mollifier/items/81b18c012d7841ab33c3
+## 新社会人に送る。peco + anyframe + zshで実現する快適コマンドライン環境 | eureka tech blog
+## https://developers.eure.jp/event/peco_anyframe_zsh/
 
+fpath=($HOME/.zsh/anyframe(N-/) $fpath)
+autoload -Uz anyframe-init
+anyframe-init
+
+# cdrコマンドの導入
+autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+add-zsh-hook chpwd chpwd_recent_dirs
+
+# よく移動するディレクトリ一覧をインクリメントサーチ & 移動
+bindkey '^@' anyframe-widget-cdr
+bindkey '^xb' anyframe-widget-cdr
+
+# branch一覧をインクリメントサーチ & checkout
+bindkey '^b' anyframe-widget-checkout-git-branch
+bindkey '^x^b' anyframe-widget-checkout-git-branch
+
+bindkey '^xr' anyframe-widget-execute-history
+bindkey '^x^r' anyframe-widget-execute-history
+
+# bash history一覧インクリメントサーチ & コマンドラインに挿入
+bindkey '^r' anyframe-widget-put-history
+bindkey '^xi' anyframe-widget-put-history
+bindkey '^x^i' anyframe-widget-put-history
+
+bindkey '^xg' anyframe-widget-cd-ghq-repository
+bindkey '^x^g' anyframe-widget-cd-ghq-repository
+
+# プロセス一覧をインクリメントサーチ & kill
+bindkey '^xk' anyframe-widget-kill
+bindkey '^x^k' anyframe-widget-kill
+
+bindkey '^xe' anyframe-widget-insert-git-branch
+bindkey '^x^e' anyframe-widget-insert-git-branch
