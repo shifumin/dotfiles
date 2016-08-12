@@ -1,7 +1,6 @@
 # dotfiles/.gitconfig at master · yuroyoro/dotfiles · GitHub
 # https://github.com/yuroyoro/dotfiles/blob/master/.gitconfig
 
-
 [user]
   name  = shifumin
   email = shifumin4230@gmail.com
@@ -208,7 +207,7 @@
   generic = ^B move-page-up
 
 [ghq]
-        #root = /Users/ozaki/src
+  root = ~/.ghq
 
 [commit]
   template = ~/.gitmessage.txt
