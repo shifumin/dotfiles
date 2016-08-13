@@ -155,6 +155,7 @@ esac
 
 export EDITOR=vim
 export PATH=$PATH:$HOME/bin
+export GOPATH=$HOME/.go
 export MANPATH=$MANPATH:/opt/local/man:/usr/local/share/man
 
 
