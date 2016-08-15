@@ -295,11 +295,13 @@ bindkey '^x^b' anyframe-widget-checkout-git-branch
 bindkey '^xr' anyframe-widget-execute-history
 bindkey '^x^r' anyframe-widget-execute-history
 
-# bash history一覧インクリメントサーチ & コマンドラインに挿入
+# history一覧インクリメントサーチ & コマンドラインに挿入
 bindkey '^r' anyframe-widget-put-history
 bindkey '^xi' anyframe-widget-put-history
 bindkey '^x^i' anyframe-widget-put-history
 
+# ghq管理ディレクトリ一覧をインクリメントサーチ $ 移動
+bindkey '^g' anyframe-widget-cd-ghq-repository
 bindkey '^xg' anyframe-widget-cd-ghq-repository
 bindkey '^x^g' anyframe-widget-cd-ghq-repository
 
