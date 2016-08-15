@@ -1,11 +1,7 @@
 My dotfiles
 =============
 
-## Usage
-
-$ git clone git@github.com:shifumin/dotfiles.git  
-$ cd dotfiles  
-$ ./setup.sh  
+This is my dotfiles.
 
 ## Stack
 
@@ -14,5 +10,4 @@ Zsh
 Oh-My-Zsh  
 tmux  
 Vim  
-RuboCop  
-Others  
+and Others  
