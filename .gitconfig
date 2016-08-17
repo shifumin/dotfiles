@@ -70,6 +70,9 @@
   bn  = branch --no-merged  # mergeしてないbranchを表示
   bo  = branch -r           # remote branchを表示
 
+  # browse
+  see = browse
+
   # checkuout
   o   = checkout
   co  = checkout
@@ -178,7 +181,6 @@
 
 
   chpk = cherry-pick
-
 
   # git-flow関連
   ff  = flow feature
