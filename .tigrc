@@ -27,6 +27,7 @@ set diff-context = 6
 ## http://qiita.com/yoshikazusawa/items/3eaa6db78fa348d38bfe
 # デフォルトの bind generic G !git gc を無効化する
 bind generic G none
+bind main G none
 bind generic g move-first-line
 bind generic G move-last-line
 
@@ -36,3 +37,7 @@ bind branch n !git checkout -b %(prompt) %(branch)
 # git checkout commit_id
 bind main C !git checkout %(commit)
 
+## tigで見ているコミットをgithubで開く - Qiita
+## http://qiita.com/yaotti/items/62947b0c981ae38fae82
+bind main H !@hub browse -- commit/%(commit)
+bind diff H !@hub browse -- commit/%(commit)
