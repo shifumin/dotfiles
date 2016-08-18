@@ -350,6 +350,12 @@ inoremap <silent> <C-y>0 <Esc>ly$<Insert>
 " inoremap ' ''<Left>
 " inoremap <> <><Left>
 
+" 高速移動
+noremap J 20j
+noremap K 20k
+noremap L 10l
+noremap H 10h
+
 " Ctags用タグスタックを戻るキーバインド
 nnoremap <c-[> :pop<CR>
 " [tag vertical] 縦にウィンドウを分割してジャンプ
