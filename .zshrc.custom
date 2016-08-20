@@ -264,6 +264,9 @@ function tmux_automatically_attach_session()
 }
 tmux_automatically_attach_session
 
+# tmuxinator
+source $HOME/.bin/tmuxinator.zsh
+
 # .ctags
 # VimでPHP開発環境を作成 - Qiita
 # http://qiita.com/NanohaAsOnKai/items/0188fb3b60e8a79656a0
