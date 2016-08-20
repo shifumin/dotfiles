@@ -1,0 +1,13 @@
+# ~/.tmuxinator/home.yml
+
+name: home
+root: ~/
+
+pre:
+  - brew update
+
+windows:
+  - mac: cd ~/Dropbox/Kobito
+  - work:
+  - dotfiles: cd ~/.ghq/github.com/shifumin/dotfiles
+  - setupfiles: cd ~/.ghq/github.com/shifumin/setupfiles
