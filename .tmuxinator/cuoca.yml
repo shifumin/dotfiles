@@ -7,21 +7,18 @@ pre:
   - brew update
   - brew outdated
   - ssh-add ~/.ssh/cuoca/cuoca_id_rsa
-  - cd ~/project/cuoca
-  - vagrant up
 
 windows:
   - mac: cd ~/Dropbox/Kobito
   - work:
     - cd ~/project/cuoca
-    - vagrant ssh
+    - vagrant up
   - git:
     - cd ~/project/cuoca
-    - vagrant ssh
   - tig:
     - cd ~/project/cuoca
-    - vagrant ssh
   - /var/www/html:
     - cd ~/project/cuoca
-    - vagrant ssh
+  - log:
+    - cd ~/project/cuoca
   - mac2:
