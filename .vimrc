@@ -436,6 +436,7 @@ nnoremap <Leader>w :w<CR>
 nnoremap <Leader>q :q<CR>
 nnoremap <Leader>i <C-i>
 nnoremap <Leader>o <C-o>
+nnoremap <Leader>k :<C-u>call<Space>ref#K('normal')<CR>
 nnoremap <Leader>n :NERDTreeToggle <CR>
 nnoremap <Leader>u :<C-u>Unite file_mru buffer<CR>
 nnoremap <Leader>t :<C-u>Tlist<CR>
