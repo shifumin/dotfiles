@@ -14,15 +14,12 @@ unset LESS
 #
 bindkey "^?" backward-delete-char
 
-
 ## Command history configuration
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 
-
 # setopt
-
 # プロンプトが表示されるたびにプロンプト文字列を評価、置換する
 setopt prompt_subst
 setopt transient_rprompt
@@ -189,19 +186,21 @@ linux*)
   ;;
 esac
 
-## Mosh
+# Docker Machine
+eval "$(docker-machine env default)"
+
+# hub
+function git(){hub "$@"} # zsh
+
+# Mosh
 compdef mosh=ssh
 
-## z
+# z
 source $HOME/dotfiles/z.sh
-
-## hub
-function git(){hub "$@"} # zsh
 
 # tmux
 # ターミナルマルチプレクサ tmux をカスタマイズする - Qiita
 # http://qiita.com/b4b4r07/items/01359e8a3066d1c37edc
-
 function is_exists() { type "$1" >/dev/null 2>&1; return $?; }
 function is_osx() { [[ $OSTYPE == darwin* ]]; }
 function is_screen_running() { [ ! -z "$STY" ]; }
@@ -282,7 +281,6 @@ alias TAGS=$tagsVariable
 # http://qiita.com/mollifier/items/81b18c012d7841ab33c3
 # 新社会人に送る。peco + anyframe + zshで実現する快適コマンドライン環境 | eureka tech blog
 # https://developers.eure.jp/event/peco_anyframe_zsh/
-
 fpath=($HOME/.zsh/anyframe(N-/) $fpath)
 autoload -Uz anyframe-init
 anyframe-init
