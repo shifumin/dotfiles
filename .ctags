@@ -1,8 +1,14 @@
 --regex-ruby=/^[\t ]*([A-Z][-_A-Za-z0-9]*::)*([A-Z][-_A-Za-z0-9]*)[\t ]*=/\2/C,constant/
 --exclude=.git
 --exclude=.svn
+--exclude=*min.js
 --recurse=yes
 --sort=yes
+--languages=-JavaScript
+--langdef=js
 --langmap=PHP:+.inc.tpl
+--langmap=js:.js.json.jsx.html
 --regex-PHP=/const\s+([^ \t=]+)/\1/d/
 --php-kinds=cfd
+--regex-js=/^(var[ \t]+)?([a-zA-Z$][a-zA-Z0-9_$]*)[ \t]*=[ \ta-zA-Z0-9_$|]*\{/\2/o,object/
+--regex-js=/['"]*([a-zA-Z$][a-zA-Z0-9_$]*)['"]*[ \t]*[:=][ \t]*function[ \t]*\(/\1/f,function/

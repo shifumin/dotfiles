@@ -168,6 +168,20 @@ NeoBundleLazy 'vim-scripts/taglist.vim', {'commands': 'Tlist'}
 " Multi-language DBGP debugger client for Vim
 NeoBundle 'joonty/vdebug'
 
+""""""""""""""""""""""""""""""
+" VimでJavaScript開発環境を作成 - Qiita
+" http://qiita.com/NanohaAsOnKai/items/21054883b57f895875c0
+""""""""""""""""""""""""""""""
+
+" Vastly improved Javascript indentation and syntax support in Vim.
+NeoBundleLazy 'pangloss/vim-javascript', {'filetypes': ['html', 'tpl', 'php', 'javascript']}
+
+" This is a documentation viewer for MDN.
+NeoBundleFetch 'tokuhirom/jsref'
+
+" jQAPI - Alternative jQuery Documentation Browser
+NeoBundleFetch 'mustardamus/jqapi'
+
 
 """"""""""""""""""""""""""""""
 call neobundle#end()
@@ -265,6 +279,14 @@ let s:hooks = neobundle#get_hooks('vim-ref')
 let g:ref_cache_dir      = $HOME .'/.vim/vim-ref/cache'
 let g:ref_phpmanual_path = $HOME .'/.vim/vim-ref/php-chunked-xhtml'
 nnoremap :rp :Ref<Space>phpmanual<Space>
+let g:ref_detect_filetype = {
+      \    'html':       ['javascript', 'jquery'],
+      \    'javascript': ['javascript', 'jquery']}
+let g:ref_javascript_doc_path = $HOME .'/.vim/bundle/jsref/htdocs'
+let g:ref_jquery_doc_path     = $HOME .'/.vim/bundle/jqapi'
+let g:ref_use_cache           = 1
+let g:ref_use_vimproc         = 1
+
 
 " --------------------------------
 " UltiSnips
