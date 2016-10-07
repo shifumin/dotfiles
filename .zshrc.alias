@@ -21,6 +21,7 @@ alias g='git'
 alias gi='git'
 alias gb='git branch -vv'
 alias gd='git diff'
+alias gf='git fetch'
 alias gl='git log'
 alias gs='git status'
 
@@ -51,6 +52,9 @@ alias t='tig'
 alias ti='tig'
 alias ta='tig --all'
 alias tb='tig blame -w'
+
+# Vagrant
+alias vs='vagrant ssh'
 
 # vim
 alias v="vim"
