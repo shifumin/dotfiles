@@ -433,6 +433,7 @@ inoremap (<Enter> ()<Left><CR><ESC><S-o>
 let mapleader = "\<Space>"
 nmap <Leader><Leader> V
 nnoremap <Leader>w :w<CR>
+nnoremap <Leader>s :w !sudo tee % > /dev/null<CR>
 nnoremap <Leader>q :q<CR>
 nnoremap <Leader>i <C-i>
 nnoremap <Leader>o <C-o>
