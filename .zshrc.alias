@@ -34,6 +34,9 @@ alias -g D='`echo S | sed "s/\([0-9a-f]*\)/\1..\1^/" | xargs git diff --name-onl
 # grep
 alias gr="grep --color=auto -ERUIn"
 
+# heroku
+alias hlt='heroku logs --tail'
+
 # less
 alias less="less -qR"
 
