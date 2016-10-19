@@ -456,4 +456,4 @@ endfunction
 " Vdebug
 " --------------------------------
 let g:vdebug_force_ascii = 1
-let g:vdebug_features = {'max_children': 128}
+let g:vdebug_features = {'max_data': 65536, 'max_depth': 16, 'max_children': 1024}
