@@ -433,21 +433,22 @@ inoremap (<Enter> ()<Left><CR><ESC><S-o>
 let mapleader = "\<Space>"
 nmap <Leader><Leader> V
 nnoremap <Leader>w :w<CR>
-nnoremap <Leader>s :w !sudo tee % > /dev/null<CR>
 nnoremap <Leader>q :q<CR>
 nnoremap <Leader>i <C-i>
 nnoremap <Leader>o <C-o>
+nnoremap <Leader>g :<C-u>Ggrep<Space>
 nnoremap <Leader>k :<C-u>call<Space>ref#K('normal')<CR>
-nnoremap <Leader>n :NERDTreeToggle <CR>
-nnoremap <Leader>u :<C-u>Unite file_mru buffer<CR>
+nnoremap <Leader>n :<C-u>NERDTreeToggle <CR>
+nnoremap <Leader>s :<C-u>QuickRun<CR>
 nnoremap <Leader>t :<C-u>Tlist<CR>
-nnoremap <Leader>g :Ggrep<Space>
+nnoremap <Leader>u :<C-u>Unite file_mru buffer<CR>
 nnoremap <Leader>co :copen<CR>
 nnoremap <Leader>cc :cclose<CR>
 nnoremap <Leader>cn :cnewer<CR>
 nnoremap <Leader>cp :colder<CR>
 nnoremap <Leader>z :<C-u>sp ~/project/trash.txt<CR>
 map q: :q
+" nnoremap sw :w !sudo tee % > /dev/null<CR>
 
 
 " filetypeの自動検出
