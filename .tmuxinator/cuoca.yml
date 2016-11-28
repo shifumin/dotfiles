@@ -13,6 +13,8 @@ windows:
   - work:
     - cd ~/project/cuoca
     - vagrant up
+  - work2:
+    - cd ~/project/cuoca
   - git:
     - cd ~/project/cuoca
   - tig:
@@ -20,5 +22,7 @@ windows:
   - /var/www/html:
     - cd ~/project/cuoca
   - log:
+    - cd ~/project/cuoca
+  - dev:
     - cd ~/project/cuoca
   - mac2:
