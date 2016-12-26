@@ -4,12 +4,12 @@ name: cuoca
 root: ~/
 
 pre:
-  - brew update
-  - brew outdated
   - ssh-add ~/.ssh/cuoca/cuoca_id_rsa
 
 windows:
-  - mac: cd ~/Dropbox/Kobito
+  - mac:
+    - cd ~/Dropbox/Kobito
+    - brew update
   - work:
     - cd ~/project/cuoca
     - vagrant up

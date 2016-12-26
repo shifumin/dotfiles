@@ -1,0 +1,28 @@
+# ~/.tmuxinator/denpo.yml
+
+name: denpo
+root: ~/
+
+pre:
+  - ssh-add ~/.ssh/denpou/denpou_id_rsa
+
+windows:
+  - mac:
+    - cd ~/Dropbox/Kobito
+    - brew update
+  - work:
+    - cd /Users/sfukunaga/.ghq/github.com/ksg-group/playbooks
+    - vagrant up
+  - work2:
+    - cd /Users/sfukunaga/.ghq/github.com/ksg-group/playbooks
+  - git:
+    - cd /Users/sfukunaga/.ghq/github.com/ksg-group/playbooks
+  - tig:
+    - cd /Users/sfukunaga/.ghq/github.com/ksg-group/playbooks
+  - local-denpou:
+    - cd /Users/sfukunaga/.ghq/github.com/ksg-group/e-denpo
+  - local-denpou2:
+    - cd /Users/sfukunaga/.ghq/github.com/ksg-group/e-denpo
+  - local-test:
+    - cd /Users/sfukunaga/.ghq/github.com/ksg-group/e-denpo
+  - mac2:
