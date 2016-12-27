@@ -425,6 +425,8 @@ inoremap {<Enter> {}<Left><CR><ESC><S-o>
 inoremap [<Enter> []<Left><CR><ESC><S-o>
 inoremap (<Enter> ()<Left><CR><ESC><S-o>
 
+" 誤動作防止
+map q: :q
 
 """"""""""""""""""""""""""""""
 " Leader key settings
@@ -447,7 +449,7 @@ nnoremap <Leader>cc :cclose<CR>
 nnoremap <Leader>cn :cnewer<CR>
 nnoremap <Leader>cp :colder<CR>
 nnoremap <Leader>z :<C-u>sp ~/project/trash.txt<CR>
-map q: :q
+nnoremap <Leader>b :<C-u>bw! \[quickrun\ output\]<CR>
 " nnoremap sw :w !sudo tee % > /dev/null<CR>
 
 
