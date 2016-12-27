@@ -10,9 +10,11 @@ windows:
   - mac:
     - cd ~/Dropbox/Kobito
     - brew update
-  - work:
+  - rails s:
     - cd ~/.ghq/github.com/example-org/playbooks
     - vagrant up
+  - work1:
+    - cd ~/.ghq/github.com/example-org/playbooks
   - work2:
     - cd ~/.ghq/github.com/example-org/playbooks
   - git:
@@ -20,8 +22,6 @@ windows:
   - tig:
     - cd ~/.ghq/github.com/example-org/playbooks
   - local-work:
-    - cd ~/.ghq/github.com/example-org/webapp
-  - local-work2:
     - cd ~/.ghq/github.com/example-org/webapp
   - local-test:
     - cd ~/.ghq/github.com/example-org/webapp
