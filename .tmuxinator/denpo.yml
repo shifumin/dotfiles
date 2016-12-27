@@ -10,9 +10,11 @@ windows:
   - mac:
     - cd ~/Dropbox/Kobito
     - brew update
-  - work:
+  - rails s:
     - cd /Users/sfukunaga/.ghq/github.com/ksg-group/playbooks
     - vagrant up
+  - work1:
+    - cd /Users/sfukunaga/.ghq/github.com/ksg-group/playbooks
   - work2:
     - cd /Users/sfukunaga/.ghq/github.com/ksg-group/playbooks
   - git:
@@ -20,8 +22,6 @@ windows:
   - tig:
     - cd /Users/sfukunaga/.ghq/github.com/ksg-group/playbooks
   - local-denpou:
-    - cd /Users/sfukunaga/.ghq/github.com/ksg-group/e-denpo
-  - local-denpou2:
     - cd /Users/sfukunaga/.ghq/github.com/ksg-group/e-denpo
   - local-test:
     - cd /Users/sfukunaga/.ghq/github.com/ksg-group/e-denpo
