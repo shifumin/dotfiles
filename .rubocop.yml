@@ -1,12 +1,18 @@
 AllCops:
-  Includes:
-    - 'Rakefile'
-    - 'Gemfile'
+  Include:
+    - '**/Rakefile'
+    - '**/config.ru'
   Exclude:
-    - 'vendor/**/*'
-    - 'db/schema.rb'
-  RunRailsCops: true
+    - 'db/**/*'
+    - 'config/**/*'
+    - 'script/**/*'
+    - 'bin/*'
+    - !ruby/regexp /old_and_unused\.rb$/
   DisplayCopNames: true
+
+  # TargetRubyVersion: 2.3.1
+  # Rails:
+    # Enabled: true
 
 
 # Ruby - Rubocopを使ってコーディングルールへの準拠チェックを自動化 - Qiita
