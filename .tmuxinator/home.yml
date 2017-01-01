@@ -12,5 +12,6 @@ windows:
     - brew update
   - work1:
   - work2:
+  - work3:
   - dotfiles: cd ~/.ghq/github.com/shifumin/dotfiles
   - setupfiles: cd ~/.ghq/github.com/shifumin/setupfiles
