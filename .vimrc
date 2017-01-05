@@ -443,6 +443,13 @@ nnoremap <Leader>k :<C-u>call<Space>ref#K('normal')<CR>
 nnoremap <Leader>n :<C-u>NERDTreeToggle <CR>
 nnoremap <Leader>s :<C-u>QuickRun<CR>
 nnoremap <Leader>t :<C-u>Tlist<CR>
+nnoremap <Leader>co :copen<CR>
+nnoremap <Leader>cc :cclose<CR>
+nnoremap <Leader>cn :cnewer<CR>
+nnoremap <Leader>cp :colder<CR>
+nnoremap <Leader>z :<C-u>sp ~/project/trash.txt<CR>
+nnoremap <Leader>b :<C-u>bw! \[quickrun\ output\]<CR>
+" nnoremap sw :w !sudo tee % > /dev/null<CR>
 
 " unite unite-rails
 nnoremap <Leader>u :<C-u>Unite file_mru buffer<CR>
@@ -457,15 +464,11 @@ nnoremap <Leader>rf :<C-u>Unite rails/config<CR>
 nnoremap <Leader>rr :<C-u>Unite rails/route<CR>
 nnoremap <Leader>rg :<C-u>Unite rails/gemfile<CR>
 nnoremap <Leader>rt :<C-u>Unite rails/spec<CR>
-
-nnoremap <Leader>co :copen<CR>
-nnoremap <Leader>cc :cclose<CR>
-nnoremap <Leader>cn :cnewer<CR>
-nnoremap <Leader>cp :colder<CR>
-nnoremap <Leader>z :<C-u>sp ~/project/trash.txt<CR>
-nnoremap <Leader>b :<C-u>bw! \[quickrun\ output\]<CR>
-" nnoremap sw :w !sudo tee % > /dev/null<CR>
-
+" rails.vim
+nnoremap <Leader>em :<C-u>Emodel<CR>
+nnoremap <Leader>ev :<C-u>Eview<CR>
+nnoremap <Leader>ec :<C-u>Econtroller<CR>
+""""""""""""""""""""""""""""""
 
 " filetypeの自動検出
 filetype on
