@@ -443,7 +443,21 @@ nnoremap <Leader>k :<C-u>call<Space>ref#K('normal')<CR>
 nnoremap <Leader>n :<C-u>NERDTreeToggle <CR>
 nnoremap <Leader>s :<C-u>QuickRun<CR>
 nnoremap <Leader>t :<C-u>Tlist<CR>
+
+" unite unite-rails
 nnoremap <Leader>u :<C-u>Unite file_mru buffer<CR>
+nnoremap <Leader>rm :<C-u>Unite rails/model<CR>
+nnoremap <Leader>rc :<C-u>Unite rails/controller<CR>
+nnoremap <Leader>rv :<C-u>Unite rails/view<CR>
+nnoremap <Leader>rh :<C-u>Unite rails/helper<CR>
+nnoremap <Leader>rs :<C-u>Unite rails/stylesheet<CR>
+nnoremap <Leader>rj :<C-u>Unite rails/javascript<CR>
+nnoremap <Leader>rd :<C-u>Unite rails/db<CR>
+nnoremap <Leader>rf :<C-u>Unite rails/config<CR>
+nnoremap <Leader>rr :<C-u>Unite rails/route<CR>
+nnoremap <Leader>rg :<C-u>Unite rails/gemfile<CR>
+nnoremap <Leader>rt :<C-u>Unite rails/spec<CR>
+
 nnoremap <Leader>co :copen<CR>
 nnoremap <Leader>cc :cclose<CR>
 nnoremap <Leader>cn :cnewer<CR>
