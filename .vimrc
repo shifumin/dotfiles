@@ -237,6 +237,23 @@ call submode#map('bufmove', 'n', '', '>', '<C-w>>')
 call submode#map('bufmove', 'n', '', '<', '<C-w><')
 call submode#map('bufmove', 'n', '', '+', '<C-w>+')
 call submode#map('bufmove', 'n', '', '-', '<C-w>-')
+
+" original
+nnoremap s[ :<C-u>tabm 0<CR>
+nnoremap s] :<C-u>tabm<CR>
+nnoremap s, :<C-u>tabm -1<CR>
+nnoremap s. :<C-u>tabm +1<CR>
+nnoremap s1 :<C-u>tabnext1<CR>
+nnoremap s2 :<C-u>tabnext2<CR>
+nnoremap s3 :<C-u>tabnext3<CR>
+nnoremap s4 :<C-u>tabnext4<CR>
+nnoremap s5 :<C-u>tabnext5<CR>
+nnoremap s6 :<C-u>tabnext6<CR>
+nnoremap s7 :<C-u>tabnext7<CR>
+nnoremap s8 :<C-u>tabnext8<CR>
+nnoremap s9 :<C-u>tabnext9<CR>
+nnoremap s0 :<C-u>tabnext10<CR>
+
 """"""""""""""""""""""""""""""
 
 " http://inari.hatenablog.com/entry/2014/05/05/231307
