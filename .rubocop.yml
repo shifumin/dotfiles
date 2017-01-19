@@ -6,13 +6,14 @@ AllCops:
     - 'db/**/*'
     - 'config/**/*'
     - 'script/**/*'
+    - 'tmp/**/*'
     - 'bin/*'
     - !ruby/regexp /old_and_unused\.rb$/
   DisplayCopNames: true
 
   # TargetRubyVersion: 2.3.1
   # Rails:
-    # Enabled: true
+  #   Enabled: true
 
 
 # Ruby - Rubocopを使ってコーディングルールへの準拠チェックを自動化 - Qiita
@@ -32,12 +33,20 @@ AllCops:
 
 ###### Style ######
 
+# Check the naming of accessor methods for get_/set_.
+Style/AccessorMethodName:
+  Enabled: false
+
 # Whether `and` and `or` are banned only in conditionals (conditionals) or completely (always).
 Style/AndOr:
   EnforcedStyle: conditionals
 
 # Use only ascii symbols in comments.
 Style/AsciiComments:
+  Enabled: false
+
+# Checks style of children classes and modules.
+Style/ClassAndModuleChildren:
   Enabled: false
 
 # Document classes and non-namespace modules.
