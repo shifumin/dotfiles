@@ -1,75 +1,24 @@
-" -------------------------------
-" Rubyプログラミングが快適になるVim環境を0から構築する - Qiita
-" http://qiita.com/mogulla3/items/42a7f6c73fa4a90b1df3
-" -------------------------------
-
 """"""""""""""""""""""""""""""
-" 脱初心者を目指すVimmerにオススメしたいVimプラグインや.vimrcの設定 - Qiita
-" http://qiita.com/jnchito/items/5141b3b01bced9f7f48f
-" dotfiles/.vimrc · JunichiIto/dotfiles
-" https://github.com/JunichiIto/dotfiles/blob/master/.vimrc
-""""""""""""""""""""""""""""""
-
-" -------------------------------
 " NeoBundle
-" -------------------------------
-""""""""""""""""""""""""""""""
-" プラグインのセットアップ
 """"""""""""""""""""""""""""""
 if has('vim_starting')
-  set nocompatible               " Be iMproved
+    " 初回起動時のみruntimepathにNeoBundleのパスを指定する
+    set runtimepath+=~/.vim/bundle/neobundle.vim/
 
-  " Required:
-  set runtimepath+=~/.vim/bundle/neobundle.vim/
+    " NeoBundleが未インストールであればgit cloneする
+    if !isdirectory(expand("~/.vim/bundle/neobundle.vim/"))
+        echo "install NeoBundle..."
+        :call system("git clone git://github.com/Shougo/neobundle.vim ~/.vim/bundle/neobundle.vim")
+    endif
 endif
 
-" Required:
 call neobundle#begin(expand('~/.vim/bundle/'))
 
-" Let NeoBundle manage NeoBundle
-" Required:
 NeoBundleFetch 'Shougo/neobundle.vim'
 """"""""""""""""""""""""""""""
-
-" コード補完
-NeoBundle 'Shougo/neocomplete.vim'
-" http://nigorojr.com/articles/19
-" NeoBundle 'marcus/rsense'
-" NeoBundle 'NigoroJr/rsense'
-" NeoBundle 'supermomonga/neocomplete-rsense.vim'
-
-" 静的解析
-NeoBundle 'scrooloose/syntastic'
-
 " ドキュメント参照
 NeoBundle 'thinca/vim-ref'
 NeoBundle 'yuku-t/vim-ref-ri'
-
-" メソッド定義元へのジャンプ
-NeoBundle 'szw/vim-tags'
-
-" 自動で閉じる
-NeoBundle 'tpope/vim-endwise'
-
-
-""""""""""""""""""""""""""""""
-" 脱初心者を目指すVimmerにオススメしたいVimプラグインや.vimrcの設定 - Qiita
-" http://qiita.com/jnchito/items/5141b3b01bced9f7f48f
-""""""""""""""""""""""""""""""
-" Unite and create user interfaces
-NeoBundle 'Shougo/unite.vim'
-
-" MRU plugin includes unite.vim MRU sources
-NeoBundle 'Shougo/neomru.vim'
-
-" A tree explorer plugin for vim
-NeoBundle 'scrooloose/nerdtree'
-
-" A Git wrapper so awesome, it should be illegal
-NeoBundle 'tpope/vim-fugitive'
-
-" Ruby on Rails: easy file navigation, enhanced syntax highlighting, and more
-NeoBundle 'tpope/vim-rails'
 
 " An extensible & universal comment plugin that also handles embedded filetypes
 NeoBundle 'tomtom/tcomment_vim'
@@ -77,16 +26,9 @@ NeoBundle 'tomtom/tcomment_vim'
 " Delete/change/add parentheses/quotes/XML-tags/much more with ease
 NeoBundle 'tpope/vim-surround'
 
-" A Vim plugin for visually displaying indent levels in code
-NeoBundle 'nathanaelkane/vim-indent-guides'
-
 " ansi escape sequences concealed, but highlighted as specified (conceal)
 NeoBundle 'vim-scripts/AnsiEsc.vim'
-
-" Highlights trailing whitespace in red and provides :FixWhitespace to fix it
-NeoBundle 'bronson/vim-trailing-whitespace'
 """"""""""""""""""""""""""""""
-
 
 """ My NeoBundle
 
@@ -103,69 +45,163 @@ NeoBundle 'Shougo/vimproc', {
 " Powerful shell implemented by vim
 NeoBundle 'Shougo/vimshell'
 
-" a unite.vim plugin for rails
-NeoBundle 'basyura/unite-rails'
-
-" Solarized
-NeoBundle 'altercation/vim-colors-solarized'
-
 " Handles bracketed-paste-mode in vim (aka. automatic `:set paste`)
 NeoBundle 'ConradIrwin/vim-bracketed-paste'
-
-" Add additional support for Ansible in Vim
-NeoBundle 'chase/vim-ansible-yaml'
 
 " submode : Create your own submodes
 NeoBundle 'kana/vim-submode'
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
+" basic
+""""""""""""""""""""""""""""""
+" precision colorscheme for the vim text editor
+NeoBundle 'altercation/vim-colors-solarized'
+
+" A light and configurable statusline/tabline for Vim
+NeoBundle 'itchyny/lightline.vim'
+
+" Vim search status.
+NeoBundle 'osyo-manga/vim-anzu'
+
+" Next generation completion framework after neocomplcache
+NeoBundle 'Shougo/neocomplete.vim'
+
+" Syntax checking hacks for vim
+NeoBundle 'scrooloose/syntastic'
+
+" Unite and create user interfaces
+NeoBundle 'Shougo/unite.vim'
+
+" MRU plugin includes unite.vim MRU sources
+NeoBundle 'Shougo/neomru.vim'
+
+" A tree explorer plugin for vim
+NeoBundle 'scrooloose/nerdtree'
+
+" Source code browser (supports C/C++, java, perl, python, tcl, sql, php, etc)
+NeoBundle 'vim-scripts/taglist.vim'
+
+" This plugin for Vim enable an auto-close chars feature for you.
+NeoBundle 'Townk/vim-autoclose'
+
+" Start a * or # search from a visual block
+NeoBundle 'nelstrom/vim-visual-star-search'
+
+" Vim plugin that allows you to visually select increasingly larger regions of text using the same key combination.
+NeoBundle 'terryma/vim-expand-region'
+
+" A Vim plugin for visually displaying indent levels in code
+NeoBundle 'nathanaelkane/vim-indent-guides'
+
+" Highlights trailing whitespace in red and provides :FixWhitespace to fix it
+NeoBundle 'bronson/vim-trailing-whitespace'
+
+" An efficient alternative to the standard matchparen plugin
+NeoBundle 'itchyny/vim-parenmatch'
+
+" Underlines the word under the cursor
+NeoBundle 'itchyny/vim-cursorword'
+
+" Override vim syntax for yaml files
+NeoBundle 'stephpy/vim-yaml'
+
+" Add additional support for Ansible in Vim
+" NeoBundle 'chase/vim-ansible-yaml'
+
+" A simple Vim plugin to switch segments of text with predefined replacements
+NeoBundle 'AndrewRadev/switch.vim'
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" Git
+""""""""""""""""""""""""""""""
+" A Git wrapper so awesome, it should be illegal
+NeoBundle 'tpope/vim-fugitive'
+
+" A Vim plugin which shows a git diff in the gutter (sign column) and stages/undoes hunks.
+NeoBundle 'airblade/vim-gitgutter'
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
 " Ruby
 """"""""""""""""""""""""""""""
+" Ruby code completion.
+NeoBundle 'osyo-manga/vim-monster'
+
 " Highlight Ruby local variables
 NeoBundle 'todesking/ruby_hl_lvar.vim'
+
+" Ruby on Rails: easy file navigation, enhanced syntax highlighting, and more
+NeoBundle 'tpope/vim-rails'
+
+" a unite.vim plugin for rails
+NeoBundle 'basyura/unite-rails'
+
+" wisely add "end" in ruby, endfunction/endif/more in vim script, etc
+NeoBundle 'tpope/vim-endwise'
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
-" Puyopuyo
+" HTML
 """"""""""""""""""""""""""""""
+" HTML5 omnicomplete and syntax
+NeoBundle 'othree/html5.vim'
+
+" Syntax highlighting for VIM
+NeoBundle 'slim-template/vim-slim'
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" CSS
+""""""""""""""""""""""""""""""
+" CSS3 syntax (and syntax defined in some foreign specifications) support for Vim's built-in syntax/css.vim
+NeoBundle 'hail2u/vim-css3-syntax'
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" JavaScript
+""""""""""""""""""""""""""""""
+" Vastly improved Javascript indentation and syntax support in Vim.
+NeoBundleLazy 'pangloss/vim-javascript', {'filetypes': ['html', 'tpl', 'php', 'javascript']}
+
+" A better JSON for Vim: distinct highlighting of keywords vs values, JSON-specific (non-JS) warnings, quote concealing. Pathogen-friendly.
+NeoBundle 'elzr/vim-json'
+
+" Syntax for JavaScript libraries
+NeoBundle 'othree/javascript-libraries-syntax.vim'
+
+" CoffeeScript support for vim
+NeoBundle 'kchmck/vim-coffee-script'
+
+" AngularJS with Vim
+NeoBundle 'burnettk/vim-angular'
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" Application
+""""""""""""""""""""""""""""""
+" A calendar application for Vim
+" NeoBundle 'itchyny/calendar.vim'
+
 " This is Game Engine for Vim script
-NeoBundle 'rbtnn/game_engine.vim'
+" NeoBundle 'rbtnn/game_engine.vim'
 
 " Puyo on Vim
-NeoBundle 'rbtnn/puyo.vim'
-""""""""""""""""""""""""""""""
-
-""""""""""""""""""""""""""""""
-" PHP settings
-""""""""""""""""""""""""""""""
-" VimでPHP開発環境を作成 - Qiita
-" http://qiita.com/NanohaAsOnKai/items/0188fb3b60e8a79656a0
+" NeoBundle 'rbtnn/puyo.vim'
 """"""""""""""""""""""""""""""
 
 "Integrated reference viewer.
 "NeoBundleLazy 'thinca/vim-ref', {'functions': 'ref#K'}
 
-" UltiSnips - The ultimate snippet solution for Vim.
-"NeoBundle 'SirVer/ultisnips'
-
 " vim-snipmate default snippets (Previously snipmate-snippets)
 "NeoBundle 'honza/vim-snippets'
-
-" The neocomplete source for PHP
-NeoBundle 'violetyk/neocomplete-php.vim'
 
 " neo-snippet plugin contains neocomplcache snippets source
 NeoBundle 'Shougo/neosnippet'
 
 " The standard snippets repository for neosnippet
 NeoBundle 'Shougo/neosnippet-snippets'
-
-" smarty syntax
-NeoBundle 'vim-scripts/smarty-syntax'
-
-" Source code browser (supports C/C++, java, perl, python, tcl, sql, php, etc)
-NeoBundleLazy 'vim-scripts/taglist.vim', {'commands': 'Tlist'}
 
 " This Vim plugin is plugin supporting watchdogs.
 NeoBundle 'KazuakiM/vim-qfstatusline'
@@ -174,80 +210,215 @@ NeoBundle 'KazuakiM/vim-qfstatusline'
 NeoBundleLazy 'thinca/vim-quickrun', {'commands': 'QuickRun'}
 
 " Async syntax checking.
-NeoBundleLazy 'osyo-manga/vim-watchdogs', {'depends': 'osyo-manga/shabadou.vim', 'insert': 1}
-
-" Use fabpot/PHP-CS-Fixer
-"NeoBundleLazy 'stephpy/vim-php-cs-fixer', {'functions': 'PhpCsFixerFixFile'}
-
-" Multi-language DBGP debugger client for Vim
-NeoBundle 'joonty/vdebug'
-
+" NeoBundleLazy 'osyo-manga/vim-watchdogs', {'depends': 'osyo-manga/shabadou.vim', 'insert': 1}
 """"""""""""""""""""""""""""""
-" VimでJavaScript開発環境を作成 - Qiita
-" http://qiita.com/NanohaAsOnKai/items/21054883b57f895875c0
-""""""""""""""""""""""""""""""
-
-" Vastly improved Javascript indentation and syntax support in Vim.
-NeoBundleLazy 'pangloss/vim-javascript', {'filetypes': ['html', 'tpl', 'php', 'javascript']}
-
 " This is a documentation viewer for MDN.
 NeoBundleFetch 'tokuhirom/jsref'
 
 " jQAPI - Alternative jQuery Documentation Browser
 NeoBundleFetch 'mustardamus/jqapi'
-
-
 """"""""""""""""""""""""""""""
 call neobundle#end()
 
-" Required:
+" ファイルタイプ別のVimプラグイン/インデントを有効にする
 filetype plugin indent on
 
-" If there are uninstalled bundles found on startup,
-" this will conveniently prompt you to install them.
+" 未インストールのVimプラグインがある場合、インストールするかどうかを尋ねてくれるようにする設定
 NeoBundleCheck
 """"""""""""""""""""""""""""""
 
+""""""""""""""""""""""""""""""
+" lightline.vim
+""""""""""""""""""""""""""""""
+" tabline
+set showtabline=2 " タブラインを常に表示
+" statusline
+set laststatus=2 " ステータスラインを常に表示
+set showmode " 現在のモードを表示
+set showcmd " 打ったコマンドをステータスラインの下に表示
+set ruler " ステータスラインの右側にカーソルの現在位置を表示する
 
-" -------------------------------
-" Rsense
-" -------------------------------
-if has('unix')
-  let g:rsenseHome = '/usr/local/lib/rsense-0.3'
-endif
-if has('mac')
-  let g:rsenseHome = '/usr/local/opt/rsense/libexec/'
-endif
+" vim-gitgutter
+let g:gitgutter_sign_added = '✚'
+let g:gitgutter_sign_modified = '➜'
+let g:gitgutter_sign_removed = '✘'
 
-let g:rsenseUseOmniFunc = 1
+" lightline.vim
+let g:lightline = {
+        \ 'colorscheme': 'solarized',
+        \ 'mode_map': {'c': 'NORMAL'},
+        \ 'active': {
+        \   'left': [
+        \     ['mode', 'paste'],
+        \     ['fugitive', 'gitgutter', 'filename'],
+        \     ['anzu']
+        \   ],
+        \   'right': [
+        \     ['lineinfo', 'syntastic'],
+        \     ['percent'],
+        \     ['charcode', 'fileformat', 'fileencoding', 'filetype'],
+        \   ]
+        \ },
+        \ 'component_function': {
+        \   'modified': 'MyModified',
+        \   'readonly': 'MyReadonly',
+        \   'fugitive': 'MyFugitive',
+        \   'filename': 'MyFilename',
+        \   'fileformat': 'MyFileformat',
+        \   'filetype': 'MyFiletype',
+        \   'fileencoding': 'MyFileencoding',
+        \   'mode': 'MyMode',
+        \   'syntastic': 'SyntasticStatuslineFlag',
+        \   'charcode': 'MyCharCode',
+        \   'gitgutter': 'MyGitGutter',
+        \   'anzu': 'anzu#search_status'
+        \ },
+        \ }
 
-" --------------------------------
+function! MyModified()
+  return &ft =~ 'help\|vimfiler\|gundo' ? '' : &modified ? '+' : &modifiable ? '' : '-'
+endfunction
+
+function! MyReadonly()
+  return &ft !~? 'help\|vimfiler\|gundo' && &ro ? '⭤' : ''
+endfunction
+
+function! MyFilename()
+  return ('' != MyReadonly() ? MyReadonly() . ' ' : '') .
+        \ (&ft == 'vimfiler' ? vimfiler#get_status_string() :
+        \  &ft == 'unite' ? unite#get_status_string() :
+        \  &ft == 'vimshell' ? substitute(b:vimshell.current_dir,expand('~'),'~','') :
+        \ '' != expand('%:t') ? expand('%') : '[No Name]') .
+        \ ('' != MyModified() ? ' ' . MyModified() : '')
+endfunction
+
+function! MyFugitive()
+  try
+    if &ft !~? 'vimfiler\|gundo' && exists('*fugitive#head')
+      let _ = fugitive#head()
+      return strlen(_) ? '⭠ '._ : ''
+    endif
+  catch
+  endtry
+  return ''
+endfunction
+
+function! MyFileformat()
+  return winwidth('.') > 70 ? &fileformat : ''
+endfunction
+
+function! MyFiletype()
+  return winwidth('.') > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
+endfunction
+
+function! MyFileencoding()
+  return winwidth('.') > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
+endfunction
+
+function! MyMode()
+  return winwidth('.') > 60 ? lightline#mode() : ''
+endfunction
+
+function! MyGitGutter()
+  if ! exists('*GitGutterGetHunkSummary')
+        \ || ! get(g:, 'gitgutter_enabled', 0)
+        \ || winwidth('.') <= 90
+    return ''
+  endif
+  let symbols = [
+        \ g:gitgutter_sign_added . ' ',
+        \ g:gitgutter_sign_modified . ' ',
+        \ g:gitgutter_sign_removed . ' '
+        \ ]
+  let hunks = GitGutterGetHunkSummary()
+  let ret = []
+  for i in [0, 1, 2]
+    if hunks[i] > 0
+      call add(ret, symbols[i] . hunks[i])
+    endif
+  endfor
+  return join(ret, ' ')
+endfunction
+
+" https://github.com/Lokaltog/vim-powerline/blob/develop/autoload/Powerline/Functions.vim
+function! MyCharCode()
+  if winwidth('.') <= 70
+    return ''
+  endif
+
+  " Get the output of :ascii
+  redir => ascii
+  silent! ascii
+  redir END
+
+  if match(ascii, 'NUL') != -1
+    return 'NUL'
+  endif
+
+  " Zero pad hex values
+  let nrformat = '0x%02x'
+
+  let encoding = (&fenc == '' ? &enc : &fenc)
+
+  if encoding == 'utf-8'
+    " Zero pad with 4 zeroes in unicode files
+    let nrformat = '0x%04x'
+  endif
+
+  " Get the character and the numeric value from the return value of :ascii
+  " This matches the two first pieces of the return value, e.g.
+  " "<F>  70" => char: 'F', nr: '70'
+  let [str, char, nr; rest] = matchlist(ascii, '\v\<(.{-1,})\>\s*([0-9]+)')
+
+  " Format the numeric value
+  let nr = printf(nrformat, nr)
+
+  return "'". char ."' ". nr
+endfunction
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" vim-anzu
+""""""""""""""""""""""""""""""
+nmap n <Plug>(anzu-n)
+nmap N <Plug>(anzu-N)
+nmap * <Plug>(anzu-star)
+nmap # <Plug>(anzu-sharp)
+augroup vim-anzu
+" 一定時間キー入力がないとき、ウインドウを移動したとき、タブを移動したときに
+" 検索ヒット数の表示を消去する
+    autocmd!
+    autocmd CursorHold,CursorHoldI,WinLeave,TabLeave * call anzu#clear_search_status()
+augroup END
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
 " neocomplete.vim
-" --------------------------------
+""""""""""""""""""""""""""""""
 let g:acp_enableAtStartup = 0
 let g:neocomplete#enable_at_startup = 1
 let g:neocomplete#enable_smart_case = 1
-if !exists('g:neocomplete#force_omni_input_patterns')
-  let g:neocomplete#force_omni_input_patterns = {}
-endif
-let g:neocomplete#force_omni_input_patterns.ruby = '[^.*\t]\.\w*\|\h\w*::'
+" if !exists('g:neocomplete#force_omni_input_patterns')
+"   let g:neocomplete#force_omni_input_patterns = {}
+" endif
+" let g:neocomplete#force_omni_input_patterns.ruby = '[^.*\t]\.\w*\|\h\w*::'
+" Use neocomplete.vim
+let g:neocomplete#sources#omni#input_patterns = {
+\   "ruby" : '[^. *\t]\.\w*\|\h\w*::',
+\}
+""""""""""""""""""""""""""""""
 
-" --------------------------------
-" rubocop
-" --------------------------------
+""""""""""""""""""""""""""""""
+" Syntastic
+""""""""""""""""""""""""""""""
 " syntastic_mode_mapをactiveにするとバッファ保存時にsyntasticが走る
 " active_filetypesに、保存時にsyntasticを走らせるファイルタイプを指定する
 let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['ruby'] }
 let g:syntastic_ruby_checkers = ['rubocop']
-
+""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
-" vimを立ち上げたときに、自動的にvim-indent-guidesをオンにする
-let g:indent_guides_enable_on_vim_startup = 1
-
-
-""""""""""""""""""""""""""""""
-" Unite.vim settings
+" Unite.vim
 """"""""""""""""""""""""""""""
 " unite.vim まとめ - Qiita
 " http://qiita.com/hide/items/77b9c1b0f29577d60397
@@ -255,6 +426,8 @@ let g:indent_guides_enable_on_vim_startup = 1
 let g:unite_enable_start_insert=1
 let g:unite_source_history_yank_enable =1
 let g:unite_source_file_mru_limit = 200
+" matcher をデフォルトにする
+call unite#custom#source('file', 'matchers', "matcher_default")
 nnoremap <silent> ,uy :<C-u>Unite history/yank<CR>
 nnoremap <silent> ,ub :<C-u>Unite buffer<CR>
 nnoremap <silent> ,uf :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
@@ -266,17 +439,52 @@ au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>:q<CR>
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
-" NERDTree settings
+" NERDTree
 """"""""""""""""""""""""""""""
 nnoremap <silent> ,nt :NERDTreeToggle<CR>
 nnoremap :tree :NERDTreeToggle
+" 不可視フェイルを表示する
+let NERDTreeShowHidden = 1
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
-" PHP settings
+" vim-indent-guides
 """"""""""""""""""""""""""""""
-" VimでPHP開発環境を作成 - Qiita
-" http://qiita.com/NanohaAsOnKai/items/0188fb3b60e8a79656a0
+" vimを立ち上げたときに、自動的にvim-indent-guidesをオンにする
+let g:indent_guides_enable_on_vim_startup = 1
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" vim-indent-guides
+""""""""""""""""""""""""""""""
+" 標準のmatchparenを使うのをやめる設定
+let g:loaded_matchparen = 1
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" vim-expand-region
+""""""""""""""""""""""""""""""
+vmap v <Plug>(expand_region_expand)
+vmap <C-v> <Plug>(expand_region_shrink)
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" taglist.vim
+""""""""""""""""""""""""""""""
+" nnoremap <Leader>t :<C-u>Tlist<CR>
+let g:tlist_javascript_settings = 'js;o:object;f:function'
+let g:tlist_php_settings        = 'php;n:namespace;c:class;i:interface;t:trait;f:function;d:constant;v:variable'
+let g:Tlist_Exit_OnlyWindow     = 1
+let g:Tlist_Show_One_File       = 1
+let g:Tlist_Use_Right_Window    = 1
+let g:Tlist_WinWidth            = 25
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" calendar.vim
+""""""""""""""""""""""""""""""
+let g:calendar_google_calendar = 1
+let g:calendar_google_task = 1
 """"""""""""""""""""""""""""""
 
 " --------------------------------
@@ -301,18 +509,6 @@ let g:ref_jquery_doc_path     = $HOME .'/.vim/bundle/jqapi'
 let g:ref_use_cache           = 1
 let g:ref_use_vimproc         = 1
 
-
-" --------------------------------
-" UltiSnips
-" --------------------------------
-"let g:did_UltiSnips_snipmate_compatibility = 1
-"let g:UltiSnipsEditSplit                   = 'vertical'
-"let g:UltiSnipsExpandTrigger               = '<TAB>'
-"let g:UltiSnipsJumpBackwardTrigger         = '<S-TAB>'
-"let g:UltiSnipsJumpForwardTrigger          = '<TAB>'
-"let g:UltiSnipsSnippetsDir                 = $HOME .'/.vim/bundle/vim-snippets/UltiSnips'
-"let g:UltiSnipsUsePythonVersion            = 2
-
 " --------------------------------
 " neosnippet.vim
 " --------------------------------
@@ -322,10 +518,10 @@ smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
 
 " SuperTab like snippets behavior.
-"imap <expr><TAB>
-" \ pumvisible() ? "\<C-n>" :
-" \ neosnippet#expandable_or_jumpable() ?
-" \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+imap <expr><TAB>
+\ pumvisible() ? "\<C-n>" :
+\ neosnippet#expandable_or_jumpable() ?
+\    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
@@ -336,183 +532,8 @@ endif
 
 let g:neosnippet#snippets_directory='~/.vim/bundle/neosnippet-snippets/snippets'
 
-
-" --------------------------------
-" neocomplete.vim for PHP
-" --------------------------------
-"Note: This option must set it in .vimrc(_vimrc).  NOT IN .gvimrc(_gvimrc)!
-" Disable AutoComplPop.
-let g:acp_enableAtStartup = 0
-" Use neocomplete.
-let g:neocomplete#enable_at_startup = 1
-" Use smartcase.
-let g:neocomplete#enable_smart_case = 1
-" Set minimum syntax keyword length.
-let g:neocomplete#sources#syntax#min_keyword_length = 3
-let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
-
-" Define dictionary.
-let g:neocomplete#sources#dictionary#dictionaries = {
-      \ 'default' : '',
-      \ 'vimshell' : $HOME.'/.vimshell_hist',
-      \ 'scheme' : $HOME.'/.gosh_completions'
-      \ }
-
-" Define keyword.
-if !exists('g:neocomplete#keyword_patterns')
-  let g:neocomplete#keyword_patterns = {}
-endif
-let g:neocomplete#keyword_patterns['default'] = '\h\w*'
-
-" Plugin key-mappings.
-inoremap <expr><C-g>     neocomplete#undo_completion()
-inoremap <expr><C-l>     neocomplete#complete_common_string()
-
-" Recommended key-mappings.
-" <CR>: close popup and save indent.
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-function! s:my_cr_function()
-  return neocomplete#close_popup() . "\<CR>"
-  " For no inserting <CR> key.
-  "return pumvisible() ? neocomplete#close_popup() : "\<CR>"
-endfunction
-" <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-" <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-inoremap <expr><C-y>  neocomplete#close_popup()
-inoremap <expr><C-e>  neocomplete#cancel_popup()
-" Close popup by <Space>.
-"inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
-
-" For cursor moving in insert mode(Not recommended)
-"inoremap <expr><Left>  neocomplete#close_popup() . "\<Left>"
-"inoremap <expr><Right> neocomplete#close_popup() . "\<Right>"
-"inoremap <expr><Up>    neocomplete#close_popup() . "\<Up>"
-"inoremap <expr><Down>  neocomplete#close_popup() . "\<Down>"
-" Or set this.
-"let g:neocomplete#enable_cursor_hold_i = 1
-" Or set this.
-"let g:neocomplete#enable_insert_char_pre = 1
-
-" AutoComplPop like behavior.
-"let g:neocomplete#enable_auto_select = 1
-
-" Shell like behavior(not recommended).
-"set completeopt+=longest
-"let g:neocomplete#enable_auto_select = 1
-"let g:neocomplete#disable_auto_complete = 1
-"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
-
-" Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-"let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
-
-" --------------------------------
-" neocomplete-php.vim
-" --------------------------------
-let g:neocomplete_php_locale = 'ja'
-
-" --------------------------------
-" taglist.vim
-" --------------------------------
-" nnoremap <Leader>t :<C-u>Tlist<CR>
-let s:hooks = neobundle#get_hooks('taglist.vim')
-function! s:hooks.on_source(bundle) abort "{{{
-    let g:tlist_php_settings     = 'php;c:class;f:function;d:constant'
-    let g:Tlist_Exit_OnlyWindow  = 1
-    let g:Tlist_Show_One_File    = 1
-    let g:Tlist_Use_Right_Window = 1
-    let g:Tlist_WinWidth         = 25
-endfunction "}}}
-"}}}
-
-" autocmd MyAutoCmd BufNewFile,BufRead $HOME/sample1/*.php setlocal tags=$HOME/.vim/tags/sample1.tags
-" autocmd MyAutoCmd BufNewFile,BufRead $HOME/sample2/*.php setlocal tags=$HOME/.vim/tags/sample2.tags
-
-" --------------------------------
-" vimproc
-" --------------------------------
-
-" --------------------------------
-" vim-qfstatusline
-" --------------------------------
-function! MyStatuslineSyntax() abort "{{{
-    return qfstatusline#Update()
-endfunction "}}}
-
-function! MyStatuslinePaste() abort "{{{
-    if &paste is# 1
-        return '(paste)'
-    endif
-    return ''
-  endfunction "}}}
-
-let g:Qfstatusline#UpdateCmd = function('MyStatuslineSyntax')
-set laststatus=2
-set cmdheight=1
-set statusline=\ %t\ %m\ %r\ %h\ %w\ %q\ %{MyStatuslineSyntax()}%=\ %{MyStatuslinePaste()}\ \|\ %Y\ \|\ %{&fileformat}\ \|\ %{&fileencoding}\
-
-" --------------------------------
-" vim-quickrun
-" --------------------------------
-nnoremap <Leader>run :<C-u>QuickRun<CR>
-" nnoremap <Leader>s :<C-u>QuickRun<CR>
-let g:quickrun_config = {
-\    '_': {
-\        'hook/close_buffer/enable_empty_data': 1,
-\        'hook/close_buffer/enable_failure':    1,
-\        'outputter':                           'multi:buffer:quickfix',
-\        'outputter/buffer/close_on_empty':     1,
-\        'outputter/buffer/split':              ':botright',
-\        'runner':                              'vimproc',
-\        'runner/vimproc/updatetime':           600},
-\    'watchdogs_checker/_': {
-\        'hook/close_quickfix/enable_exit':        1,
-\        'hook/back_window/enable_exit':           0,
-\        'hook/back_window/priority_exit':         1,
-\        'hook/qfstatusline_update/enable_exit':   1,
-\        'hook/qfstatusline_update/priority_exit': 2,
-\        'outputter/quickfix/open_cmd':            ''},
-\    'watchdogs_checker/php': {
-\        'command': 'php',
-\        'cmdopt':  '-l -d error_reporting=E_ALL -d display_errors=1 -d display_startup_errors=1 -d log_errors=0 -d xdebug.cli_color=0',
-\        'exec':    '%c %o %s:p',
-\        'errorformat': '%m\ in\ %f\ on\ line\ %l'},}
-
-" --------------------------------
-" vim-watchdogs
-" --------------------------------
-let s:hooks = neobundle#get_hooks('vim-watchdogs')
-function! s:hooks.on_source(bundle) abort "{{{
-    "vim-watchdogs
-    let g:watchdogs_check_BufWritePost_enable  = 1
-    let g:watchdogs_check_CursorHold_enable    = 1
-endfunction "}}}
-
-" --------------------------------
-" Vim-php-cs-fixer
-" --------------------------------
-nnoremap <Leader>php :<C-u>call<Space>PhpCsFixerFixFile()<CR>
-let s:hooks = neobundle#get_hooks('vim-php-cs-fixer')
-function! s:hooks.on_source(bundle) abort "{{{
-    let g:php_cs_fixer_path = "$HOME/.vim/phpCsFixer/php-cs-fixer" " define the path to the php-cs-fixer.phar
-    let g:php_cs_fixer_config                 = 'default'
-    let g:php_cs_fixer_dry_run                = 0
-    let g:php_cs_fixer_enable_default_mapping = 0
-    let g:php_cs_fixer_fixers_list            = 'align_equals,align_double_arrow'
-    let g:php_cs_fixer_level                  = 'all'
-    let g:php_cs_fixer_php_path               = 'php'
-    let g:php_cs_fixer_verbose                = 0
-endfunction
-
-" --------------------------------
-" Vdebug
-" --------------------------------
-let g:vdebug_force_ascii = 1
-let g:vdebug_features = {'max_data': 65536, 'max_depth': 16, 'max_children': 1024}
+""""""""""""""""""""""""""""""
+" javascript-libraries-syntax.vim
+""""""""""""""""""""""""""""""
+ let g:used_javascript_libs = 'jquery,underscore,backbone,angularjs,angularui,angularuirouter,react'
+""""""""""""""""""""""""""""""
