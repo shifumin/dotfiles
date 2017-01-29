@@ -117,6 +117,14 @@ NeoBundle 'chase/vim-ansible-yaml'
 
 " submode : Create your own submodes
 NeoBundle 'kana/vim-submode'
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" Ruby
+""""""""""""""""""""""""""""""
+" Highlight Ruby local variables
+NeoBundle 'todesking/ruby_hl_lvar.vim'
+""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
 " Puyopuyo
