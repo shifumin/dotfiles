@@ -395,29 +395,6 @@ nnoremap ]Q :<C-u>clast<CR>  " 最後へ
 " grep検索の実行後にQuickFix Listを表示する
 autocmd QuickFixCmdPost *grep* cwindow
 
-""""""""""""""""""""""""""""""
-" PHP settings
-""""""""""""""""""""""""""""""
-" VimでPHP開発環境を作成 - Qiita
-" http://qiita.com/NanohaAsOnKai/items/0188fb3b60e8a79656a0
-""""""""""""""""""""""""""""""
-
-" $VIMRUNTIME/syntax/php.vim
-let g:php_baselib       = 1
-let g:php_htmlInStrings = 1
-let g:php_noShortTags   = 1
-let g:php_sql_query     = 1
-
-" <? をハイライト除外にする
-let g:php_noShortTags         = 1
-" カッコが閉じていない場合にハイライト
-let g:php_parent_error_close  = 1
-
-" $VIMRUNTIME/syntax/sql.vim
-let g:sql_type_default = 'mysql'
-
-" 辞書ファイルの読込
-autocmd FileType php,ctp :set dictionary=~/.vim/dict/php.dict
 
 """"""""""""""""""""""""""""""
 " 実践Vim
