@@ -1,16 +1,6 @@
-" Encoding
 set encoding=utf-8
 scriptencoding utf-8
 
-""""""""""""""""""""""""""""""
-" 脱初心者を目指すVimmerにオススメしたいVimプラグインや.vimrcの設定 - Qiita
-" http://qiita.com/jnchito/items/5141b3b01bced9f7f48f
-" dotfiles/.vimrc · JunichiIto/dotfiles
-" https://github.com/JunichiIto/dotfiles/blob/master/.vimrc
-""""""""""""""""""""""""""""""
-
-" 挙動を vi 互換ではなく、Vim のデフォルト設定にする
-set nocompatible
 " 一旦ファイルタイプ関連を無効化する
 filetype off
 
@@ -19,44 +9,17 @@ if filereadable(expand('~/.vimrc.neobundle'))
   source ~/.vimrc.neobundle
 endif
 
-" 想定される改行コードの指定する
-set fileformats=unix,dos,mac
-
-" Colorscheme Solarized
-syntax enable
-set background=dark
-colorscheme solarized
-
-" O で空行を挿入得する
-nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
-
-
-" -------------------------------
-" http://lambdalisue.hatenablog.com/entry/2013/06/23/071344
-" -------------------------------
+""""""""""""""""""""""""""""""
 
 " 表示関係
 
 set list                " 不可視文字の可視化
-set number              " 行番号の表示
 set wrap                " 長いテキストの折り返し
 set textwidth=0         " 自動的に改行が入るのを無効化
 " set colorcolumn=80      " その代わり80文字目にラインを入れる
 
-" 前時代的スクリーンベルを無効化
-set t_vb=
-set novisualbell
-
 " デフォルト不可視文字は美しくないのでUnicodeで綺麗に
 set listchars=tab:»-,trail:-,extends:»,precedes:«,nbsp:%,eol:↲
-
-
-" 検索関係
-
-set ignorecase          " 大文字小文字を区別しない
-set smartcase           " 検索文字に大文字がある場合は大文字小文字を区別
-set incsearch           " インクリメンタルサーチ
-set hlsearch            " 検索マッチテキストをハイライト
 
 " バックスラッシュやクエスチョンを状況に合わせ自動的にエスケープ
 cnoremap <expr> / getcmdtype() == '/' ? '\/' : '/'
@@ -70,14 +33,10 @@ set infercase           " 補完時に大文字小文字を区別しない
 set virtualedit=all     " カーソルを文字が存在しない部分でも動けるようにする
 set hidden              " バッファを閉じる代わりに隠す（Undo履歴を残すため）
 set switchbuf=useopen   " 新しく開く代わりにすでに開いてあるバッファを開く
-set showmatch           " 対応する括弧などをハイライト表示する
 set matchtime=3         " 対応括弧のハイライト表示を3秒にする
 
 " 対応括弧に'<'と'>'のペアを追加
 set matchpairs& matchpairs+=<:>
-
-" バックスペースでなんでも消せるようにする
-set backspace=indent,eol,start
 
 " クリップボードをデフォルトのレジスタとして指定。後にYankRingを使うので
 " 'unnamedplus'が存在しているかどうかで設定を分ける必要がある
@@ -99,22 +58,16 @@ set noswapfile
 "
 " http://yuroyoro.hatenablog.com/entry/20120211/1328930819
 "
-
-  " カーソル行をハイライト
-  set cursorline
-  " カレントウィンドウにのみ罫線を引く
-  augroup cch
-    autocmd! cch
-    autocmd WinLeave * set nocursorline
-    autocmd WinEnter,BufRead * set cursorline
-  augroup END
+" カレントウィンドウにのみ罫線を引く
+augroup cch
+  autocmd! cch
+  autocmd WinLeave * set nocursorline
+  autocmd WinEnter,BufRead * set cursorline
+augroup END
 
 hi clear CursorLine
 hi CursorLine gui=underline
 highlight CursorLine ctermbg=black guibg=black
-
-"Escの2回押しでハイライト消去
-nmap <ESC><ESC> :nohlsearch<CR><ESC>
 
 " Ctrl-iでヘルプ
 nnoremap <C-i>  :<C-u>help<Space>
@@ -139,46 +92,26 @@ autocmd BufWritePre * :%s/\t/  /ge
 set tags=~/.tags
 " スワップファイルは使わない(ときどき面倒な警告が出るだけで役に立ったことがない)
 set noswapfile
-" カーソルが何行目の何列目に置かれているかを表示する
-set ruler
 " コマンドラインに使われる画面上の行数
 "set cmdheight=2
-" エディタウィンドウの末尾から2行目にステータスラインを常時表示させる
-set laststatus=2
-" ステータス行に表示させる情報の指定(どこからかコピペしたので細かい意味はわかっていない)
-set statusline=%<%f\ %m%r%h%w%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=%l,%c%V%8P
-" ステータス行に現在のgitブランチを表示する
-set statusline+=%{fugitive#statusline()}
 " ウインドウのタイトルバーにファイルのパス情報等を表示する
 set title
 " コマンドラインモードで<Tab>キーによるファイル名補完を有効にする
 set wildmenu
-" 入力中のコマンドを表示する
-set showcmd
 " バックアップディレクトリの指定(でもバックアップは使ってない)
 set backupdir=$HOME/.vimbackup
 " バッファで開いているファイルのディレクトリでエクスクローラを開始する(でもエクスプローラって使ってない)
 set browsedir=buffer
-" 小文字のみで検索したときに大文字小文字を無視する
-set smartcase
-" 検索結果をハイライト表示する
-set hlsearch
 " 暗い背景色に合わせた配色にする
 set background=dark
 " タブ入力を複数の空白入力に置き換える
 set expandtab
-" 検索ワードの最初の文字を入力した時点で検索を開始する
-set incsearch
 " 保存されていないファイルがあるときでも別のファイルを開けるようにする
 set hidden
 " 不可視文字を表示する
 set list
 " タブと行の続きを可視化する
 set listchars=tab:>\ ,extends:<
-" 行番号を表示する
-set number
-" 対応する括弧やブレースを表示する
-set showmatch
 " 改行時に前の行のインデントを継続する
 set autoindent
 " 改行時に入力された行の末尾に合わせて次の行のインデントを増減する
@@ -189,8 +122,6 @@ set tabstop=2
 set shiftwidth=2
 " 行頭の余白内で Tab を打ち込むと、'shiftwidth' の数だけインデントする
 set smarttab
-" カーソルを行頭、行末で止まらないようにする
-set whichwrap=b,s,h,l,<,>,[,]
 " 構文毎に文字色を変化させる
 syntax on
 " カラースキーマの指定
@@ -253,7 +184,6 @@ nnoremap s7 :<C-u>tabnext7<CR>
 nnoremap s8 :<C-u>tabnext8<CR>
 nnoremap s9 :<C-u>tabnext9<CR>
 nnoremap s0 :<C-u>tabnext10<CR>
-
 """"""""""""""""""""""""""""""
 
 " http://inari.hatenablog.com/entry/2014/05/05/231307
@@ -274,41 +204,6 @@ if has('syntax')
 endif
 """"""""""""""""""""""""""""""
 
-" https://sites.google.com/site/fudist/Home/vim-nihongo-ban/-vimrc-sample
-""""""""""""""""""""""""""""""
-" 挿入モード時、ステータスラインの色を変更
-""""""""""""""""""""""""""""""
-let g:hi_insert = 'highlight StatusLine guifg=darkblue guibg=darkyellow gui=none ctermfg=blue ctermbg=yellow cterm=none'
-
-if has('syntax')
-  augroup InsertHook
-    autocmd!
-    autocmd InsertEnter * call s:StatusLine('Enter')
-    autocmd InsertLeave * call s:StatusLine('Leave')
-  augroup END
-endif
-
-let s:slhlcmd = ''
-function! s:StatusLine(mode)
-  if a:mode == 'Enter'
-    silent! let s:slhlcmd = 'highlight ' . s:GetHighlight('StatusLine')
-    silent exec g:hi_insert
-  else
-    highlight clear StatusLine
-    silent exec s:slhlcmd
-  endif
-endfunction
-
-function! s:GetHighlight(hi)
-  redir => hl
-  exec 'highlight '.a:hi
-  redir END
-  let hl = substitute(hl, '[\r\n]', '', 'g')
-  let hl = substitute(hl, 'xxx', '', '')
-  return hl
-endfunction
-""""""""""""""""""""""""""""""
-
 """"""""""""""""""""""""""""""
 " 最後のカーソル位置を復元する
 """"""""""""""""""""""""""""""
@@ -320,58 +215,44 @@ if has("autocmd")
 endif
 """"""""""""""""""""""""""""""
 
-set viminfo='50,\"3000,:0,n~/.viminfo
+""""""""""""""""""""""""""""""
+" Basic
+""""""""""""""""""""""""""""""
+" 想定される改行コードの指定する
+set fileformats=unix,dos,mac
 
+" Colorscheme Solarized
+syntax enable
+set background=dark
+colorscheme solarized
+
+" 行番号のハイライト設定
+hi CursorLineNr term=bold   cterm=NONE ctermfg=6 ctermbg=NONE
+
+" http://vimwiki.net/?%27viminfo%27
+set viminfo='50,\"1000,:0,n~/.vim/viminfo
+
+" ビープ音を全て無効にする
+set visualbell t_vb=
+set noerrorbells
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
 " key mapping
 """"""""""""""""""""""""""""""
-" [Vim] インサートモード時の便利キーマップ - Qiita
-" http://qiita.com/y_uuki/items/14389dbaaa43d25f3254
-""""""""""""""""""""""""""""""
 " insertモードから抜ける
 inoremap <silent> jj <ESC>
-" inoremap <silent> <C-j> j
-inoremap <silent> kk <ESC>
-" inoremap <silent> <C-k> k
-
-" 行頭・行末移動方向をキーの相対位置にあわせる
-" nnoremap 0 $
-" nnoremap 1 0
-
-" 挿入モードでのカーソル移動
-" inoremap <C-j> <Down>
-" inoremap <C-k> <Up>
-inoremap <C-h> <Left>
-inoremap <C-l> <Right>
-
-" カーソル前の文字削除
-inoremap <silent> <C-h> <C-g>u<C-h>
-" カーソル後の文字削除
-inoremap <silent> <C-d> <Del>
-" カーソルから行頭まで削除
-inoremap <silent> <C-d>e <Esc>lc^
-" カーソルから行末まで削除
-inoremap <silent> <C-d>0 <Esc>lc$
-" カーソルから行頭までヤンク
-inoremap <silent> <C-y>e <Esc>ly0<Insert>
-" カーソルから行末までヤンク
-inoremap <silent> <C-y>0 <Esc>ly$<Insert>
-
-" 引用符, 括弧の設定
-" inoremap { {}<Left>
-" inoremap [ []<Left>
-" inoremap ( ()<Left>
-" inoremap " ""<Left>
-" inoremap ' ''<Left>
-" inoremap <> <><Left>
 
 " 高速移動
 noremap J 20j
 noremap K 20k
 noremap L 10l
 noremap H 10h
+
+" O で空行を挿入する
+nnoremap O :<C-u>call append(expand('.'), '')<Cr>j
+" I でスペースを挿入する
+nnoremap I a <Esc>
 
 " Ctags用タグスタックを戻るキーバインド
 nnoremap <c-[> :pop<CR>
@@ -381,6 +262,39 @@ nnoremap ts :split<CR> :exe("tjump ".expand('<cword>'))<CR>
 " 新しいタブを開いてジャンプ
 nnoremap <F3> :<C-u>tab stj <C-R>=expand('<cword>')<CR><CR>
 nnoremap tw :<C-u>tab stj <C-R>=expand('<cword>')<CR><CR>
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" 文字列検索
+""""""""""""""""""""""""""""""
+set incsearch " インクリメンタルサーチ. １文字入力毎に検索を行う
+set ignorecase " 検索パターンに大文字小文字を区別しない
+set smartcase " 検索パターンに大文字を含んでいたら大文字小文字を区別する
+set hlsearch " 検索結果をハイライト
+
+"Escキーの2回押しでハイライトを消去
+nnoremap <ESC><ESC> :nohlsearch<CR>
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" カーソル
+""""""""""""""""""""""""""""""
+set whichwrap=b,s,h,l,<,>,[,],~ " カーソルの左右移動で行末から次の行の行頭への移動が可能になる
+set number " 行番号を表示
+set cursorline " カーソルラインをハイライト
+
+" 行が折り返し表示されていた場合、行単位ではなく表示行単位でカーソルを移動する
+nnoremap j gj
+nnoremap k gk
+nnoremap <down> gj
+nnoremap <up> gk
+
+" バックスペースキーの有効化
+set backspace=indent,eol,start
+
+set showmatch " 括弧の対応関係を一瞬表示する
+source $VIMRUNTIME/macros/matchit.vim " Vimの「%」を拡張する
+""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
 " vimgrep
@@ -394,25 +308,38 @@ nnoremap [Q :<C-u>cfirst<CR> " 最初へ
 nnoremap ]Q :<C-u>clast<CR>  " 最後へ
 " grep検索の実行後にQuickFix Listを表示する
 autocmd QuickFixCmdPost *grep* cwindow
-
+""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
 " 実践Vim
 """"""""""""""""""""""""""""""
-
 " 記録するコマンド履歴検索履歴の数
 set history=200
 
 " 履歴からコマンドを呼び戻すときにカーソルキーを使わない
 cnoremap <C-p> <Up>
 cnoremap <C-n> <Down>
+""""""""""""""""""""""""""""""
 
-""
+""""""""""""""""""""""""""""""
 " Original
-""
+""""""""""""""""""""""""""""""
+" daw : delete a word カーソル位置の単語を削除
+nnoremap da daw
+nnoremap ca caw
+
+" 行内での先頭、末尾までの色々
+nnoremap dh d0
+nnoremap dl d$
+nnoremap ch c0
+nnoremap cl c$
+nnoremap yh y0
+nnoremap yl y$
+
 " ヤンクした内容が消えないようにする
-noremap PP "0p
-noremap x "_x
+nnoremap PP "0p
+nnoremap x "_x
+nnoremap dd "_dd
 
 " 閉じ括弧補完
 inoremap {<Enter> {}<Left><CR><ESC><S-o>
@@ -421,6 +348,31 @@ inoremap (<Enter> ()<Left><CR><ESC><S-o>
 
 " 誤動作防止
 map q: :q
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" Filetype
+""""""""""""""""""""""""""""""
+autocmd BufRead,BufNewFile *.md set filetype=markdown
+autocmd BufRead,BufNewFile *.yml set filetype=yaml
+autocmd BufRead,BufNewFile *.html set filetype=html
+autocmd BufRead,BufNewFile *.haml set filetype=haml
+autocmd BufRead,BufNewFile *.slim set filetype=slim
+autocmd BufRead,BufNewFile *.sass set filetype=sass
+autocmd BufRead,BufNewFile *.scss set filetype=scss.css
+autocmd BufRead,BufNewFile *.js set filetype=javascript
+autocmd BufRead,BufNewFile *.json set filetype=json
+autocmd BufRead,BufNewFile *.coffee set filetype=coffee
+autocmd BufRead,BufNewFile *.rb set filetype=ruby
+autocmd BufRead,BufNewFile *.rabl  set filetype=ruby
+autocmd BufRead,BufNewFile *.rake set filetype=ruby
+autocmd BufRead,BufNewFile .pryrc set filetype=ruby
+autocmd BufRead,BufNewFile Gemfile set filetype=ruby
+autocmd FileType javascript setlocal sw=4 sts=4 ts=4 et
+autocmd FileType coffee setlocal sw=2 sts=2 ts=2 et
+autocmd FileType php setlocal sw=4 sts=4 ts=4 et
+autocmd FileType ruby setlocal sw=2 sts=2 ts=2 et
+""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
 " Leader key settings
@@ -442,8 +394,14 @@ nnoremap <Leader>cc :cclose<CR>
 nnoremap <Leader>cn :cnewer<CR>
 nnoremap <Leader>cp :colder<CR>
 nnoremap <Leader>z :<C-u>sp ~/project/trash.txt<CR>
-nnoremap <Leader>b :<C-u>bw! \[quickrun\ output\]<CR>
+" nnoremap <Leader>b :<C-u>bw! \[quickrun\ output\]<CR>
 " nnoremap sw :w !sudo tee % > /dev/null<CR>
+
+" Ruby
+nnoremap <Leader>bp obinding.pry<Esc>:<C-u>w<CR>
+
+" Python
+nnoremap <Leader>l :call Flake8()<CR>
 
 " unite unite-rails
 nnoremap <Leader>u :<C-u>Unite file_mru buffer<CR>
