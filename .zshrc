@@ -1,39 +1,52 @@
-# Path to your oh-my-zsh installation.
-export ZSH=$HOME/.oh-my-zsh
+# Check if zplug is installed
+if [[ ! -d ~/.zplug ]]; then
+  git clone https://github.com/zplug/zplug ~/.zplug
+  source ~/.zplug/linit.zsh && zplug update --self
+fi
 
-# Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
-# Optionally, if you set this to "random", it'll load a random theme each
-# time that oh-my-zsh is loaded.
-ZSH_THEME="robbyrussell"
+# Essential
+source ~/.zplug/init.zsh
 
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+# Load theme file
+zplug 'dracula/zsh', as:theme
 
-# Set to this to use case-sensitive completion
-# CASE_SENSITIVE="true"
+# Additional completion definitions for Zsh.
+zplug 'zsh-users/zsh-completions'
 
-# Comment this out to disable weekly auto-update checks
-# DISABLE_AUTO_UPDATE="true"
+# Fish-like autosuggestions for zsh
+zplug 'zsh-users/zsh-autosuggestions'
 
-# Uncomment following line if you want to disable colors in ls
-# DISABLE_LS_COLORS="true"
+# Fish shell like syntax highlighting for Zsh.
+zplug 'zsh-users/zsh-syntax-highlighting', defer:2
 
-# Uncomment following line if you want to disable autosetting terminal title.
-# DISABLE_AUTO_TITLE="true"
+# ZSH port of the FISH shell's history search 🐠
+zplug 'zsh-users/zsh-history-substring-search', defer:3
 
-# Uncomment following line if you want red dots to be displayed while waiting for completion
-# COMPLETION_WAITING_DOTS="true"
+# Simplistic interactive filtering tool
+zplug 'peco/peco', as:command, from:gh-r, use:"*amd64*"
 
+# fzf-tmux の peco バージョン
+zplug 'b4b4r07/dotfiles', as:command, use:bin/peco-tmux
 
+# peco/percol/fzf wrapper plugin for zsh
+zplug 'mollifier/anyframe'
 
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(brew brew-cask bundler coffee command-not-found docker docker-compose emoji-clock gem git git-flow github heroku history history-substring-search node npm osx pip python rails rake rbenv ruby tmux tmuxinator vagrant vi-mode yum z)
+# 🚀 A next-generation cd command with an interactive filter
+zplug "b4b4r07/enhancd", use:init.sh
 
-source $ZSH/oh-my-zsh.sh
+# zsh plugin to cd to git repository root directory.
+zplug 'mollifier/cd-gitroot'
 
-source $HOME/.zshrc.custom
+# Install plugins if there are plugins that have not been installed
+if ! zplug check --verbose; then
+    printf "Install? [y/N]: "
+    if read -q; then
+        echo; zplug install
+    fi
+fi
+
+# Then, source plugins and add commands to $PATH
+zplug load --verbose
+
+[ -f $HOME/dotfiles/.zshrc.custom ] && source $HOME/dotfiles/.zshrc.custom
+[ -f $HOME/dotfiles/.zshrc.alias ] && source $HOME/dotfiles/.zshrc.alias
