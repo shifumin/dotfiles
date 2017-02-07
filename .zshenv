@@ -6,3 +6,5 @@ if [ -d ${HOME}/.rbenv  ] ; then
   export PATH
   eval "$(rbenv init -)"
 fi
+
+ENHANCD_COMMAND=c; export ENHANCD_COMMAND
