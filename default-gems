@@ -1,4 +1,5 @@
 bundler
+neovim
 pry
 pry-doc
 pry-byebug
