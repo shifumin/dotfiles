@@ -5,9 +5,9 @@ This is my dotfiles.
 
 ## Stack
 
-Git  
-Zsh  
-Oh-My-Zsh  
-tmux  
-Vim  
-and Others  
+- Git
+- Zsh
+- tmux
+- Neovim
+- Ruby
+- and Others
