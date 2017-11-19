@@ -1,5 +1,6 @@
 AllCops:
   Include:
+    - '**/Gemfile'
     - '**/Rakefile'
     - '**/config.ru'
   Exclude:
@@ -34,7 +35,7 @@ AllCops:
 ###### Style ######
 
 # Check the naming of accessor methods for get_/set_.
-Style/AccessorMethodName:
+Naming/AccessorMethodName:
   Enabled: false
 
 # Whether `and` and `or` are banned only in conditionals (conditionals) or completely (always).
@@ -58,7 +59,7 @@ Style/IfUnlessModifier:
   Enabled: false
 
 # Check the names of predicate methods.
-Style/PredicateName:
+Naming/PredicateName:
   # Predicate name prefices.
   NamePrefix:
     - is_
