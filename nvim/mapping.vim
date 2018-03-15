@@ -20,10 +20,6 @@ nnoremap PP "0p
 nnoremap x "_x
 nnoremap dd "_dd
 
-" daw : delete a word カーソル位置の単語を削除
-nnoremap da daw
-nnoremap ca caw
-
 " 行頭,行末までの色々
 nnoremap dh d0
 nnoremap dl d$
@@ -200,10 +196,14 @@ nnoremap <silent> <Leader><Leader>gs :<C-u>Denite gitstatus<CR>
 nnoremap <silent> <Leader><Leader>: :<C-u>Denite command command_history<CR>
 
 "" denite-rails
-nnoremap <silent> <Leader>rr :<C-u>Denite<Space>rails:dwim<Return>
-nnoremap <silent> <Leader>rm :<C-u>Denite<Space>rails:model<Return>
-nnoremap <silent> <Leader>rc :<C-u>Denite<Space>rails:controller<Return>
-nnoremap <silent> <Leader>rv :<C-u>Denite<Space>rails:view<Return>
-nnoremap <silent> <Leader>rh :<C-u>Denite<Space>rails:helper<Return>
-nnoremap <silent> <Leader>rt :<C-u>Denite<Space>rails:test<Return>
+nnoremap [rails] <Nop>
+nmap     <Leader>r [rails]
+nnoremap [rails]r :Denite<Space>rails:
+nnoremap <silent> [rails]r :<C-u>Denite<Space>rails:dwim<Return>
+nnoremap <silent> [rails]m :<C-u>Denite<Space>rails:model<Return>
+nnoremap <silent> [rails]c :<C-u>Denite<Space>rails:controller<Return>
+nnoremap <silent> [rails]v :<C-u>Denite<Space>rails:view<Return>
+nnoremap <silent> [rails]h :<C-u>Denite<Space>rails:helper<Return>
+nnoremap <silent> [rails]r :<C-u>Denite<Space>rails:test<Return>
+nnoremap <silent> [rails]s :<C-u>Denite<Space>rails:spec<Return>
 """"""""""""""""""""""""""""""
