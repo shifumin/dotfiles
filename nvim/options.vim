@@ -106,6 +106,7 @@ autocmd BufRead,BufNewFile *.rabl  set filetype=ruby
 autocmd BufRead,BufNewFile *.rake set filetype=ruby
 autocmd BufRead,BufNewFile .pryrc set filetype=ruby
 autocmd BufRead,BufNewFile Gemfile set filetype=ruby
+autocmd BufRead,BufNewFile Dockerfile.* set filetype=dockerfile
 autocmd FileType javascript setlocal sw=4 sts=4 ts=4 et
 autocmd FileType coffee setlocal sw=2 sts=2 ts=2 et
 autocmd FileType php setlocal sw=4 sts=4 ts=4 et
