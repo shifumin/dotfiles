@@ -5,9 +5,10 @@ alias git='nocorrect git'
 alias vim='nocorrect vim'
 
 # global aliases
-alias -g L='| less'
 alias -g G='| grep'
 alias -g H='| head'
+alias -g J='| jq'
+alias -g L='| less'
 alias -g M='| more'
 alias -g T='| tail'
 alias -g P='| peco'
@@ -23,6 +24,9 @@ alias be='bundle exec'
 
 # cat
 alias cat=ccat
+
+# ctags
+alias ctags='`brew --prefix`/bin/ctags'
 
 # Docker
 alias do='docker'
