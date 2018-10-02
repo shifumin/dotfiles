@@ -359,6 +359,9 @@ tmux_automatically_attach_session
 source $HOME/.bin/tmuxinator.zsh
 ####################
 
+## fpath settings
+fpath=($HOME/.zplug/repos/zsh-users/zsh-completions/src(N-/) $fpath)
+
 ####################
 # anyframe
 ####################
@@ -499,11 +502,9 @@ setopt hist_no_store
 export EDITOR=nvim
 
 # コマンド履歴を保存するファイルを指定する
-HISTFILE=$HOME/.zsh_history
-
+export HISTFILE=$HOME/.zsh_history
 # メモリに保存する履歴の件数を指定する
 export HISTSIZE=1000
-
 # ファイルに保存する履歴の件数を指定する
 export SAVEHIST=1000000
 
