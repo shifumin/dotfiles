@@ -172,11 +172,22 @@ hi clear CursorLine
 hi CursorLine gui=underline
 highlight CursorLine ctermbg=black guibg=black
 
-" 保存時に行末の空白を除去する
-autocmd BufWritePre * :%s/\s\+$//ge
-" 保存時にtabをスペースに変換する
-autocmd BufWritePre * :%s/\t/  /ge
-
+""""""""""""""""""""""""""""""
+" vimを使って保存時に楽をする - Qiita
+" https://qiita.com/katton/items/bc9720826120f5f61fc1
+""""""""""""""""""""""""""""""
+function! s:remove_dust()
+    let cursor = getpos(".")
+    " 保存時に行末の空白を除去する
+    %s/\s\+$//ge
+    " 保存時にtabを2スペースに変換する
+    %s/\t/  /ge
+    call setpos(".", cursor)
+    unlet cursor
+endfunction
+" autocmd BufWritePre * call <SID>remove_dust()
+command! Re call <SID>remove_dust()
+""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
 " 脱初心者を目指すVimmerにオススメしたいVimプラグインや.vimrcの設定 - Qiita
