@@ -1,35 +1,15 @@
-# https://github.com/yuroyoro/dotfiles/blob/master/.gitignore
-
-*.o
-\#*#
-*#
-.#*
-.*~
-*~
+# MacOS/General
 .DS_Store
-*.sw[po]
-tags
-TAGS
-Session.vim
-.svn
-*.dSYM
-*.log
-*.dvi
-*.aux
-*.elc
-.zshrc.local
-samples
+.AppleDouble
+.LSOverride
 
-.vim/bundle/
-.vim/.netrwhist
-.vimrc_sample
+# Rails/TODO Comment out this rule if you are OK with secrets being uploaded to the repo
+config/initializers/secret_token.rb
+config/master.key
 
-# Bundler
-.bundle
-vendor/bundle
+## Rails/Environment normalization:
+/.bundle
+/vendor/bundle
 
-# Vagrant
-.vagrant
-
-# 環境変数
-.env
+# Vagrant/General
+.vagrant/
