@@ -86,6 +86,16 @@ on_ft = ['ruby']
 repo = 'osyo-manga/vim-monster'
 on_ft = ['ruby']
 
+[[plugins]]
+# Ruby code completion.
+repo = 'fishbullet/deoplete-ruby'
+on_ft = ['ruby']
+
+[[plugins]]
+# Ruby code completion.
+repo = 'Shougo/deoplete-rct'
+on_ft = ['ruby']
+
 # Python
 [[plugins]]
 # Using the jedi autocompletion library for VIM.
@@ -113,3 +123,14 @@ on_ft = 'python'
 # Flake8 plugin for Vim
 repo = 'nvie/vim-flake8'
 on_ft = 'python'
+
+# Terraform
+[[plugins]]
+# basic vim/terraform integration
+repo = 'hashivim/vim-terraform'
+on_ft = 'tf'
+hook_source = '''
+  let g:terraform_fmt_on_save = 1
+  let g:terraform_align = 1
+  let g:terraform_fold_sections = 1
+'''
