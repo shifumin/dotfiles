@@ -1,9 +1,6 @@
 bundler
 neovim
-pry
-pry-doc
 pry-byebug
 pry-stack_explorer
-refe2
 rubocop
 tmuxinator
