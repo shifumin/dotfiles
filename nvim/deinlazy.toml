@@ -45,11 +45,11 @@ hook_add = '''
 repo = 'kana/vim-smartchr'
 on_event = 'InsertCharPre'
 hook_source = '''
-  inoremap <buffer> <expr> = smartchr#loop(' = ', ' == ', '=')
-  inoremap <buffer> <expr> & smartchr#loop(' & ', ' && ', '&')
-  inoremap <buffer> <expr> + smartchr#loop(' + ', '+')
-  inoremap <buffer> <expr> - smartchr#loop(' - ', '-')
-  inoremap <buffer> <expr> , smartchr#loop(', ', ',')
+  inoremap <buffer> <expr> = smartchr#loop('=', ' = ', ' == ')
+  inoremap <buffer> <expr> & smartchr#loop('&', '&&', ' & ', ' && ')
+  inoremap <buffer> <expr> + smartchr#loop('+', ' + ')
+  inoremap <buffer> <expr> - smartchr#loop('-', '--', ' - ')
+  inoremap <buffer> <expr> , smartchr#loop(',', ', ')
   inoremap <buffer> <expr> > smartchr#loop('>', ' ->')
   inoremap <buffer> <expr> . smartchr#loop('.', '<%=  %>', '<%  %>')
 '''
