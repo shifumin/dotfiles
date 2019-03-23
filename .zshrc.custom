@@ -519,6 +519,12 @@ export AWS_DEFAULT_REGION=ap-northeast-1
 ####################
 
 ####################
+# anyenv
+####################
+eval "$(anyenv init -)"
+####################
+
+####################
 # direnv
 ####################
 eval "$(direnv hook zsh)"
