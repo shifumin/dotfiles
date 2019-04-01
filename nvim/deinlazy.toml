@@ -45,13 +45,13 @@ hook_add = '''
 repo = 'kana/vim-smartchr'
 on_event = 'InsertCharPre'
 hook_source = '''
-  inoremap <buffer> <expr> = smartchr#loop('=', ' = ', ' == ')
+  inoremap <buffer> <expr> = smartchr#loop('=', '==', ' = ', ' == ')
   inoremap <buffer> <expr> & smartchr#loop('&', '&&', ' & ', ' && ')
   inoremap <buffer> <expr> + smartchr#loop('+', ' + ')
   inoremap <buffer> <expr> - smartchr#loop('-', '--', ' - ')
   inoremap <buffer> <expr> , smartchr#loop(',', ', ')
   inoremap <buffer> <expr> > smartchr#loop('>', ' ->')
-  inoremap <buffer> <expr> . smartchr#loop('.', '<%=  %>', '<%  %>')
+  inoremap <buffer> <expr> . smartchr#loop('.', '..', '<%=  %>', '<%  %>')
 '''
 
 [[plugins]]
@@ -70,7 +70,18 @@ hook_add = '''
 repo = 'rhysd/vim-gfm-syntax'
 on_event = 'BufRead'
 
- # Ruby
+# JavaScript
+[[plugins]]
+# Typescript syntax files for Vim
+repo = 'leafgarland/typescript-vim'
+on_ft = ['typescript']
+
+[[plugins]]
+# 🔦 [Vim script] JSX syntax pretty highlighting for vim.
+repo = 'MaxMEllon/vim-jsx-pretty'
+on_ft = ['typescript']
+
+# Ruby
 [[plugins]]
 # Highlight Ruby local variables
 repo = 'todesking/ruby_hl_lvar.vim'
