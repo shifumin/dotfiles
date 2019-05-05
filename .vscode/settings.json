@@ -1,0 +1,148 @@
+{
+  "workbench.colorTheme": "Better Solarized Dark",
+  "files.autoSave": "afterDelay",
+
+  //----------------------------------------------------------
+  // vscode vimの設定
+  // 割と突き詰めてやったvim→vscode移行 - Qiita
+  // https://qiita.com/y-mattun/items/45776b7e1942edb2f727
+  //----------------------------------------------------------
+  // systemのclipboardを使用します
+  "vim.useSystemClipboard": true,
+  // hlsearchは必要だと思う
+  "vim.hlsearch": true,
+  // 検索をするときに見やすいモッサりすることなければこのまま
+  "vim.easymotion": true,
+  // wordを* or + で検索するでしょ?
+  "vim.visualstar": true,
+  "vim.useCtrlKeys": true,
+  // ignore case in search patterns.
+  "vim.ignorecase": true,
+  // show where a / search matches as you type it.
+  "vim.incsearch": true,
+  // enable the sneak plugin for vim.
+  "vim.sneak": true,
+  // VSCodeVimのキーバインドを変更する方法 - unii9ra’s blog
+  // http://unii9ra-blog.hatenablog.com/entry/2017/06/02/135449
+  "vim.insertModeKeyBindings": [
+    {
+      "before": ["j", "j"],
+      "after": ["<Esc>"]
+    }
+  ],
+  "vim.leader": "<space>",
+  "vim.normalModeKeyBindings": [
+    {
+      "before": ["leader", "w"],
+      "commands": [
+        {
+          "command": "workbench.action.files.save",
+          "args": []
+        }
+      ]
+    },
+    {
+      "before": ["leader", "q"],
+      "commands": [
+        {
+          "command": "workbench.action.closeActiveEditor",
+          "args": []
+        }
+      ]
+    },
+    {
+      "before": ["c", "l"],
+      "after": ["c", "$"]
+    },
+    {
+      "before": ["d", "l"],
+      "after": ["d", "$"]
+    },
+    {
+      "before": ["s", "t"],
+      "commands": [":tabnew"]
+    },
+    {
+      "before": ["s", "v"],
+      "commands": [":vsplit"]
+    },
+    {
+      "before": ["s", "h"],
+      "after": ["<C-w>", "h"]
+    },
+    {
+      "before": ["s", "l"],
+      "after": ["<C-w>", "l"]
+    },
+    {
+      "before": ["s", "n"],
+      "after": ["g", "t"]
+    },
+    {
+      "before": ["s", "p"],
+      "after": ["g", "T"]
+    },
+    {
+      "before": ["O"],
+      "commands": [":<C-u>call append(expand('.'), '')<Cr>j"]
+    },
+    {
+      "before": ["I"],
+      "after": ["a", "<Esc>"]
+    }
+
+    // {
+    //   "before": ["s", "H"],
+    //   "after": ["<C-w>", "H"]
+    // },
+    // {
+    //   "before": ["s", "L"],
+    //   "after": ["<C-w>", "L"]
+    // }
+  ],
+
+  // https://github.com/oukayuka/ReactBeginnersBook-2.0
+  "css.validate": true,
+  "editor.formatOnSave": true,
+  "eslint.autoFixOnSave": true,
+  "eslint.enable": true,
+  "eslint.validate": [
+    {
+      "language": "javascript",
+      "autoFix": true
+    },
+    {
+      "language": "javascriptreact",
+      "autoFix": true
+    },
+    {
+      "language": "typescript",
+      "autoFix": true
+    },
+    {
+      "language": "typescriptreact",
+      "autoFix": true
+    }
+  ],
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "prettier.eslintIntegration": true,
+  "prettier.stylelintIntegration": true,
+  "stylelint.enable": true,
+  "typescript.tsserver.trace": "verbose",
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  },
+  // Add
+  "editor.enablePreview": false,
+  "editor.fontSize": 14,
+  "editor.suggestFontSize": 0,
+  "markdown.preview.fontSize": 14,
+  "terminal.integrated.fontSize": 14,
+  "debug.console.fontSize": 14,
+  "editor.renderWhitespace": "none",
+  "editor.minimap.enabled": false,
+  "editor.suggestSelection": "first",
+  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+  "workbench.editor.enablePreview": false
+}
