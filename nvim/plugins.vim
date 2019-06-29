@@ -4,13 +4,13 @@
 call denite#custom#option('default', 'prompt', '>')
 
 if executable('rg')
-  call denite#custom#var('file_rec', 'command',
+  call denite#custom#var('file/rec', 'command',
         \ ['rg', '--files', '--glob', '!.git', ''])
   call denite#custom#var('grep', 'command', ['rg'])
 endif
 
-call denite#custom#alias('source', 'file_rec/git', 'file_rec')
-call denite#custom#var('file_rec/git', 'command',
+call denite#custom#alias('source', 'file/rec/git', 'file/rec')
+call denite#custom#var('file/rec/git', 'command',
       \ ['git', 'ls-files', '-co', '--exclude-standard'])
 
 " denite/insert モードのときは，C-j/k/n/p で移動できるようにする
@@ -26,7 +26,7 @@ call denite#custom#map('normal', 'v', '<denite:do_action:vsplit>')
 call denite#custom#map('insert', 'jj', '<denite:enter_mode:normal>')
 
 " customize ignore globs
-" call denite#custom#source('file_rec', 'matchers', ['matcher_fuzzy','matcher_ignore_globs'])
+" call denite#custom#source('file/rec', 'matchers', ['matcher_fuzzy','matcher_ignore_globs'])
 call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
       \ [
       \ '.git/', 'build/', '__pycache__/',
@@ -66,6 +66,9 @@ autocmd FileType python setlocal completeopt-=preview
 
 """"""""""""""""""""""""""""""
 " lightline.vim
+" lightline-ale
+" vimプラグインのlightline-aleを使ってみた - sinshutu_kibotuの日記
+" https://sinshutu-kibotu.hatenablog.jp/entry/2018/06/24/025319
 """"""""""""""""""""""""""""""
 " tabline
 set showtabline=2 " タブラインを常に表示
@@ -75,42 +78,50 @@ set showmode " 現在のモードを表示
 set showcmd " 打ったコマンドをステータスラインの下に表示
 set ruler " ステータスラインの右側にカーソルの現在位置を表示する
 
-" vim-gitgutter
-let g:gitgutter_sign_added = '✚'
-let g:gitgutter_sign_modified = '➜'
-let g:gitgutter_sign_removed = '✘'
-
 " lightline.vim
 let g:lightline = {
-        \ 'colorscheme': 'solarized',
-        \ 'mode_map': {'c': 'NORMAL'},
-        \ 'active': {
-        \   'left': [
-        \     ['mode', 'paste'],
-        \     ['fugitive', 'gitgutter', 'filename'],
-        \     ['anzu']
-        \   ],
-        \   'right': [
-        \     ['lineinfo', 'syntastic'],
-        \     ['percent'],
-        \     ['charcode', 'fileformat', 'fileencoding', 'filetype'],
-        \   ]
-        \ },
-        \ 'component_function': {
-        \   'modified': 'MyModified',
-        \   'readonly': 'MyReadonly',
-        \   'fugitive': 'MyFugitive',
-        \   'filename': 'MyFilename',
-        \   'fileformat': 'MyFileformat',
-        \   'filetype': 'MyFiletype',
-        \   'fileencoding': 'MyFileencoding',
-        \   'mode': 'MyMode',
-        \   'syntastic': 'SyntasticStatuslineFlag',
-        \   'charcode': 'MyCharCode',
-        \   'gitgutter': 'MyGitGutter',
-        \   'anzu': 'anzu#search_status'
-        \ },
-        \ }
+      \ 'colorscheme': 'solarized',
+      \ 'mode_map': {'c': 'NORMAL'},
+      \ 'active': {
+      \   'left': [
+      \     ['mode', 'paste'],
+      \     ['fugitive', 'gitgutter', 'filename'],
+      \     ['anzu'],
+      \     ['linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok']
+      \   ],
+      \   'right': [
+      \     ['lineinfo'],
+      \     ['percent'],
+      \     ['charcode', 'fileformat', 'fileencoding', 'filetype'],
+      \   ]
+      \ },
+      \ 'component_function': {
+      \   'modified': 'MyModified',
+      \   'readonly': 'MyReadonly',
+      \   'fugitive': 'MyFugitive',
+      \   'filename': 'MyFilename',
+      \   'fileformat': 'MyFileformat',
+      \   'filetype': 'MyFiletype',
+      \   'fileencoding': 'MyFileencoding',
+      \   'mode': 'MyMode',
+      \   'charcode': 'MyCharCode',
+      \   'gitgutter': 'MyGitGutter',
+      \   'anzu': 'anzu#search_status'
+      \ },
+      \ }
+
+let g:lightline.component_expand = {
+      \  'linter_checking': 'lightline#ale#checking',
+      \  'linter_warnings': 'lightline#ale#warnings',
+      \  'linter_errors': 'lightline#ale#errors',
+      \  'linter_ok': 'lightline#ale#ok',
+      \ }
+let g:lightline.component_type = {
+      \  'linter_checking': 'left',
+      \  'linter_warnings': 'warning',
+      \  'linter_errors': 'error',
+      \  'linter_ok': 'left',
+      \ }
 
 function! MyModified()
   return &ft =~ 'help\|vimfiler\|gundo' ? '' : &modified ? '+' : &modifiable ? '' : '-'
@@ -248,15 +259,6 @@ let g:indent_guides_enable_on_vim_startup = 1
 """"""""""""""""""""""""""""""
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
-""""""""""""""""""""""""""""""
-
-""""""""""""""""""""""""""""""
-" Syntastic
-""""""""""""""""""""""""""""""
-" syntastic_mode_mapをactiveにするとバッファ保存時にsyntasticが走る
-" active_filetypesに、保存時にsyntasticを走らせるファイルタイプを指定する
-let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['ruby'] }
-let g:syntastic_ruby_checkers = ['rubocop']
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
