@@ -19,7 +19,6 @@ on_source = ['denite.nvim']
 repo = 'Shougo/denite.nvim'
 depends = ['neomru.vim', 'neoyank.vim']
 on_cmd = 'Denite'
-if = 'has("nvim")'
 
 [[plugins]]
 # denite-rails is a Denite.nvim source for Rails.

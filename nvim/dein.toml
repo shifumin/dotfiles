@@ -13,7 +13,7 @@ repo = 'Shougo/deoplete.nvim'
 depends = 'context_filetype.vim'
 on_i = 1
 hook_source = '''
-let g:deoplete#enable_at_startup = 1
+  let g:deoplete#enable_at_startup = 1
 '''
 
 [[plugins]]
@@ -27,6 +27,27 @@ repo = 'itchyny/vim-cursorword'
 [[plugins]]
 # A light and configurable statusline/tabline for Vim
 repo = 'itchyny/lightline.vim'
+
+[[plugins]]
+# ALE indicator for the lightline vim plugin
+repo = 'maximbaz/lightline-ale'
+depends = ['lightline.vim', 'ale']
+
+[[plugins]]
+# Check syntax (linting) and fix files asynchronously, with Language Server Protocol (LSP) integration in Vim
+repo = 'w0rp/ale'
+hook_add = '''
+  let g:ale_sign_column_always = 1
+  let g:ale_sign_error = '>>'
+  let g:ale_sign_warning = '--'
+  let g:ale_linters = { 'ruby': ['rubocop'] }
+  let g:ale_fixers = { 'ruby': ['rubocop'] }
+  let g:ale_statusline_format = ['E%d', 'W%d', 'ok']
+  nmap <silent> <C-n> <Plug>(ale_next_wrap)
+'''
+  # let g:ale_fix_on_save = 1
+  # let g:ale_set_loclist = 0
+  # let g:ale_set_quickfix = 1
 
 [[plugins]]
 # Vim search status.
@@ -97,10 +118,6 @@ repo = 'tpope/vim-speeddating'
 repo = 'tpope/vim-repeat'
 
 [[plugins]]
-# Syntax checking hacks for vim
-repo = 'scrooloose/syntastic'
-
-[[plugins]]
 # A tree explorer plugin for vim
 repo = 'scrooloose/nerdtree'
 
@@ -149,3 +166,8 @@ repo = 'tpope/vim-fugitive'
 [[plugins]]
 # A Vim plugin which shows a git diff in the gutter (sign column) and stages/undoes hunks.
 repo = 'airblade/vim-gitgutter'
+hook_add = '''
+  let g:gitgutter_sign_added = '✚'
+  let g:gitgutter_sign_modified = '➜'
+  let g:gitgutter_sign_removed = '✘'
+'''
