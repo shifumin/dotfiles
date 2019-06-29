@@ -164,7 +164,7 @@ nnoremap <Leader>ec :<C-u>Econtroller<CR>
 " nnoremap <Leader>u :<C-u>Denite file_mru buffer<CR>
 nnoremap <silent> <Leader><Leader>u :<C-u>Denite file_mru buffer -highlight-mode-insert=Search<CR>
 " カレントディレクトリ以下の再帰検索
-nnoremap <silent> <Leader><Leader>c :<C-u>Denite file_rec<CR>
+nnoremap <silent> <Leader><Leader>c :<C-u>Denite file/rec<CR>
 " カーソル以下の単語をgrep
 nnoremap <silent> <Leader><Leader>w :<C-u>DeniteCursorWord grep -buffer-name=search line<CR><C-R><C-W><CR>
 
@@ -181,15 +181,15 @@ nnoremap <silent> ,n :<C-u>Denite -resume -buffer-name=search -select=+1 -immedi
 nnoremap <silent> ,p :<C-u>Denite -resume -buffer-name=search -select=-1 -immediately<CR>
 
 " search dotfiles
-nnoremap <silent> <Leader><Leader>d :<C-u>Denite -buffer-name=search file_rec:~/dotfiles/<CR>
+nnoremap <silent> <Leader><Leader>d :<C-u>Denite -buffer-name=search file/rec:~/dotfiles/<CR>
 
 nnoremap <silent> <Leader><Leader>r :<C-u>Denite -buffer-name=register register neoyank<CR>
 xnoremap <silent> <Leader><Leader>r :<C-u>Denite -default-action=replace -buffer-name=register register neoyank<CR>
 nnoremap <silent> <Leader><Leader>/ :<C-u>Denite -buffer-name=search -auto-highlight line<CR>
 nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord -buffer-name=search -auto-highlight -mode=normal line<CR>
-nnoremap <silent> <Leader><Leader>s :<C-u>Denite file_point file_old
+nnoremap <silent> <Leader><Leader>s :<C-u>Denite file/point file/old
         \ -sorters=sorter_rank
-        \ `finddir('.git', ';') != '' ? 'file_rec/git' : 'file_rec'`<CR>
+        \ `finddir('.git', ';') != '' ? 'file/rec' : 'file/rec'`<CR>
 
 nnoremap <silent> <Leader><Leader>gr :<C-u>Denite -buffer-name=search -no-empty -mode=normal grep<CR>
 nnoremap <silent> <Leader><Leader>gs :<C-u>Denite gitstatus<CR>
