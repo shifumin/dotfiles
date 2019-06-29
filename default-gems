@@ -4,3 +4,5 @@ neovim
 pry-byebug
 pry-stack_explorer
 rubocop
+rubocop-performance
+rubocop-rails
