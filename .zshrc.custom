@@ -33,8 +33,7 @@ setopt noautoremoveslash
 
 ####################
 # hub
-# TODO: MacOS環境のみで起動するように修正する
-# function git(){hub "$@"} # zsh
+eval "$(hub alias -s)"
 
 # .ctags
 # VimでPHP開発環境を作成 - Qiita
@@ -271,93 +270,62 @@ bindkey '^m' do_enter
 ####################
 
 ####################
-# ssh-agent
-# tmux で attach したら ssh-agent が切れる場合 - Qiita
-# https://qiita.com/sonots/items/2d7950a68da0a02ba7e4
-####################
-agent="$HOME/.ssh/agent"
-if [ -S "$SSH_AUTH_SOCK" ]; then
-    case $SSH_AUTH_SOCK in
-    /tmp/*/agent.[0-9]*)
-        ln -snf "$SSH_AUTH_SOCK" $agent && export SSH_AUTH_SOCK=$agent
-    esac
-elif [ -S $agent ]; then
-    export SSH_AUTH_SOCK=$agent
-else
-    echo "no ssh-agent"
-fi
-####################
-
-####################
 # tmux
-# ターミナルマルチプレクサ tmux をカスタマイズする - Qiita
-# http://qiita.com/b4b4r07/items/01359e8a3066d1c37edc
+# [tmux] 端末起動時に自動で新規セッションを作成 or 既存セッションにアタッチ - Qiita<Paste>
+# https://qiita.com/ssh0/items/a9956a74bff8254a606a
 ####################
-function is_exists() { type "$1" >/dev/null 2>&1; return $?; }
-function is_osx() { [[ $OSTYPE == darwin* ]]; }
-function is_screen_running() { [ ! -z "$STY" ]; }
-function is_tmux_runnning() { [ ! -z "$TMUX" ]; }
-function is_screen_or_tmux_running() { is_screen_running || is_tmux_runnning; }
-function shell_has_started_interactively() { [ ! -z "$PS1" ]; }
-function is_ssh_running() { [ ! -z "$SSH_CONECTION" ]; }
-
-function tmux_automatically_attach_session()
-{
-    if is_screen_or_tmux_running; then
-        ! is_exists 'tmux' && return 1
-
-        if is_tmux_runnning; then
-            echo "${fg_bold[red]} _____ __  __ _   ___  __ ${reset_color}"
-            echo "${fg_bold[red]}|_   _|  \/  | | | \ \/ / ${reset_color}"
-            echo "${fg_bold[red]}  | | | |\/| | | | |\  /  ${reset_color}"
-            echo "${fg_bold[red]}  | | | |  | | |_| |/  \  ${reset_color}"
-            echo "${fg_bold[red]}  |_| |_|  |_|\___//_/\_\ ${reset_color}"
-        elif is_screen_running; then
-            echo "This is on screen."
-        fi
-    else
-        if shell_has_started_interactively && ! is_ssh_running; then
-            if ! is_exists 'tmux'; then
-                echo 'Error: tmux command not found' 2>&1
-                return 1
-            fi
-
-            if tmux has-session >/dev/null 2>&1 && tmux list-sessions | grep -qE '.*]$'; then
-                # detached session exists
-                tmux list-sessions
-                echo -n "Tmux: attach? (y/N/num) "
-                read
-                if [[ "$REPLY" =~ ^[Yy]$ ]] || [[ "$REPLY" == '' ]]; then
-                    tmux attach-session
-                    if [ $? -eq 0 ]; then
-                        echo "$(tmux -V) attached session"
-                        return 0
-                    fi
-                elif [[ "$REPLY" =~ ^[0-9]+$ ]]; then
-                    tmux attach -t "$REPLY"
-                    if [ $? -eq 0 ]; then
-                        echo "$(tmux -V) attached session"
-                        return 0
-                    fi
-                fi
-            fi
-
-            if is_osx && is_exists 'reattach-to-user-namespace'; then
-                # on OS X force tmux's default command
-                # to spawn a shell in the user's namespace
-                tmux_config=$(cat $HOME/.tmux.conf <(echo 'set-option -g default-command "reattach-to-user-namespace -l $SHELL"'))
-                tmux -f <(echo "$tmux_config") new-session && echo "$(tmux -V) created new session supported OS X"
-            else
-                tmux new-session && echo "tmux created new session"
-            fi
-        fi
-    fi
+tmux-new-session() {
+  if [[ -n $TMUX ]]; then
+    tmux switch-client -t "$(TMUX= tmux -S "${TMUX%,*,*}" new-session -dP "$@")"
+  else
+    tmux new-session "$@"
+  fi
 }
-tmux_automatically_attach_session
+
+tmux_sessions() {
+  # Select existing session or create session with fuzzy search tool
+  # get the IDs
+  if ! ID="$(tmux list-sessions 2>/dev/null)"; then
+    # tmux returned error, so try cleaning up /tmp
+    /bin/rm -rf /tmp/tmux*
+  fi
+  create_new_session="Create New Session"
+  if [[ -n "$ID" ]]; then
+    ID="${create_new_session}:\n$ID"
+  else
+    ID="${create_new_session}:"
+  fi
+  ID="$(echo $ID | $PERCOL | cut -d: -f1)"
+  if [[ "$ID" = "${create_new_session}" ]]; then
+    tmux-new-session
+  elif [[ -n "$ID" ]]; then
+    if [[ -n $TMUX ]]; then
+      tmux switch-client -t "$ID"
+    else
+      tmux attach-session -t "$ID"
+    fi
+  else
+    :  # Start terminal normally
+  fi
+}
+
+# Aliases
+if [[ -n $TMUX ]]; then
+  alias ta='tmux switch-client -t'
+else
+  alias ta='tmux attach-session -t'
+fi
+
+if ${TMUX_AUTO_START:-false} && [[ ! -n $TMUX && $- == *l* ]]; then
+  tmux_sessions
+fi
 ####################
 
 ## fpath settings
 fpath=($HOME/.zplug/repos/zsh-users/zsh-completions/src(N-/) $fpath)
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+fi
 
 ####################
 # anyframe
@@ -495,8 +463,8 @@ setopt hist_no_store
 
 ####################
 # Exports
-# 標準エディタを設定する
 export EDITOR=nvim
+export PERCOL=peco
 
 # コマンド履歴を保存するファイルを指定する
 export HISTFILE=$HOME/.zsh_history
