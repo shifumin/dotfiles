@@ -1,32 +1,61 @@
 """"""""""""""""""""""""""""""
 " denite.vim
 """"""""""""""""""""""""""""""
+augroup denite_my_settings
+  autocmd!
+  autocmd FileType denite call s:denite_my_settings()
+  function! s:denite_my_settings() abort
+    nnoremap <silent><buffer><expr> <CR>
+          \ denite#do_map('do_action')
+    nnoremap <silent><buffer><expr> d
+          \ denite#do_map('do_action', 'delete')
+    nnoremap <silent><buffer><expr> p
+          \ denite#do_map('do_action', 'preview')
+    nnoremap <silent><buffer><expr> q
+          \ denite#do_map('quit')
+    nnoremap <silent><buffer><expr> i
+          \ denite#do_map('open_filter_buffer')
+    nnoremap <silent><buffer><expr> <Space>
+          \ denite#do_map('toggle_select').'j'
+  endfunction
+
+  autocmd FileType denite-filter call s:denite_filter_my_setting()
+  function! s:denite_filter_my_setting() abort
+    " call deoplete#custom#buffer_option('auto_complete', v:false)
+    inoremap <silent><buffer><expr> <CR>
+          \ denite#do_map('do_action')
+    imap <silent><buffer> jj <Plug>(denite_filter_quit)
+  endfunction
+augroup END
+
 call denite#custom#option('default', 'prompt', '>')
 
 if executable('rg')
   call denite#custom#var('file/rec', 'command',
-        \ ['rg', '--files', '--glob', '!.git', ''])
+        \ ['rg', '--files', '--glob', '!.git'])
+  " Ripgrep command on grep source
   call denite#custom#var('grep', 'command', ['rg'])
+  call denite#custom#var('grep', 'default_opts',
+        \ ['-i', '--vimgrep', '--no-heading'])
+  call denite#custom#var('grep', 'recursive_opts', [])
+  call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
+  call denite#custom#var('grep', 'separator', ['--'])
+  call denite#custom#var('grep', 'final_opts', [])
+
+  set grepprg=rg\ --vimgrep\ --no-heading
+  set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
 
 call denite#custom#alias('source', 'file/rec/git', 'file/rec')
 call denite#custom#var('file/rec/git', 'command',
       \ ['git', 'ls-files', '-co', '--exclude-standard'])
+nnoremap <silent> <Leader><Leader>k :<C-u>Denite -start-filter
+      \ `finddir('.git', ';') != '' ? 'file/rec/git' : 'file/rec'`<CR>
 
-" denite/insert モードのときは，C-j/k/n/p で移動できるようにする
-call denite#custom#map('insert', '<down>', '<denite:move_to_next_line>')
-call denite#custom#map('insert', '<up>', '<denite:move_to_previous_line>')
-call denite#custom#map('insert', '<C-n>', '<denite:move_to_next_line>')
-call denite#custom#map('insert', '<C-p>', '<denite:move_to_previous_line>')
-" tabopen や vsplit のキーバインドを割り当て
-call denite#custom#map('insert', '<C-s>', '<denite:do_action:tabopen>')
-call denite#custom#map('insert', '<C-v>', '<denite:do_action:vsplit>')
-call denite#custom#map('normal', 'v', '<denite:do_action:vsplit>')
-" jj で denite/insert を抜けるようにする
-call denite#custom#map('insert', 'jj', '<denite:enter_mode:normal>')
+call denite#custom#map('insert', '<C-N>', '<denite:move_to_next_line>', 'noremap')
 
 " customize ignore globs
-" call denite#custom#source('file/rec', 'matchers', ['matcher_fuzzy','matcher_ignore_globs'])
+call denite#custom#source('file/rec', 'matchers', ['matcher_fuzzy','matcher_ignore_globs'])
 call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
       \ [
       \ '.git/', 'build/', '__pycache__/',
@@ -34,7 +63,7 @@ call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
       \ '*.min.*',
       \ 'img/', 'fonts/'])
 
-call denite#custom#source('_', 'matchers', ['matcher_substring'])
+call denite#custom#source('_', 'matchers', ['matcher/substring'])
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
@@ -259,15 +288,6 @@ let g:indent_guides_enable_on_vim_startup = 1
 """"""""""""""""""""""""""""""
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
-""""""""""""""""""""""""""""""
-
-""""""""""""""""""""""""""""""
-" NERDTree
-""""""""""""""""""""""""""""""
-nnoremap <silent> ,nt :NERDTreeToggle<CR>
-nnoremap :tree :NERDTreeToggle
-" 不可視ファイルを表示する
-let NERDTreeShowHidden = 1
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""

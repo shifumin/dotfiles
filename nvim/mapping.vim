@@ -84,8 +84,6 @@ nnoremap ss :<C-u>sp<CR>
 nnoremap sv :<C-u>vs<CR>
 nnoremap sq :<C-u>q<CR>
 nnoremap sQ :<C-u>bd<CR>
-" nnoremap sb :<C-u>Unite buffer_tab -buffer-name=file<CR>
-" nnoremap sB :<C-u>Unite buffer -buffer-name=file<CR>
 call submode#enter_with('bufmove', 'n', '', 's>', '<C-w>>')
 call submode#enter_with('bufmove', 'n', '', 's<', '<C-w><')
 call submode#enter_with('bufmove', 'n', '', 's+', '<C-w>+')
@@ -134,47 +132,41 @@ let mapleader = "\<Space>"
 nnoremap <Leader>w :w<CR>
 nnoremap <Leader>q :q<CR>
 nnoremap <Leader>v V
-nnoremap <Leader>i <C-i>
-nnoremap <Leader>o <C-o>
-nnoremap <Leader>g :<C-u>Ggrep<Space>
-nnoremap <Leader>k :<C-u>call<Space>ref#K('normal')<CR>
+nnoremap <Leader>g :<C-u>Ggrep --ignore-case<Space>
+nnoremap <Leader>b :<C-u>Gblame<CR>
 nnoremap <Leader>n :<C-u>NERDTreeToggle<CR>
 nnoremap <Leader>f :<C-u>NERDTreeFind<CR>
-nnoremap <Leader>s :<C-u>QuickRun<CR>
-nnoremap <Leader>t :<C-u>Tlist<CR>
 nnoremap <Leader>co :copen<CR>
 nnoremap <Leader>cc :cclose<CR>
 nnoremap <Leader>cn :cnewer<CR>
 nnoremap <Leader>cp :colder<CR>
-" nnoremap <Leader>z :<C-u>sp ~/project/trash.txt<CR>
-nnoremap <Leader>sw :w !sudo tee % > /dev/null<CR>
 
 " Ruby
-nnoremap <Leader>bp obinding.pry<Esc>:<C-u>w<CR>
-
+nnoremap <Leader>p obinding.pry<Esc>:<C-u>w<CR>
 " Python
 nnoremap <Leader>l :call Flake8()<CR>
-
 " rails.vim
 nnoremap <Leader>em :<C-u>Emodel<CR>
 nnoremap <Leader>ev :<C-u>Eview<CR>
 nnoremap <Leader>ec :<C-u>Econtroller<CR>
 
 "" denite.vim
-" nnoremap <Leader>u :<C-u>Denite file_mru buffer<CR>
-nnoremap <silent> <Leader><Leader>u :<C-u>Denite file_mru buffer -highlight-mode-insert=Search<CR>
 " カレントディレクトリ以下の再帰検索
-nnoremap <silent> <Leader><Leader>c :<C-u>Denite file/rec<CR>
+" nvim/plugins.vim に定義
+" nnoremap <silent> <Leader><Leader>k :<C-u>Denite file/rec<CR>
 " カーソル以下の単語をgrep
-nnoremap <silent> <Leader><Leader>w :<C-u>DeniteCursorWord grep -buffer-name=search line<CR><C-R><C-W><CR>
+nnoremap <silent> <Leader><Leader>w :<C-u>DeniteCursorWord -auto-action=highlight -buffer-name=search grep line<CR>
+nnoremap <silent> <Leader><Leader>j :<C-u>Denite -start-filter file_mru buffer<CR>
+nnoremap <silent> <Leader><Leader>gs :<C-u>Denite gitstatus<CR>
+nnoremap <silent> <Leader><Leader>gr :<C-u>Denite -buffer-name=search -no-empty grep line<CR>
 
 " 普通にgrep
-" nnoremap <silent> ,g :<C-u>Denite -buffer-name=search -mode=normal grep<CR>
+nnoremap <silent> ,g :<C-u>Denite -buffer-name=search grep<CR>
 " search
-" nnoremap <silent> ,/ :<C-u>Denite -buffer-name=search -auto-resize line<CR>
+nnoremap <silent> <Leader><Leader>/ :<C-u>Denite -buffer-name=search -auto-resize -auto-action=highlight line<CR>
 
-" resume previous buffer
-nnoremap <silent> ,r :<C-u>Denite -buffer-name=search -resume -mode=normal<CR>
+" resumeした検索結果を開く
+nnoremap <silent> ,r :<C-u>Denite -resume -buffer-name=search<CR>
 " resumeした検索結果の次の行の結果へ飛ぶ
 nnoremap <silent> ,n :<C-u>Denite -resume -buffer-name=search -select=+1 -immediately<CR>
 " resumeした検索結果の前の行の結果へ飛ぶ
@@ -182,28 +174,23 @@ nnoremap <silent> ,p :<C-u>Denite -resume -buffer-name=search -select=-1 -immedi
 
 " search dotfiles
 nnoremap <silent> <Leader><Leader>d :<C-u>Denite -buffer-name=search file/rec:~/dotfiles/<CR>
+nnoremap <silent> ;v :<C-u>Denite -buffer-name=search file/rec:~/.config/nvim/<CR>
 
 nnoremap <silent> <Leader><Leader>r :<C-u>Denite -buffer-name=register register neoyank<CR>
 xnoremap <silent> <Leader><Leader>r :<C-u>Denite -default-action=replace -buffer-name=register register neoyank<CR>
-nnoremap <silent> <Leader><Leader>/ :<C-u>Denite -buffer-name=search -auto-highlight line<CR>
-nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord -buffer-name=search -auto-highlight -mode=normal line<CR>
-nnoremap <silent> <Leader><Leader>s :<C-u>Denite file/point file/old
-        \ -sorters=sorter_rank
-        \ `finddir('.git', ';') != '' ? 'file/rec' : 'file/rec'`<CR>
+nnoremap <silent> <Leader><Leader>* :<C-u>DeniteCursorWord -buffer-name=search -auto-action=highlight line<CR>
 
-nnoremap <silent> <Leader><Leader>gr :<C-u>Denite -buffer-name=search -no-empty -mode=normal grep<CR>
-nnoremap <silent> <Leader><Leader>gs :<C-u>Denite gitstatus<CR>
 nnoremap <silent> <Leader><Leader>: :<C-u>Denite command command_history<CR>
 
 "" denite-rails
 nnoremap [rails] <Nop>
 nmap     <Leader>r [rails]
 nnoremap [rails]r :Denite<Space>rails:
-nnoremap <silent> [rails]d :<C-u>Denite<Space>rails:dwim<Return>
-nnoremap <silent> [rails]m :<C-u>Denite<Space>rails:model<Return>
-nnoremap <silent> [rails]c :<C-u>Denite<Space>rails:controller<Return>
-nnoremap <silent> [rails]v :<C-u>Denite<Space>rails:view<Return>
-nnoremap <silent> [rails]h :<C-u>Denite<Space>rails:helper<Return>
-nnoremap <silent> [rails]t :<C-u>Denite<Space>rails:test<Return>
-nnoremap <silent> [rails]s :<C-u>Denite<Space>rails:spec<Return>
+nnoremap <silent> [rails]d :<C-u>Denite -start-filter rails:dwim<Return>
+nnoremap <silent> [rails]m :<C-u>Denite -start-filter rails:model<Return>
+nnoremap <silent> [rails]c :<C-u>Denite -start-filter rails:controller<Return>
+nnoremap <silent> [rails]v :<C-u>Denite -start-filter rails:view<Return>
+nnoremap <silent> [rails]h :<C-u>Denite -start-filter rails:helper<Return>
+nnoremap <silent> [rails]t :<C-u>Denite -start-filter rails:test<Return>
+nnoremap <silent> [rails]s :<C-u>Denite -start-filter rails:spec<Return>
 """"""""""""""""""""""""""""""
