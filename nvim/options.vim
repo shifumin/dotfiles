@@ -160,6 +160,9 @@ set nowritebackup
 set nobackup
 set noswapfile
 
+" Turn off paste mode when leaving insert
+autocmd InsertLeave * set nopaste
+
 "
 " http://yuroyoro.hatenablog.com/entry/20120211/1328930819
 "
