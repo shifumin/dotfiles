@@ -27,5 +27,10 @@
     "key": "alt+shift+e",
     "command": "workbench.action.terminal.runSelectedText",
     "when": "editorTextFocus"
-  }
+  },
+  {
+    "key": "c",
+    "command": "workbench.files.action.collapseExplorerFolders",
+    "when": "explorerViewletVisible && filesExplorerFocus && !explorerResourceIsRoot && !explorerResourceReadonly && !inputFocus"
+  },
 ]
