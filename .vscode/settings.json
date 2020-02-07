@@ -26,93 +26,49 @@
   // http://unii9ra-blog.hatenablog.com/entry/2017/06/02/135449
   "vim.insertModeKeyBindings": [
     {
-      "before": [
-        "j",
-        "j"
-      ],
-      "after": [
-        "<Esc>"
-      ]
+      "before": ["j", "j"],
+      "after": ["<Esc>"]
     }
   ],
   "vim.leader": "<space>",
   "vim.normalModeKeyBindingsNonRecursive": [
-    { // 2char search
-      "before": [
-        "leader",
-        "leader",
-        "s"
-      ],
-      "after": [
-        "leader",
-        "leader",
-        "2",
-        "s"
-      ]
-    },
-    { // next tab
-      "before": [
-        "g",
-        "t",
-      ],
-      "after": [
-        "s",
-        "n"
-      ]
-    },
-    { // previous tab
-      "before": [
-        "g",
-        "T",
-      ],
-      "after": [
-        "s",
-        "p"
-      ]
-    },
-    { // move tab to the left
-      "before": [
-        "s",
-        ","
-      ],
-      "commands": [
-        ":tabm -1"
-      ]
-    },
-    { // move tab to the right
-      "before": [
-        "s",
-        "."
-      ],
-      "commands": [
-        ":tabm +1"
-      ]
+    {
+      // 2char search
+      "before": ["leader", "leader", "s"],
+      "after": ["leader", "leader", "2", "s"]
     },
     {
-      "before": [
-        "s",
-        "t"
-      ],
-      "commands": [
-        ":tabnew"
-      ]
+      // next tab
+      "before": ["g", "t"],
+      "after": ["s", "n"]
     },
     {
-      "before": [
-        "s",
-        "v"
-      ],
-      "commands": [
-        ":vsplit"
-      ]
+      // previous tab
+      "before": ["g", "T"],
+      "after": ["s", "p"]
     },
+    {
+      // move tab to the left
+      "before": ["s", ","],
+      "commands": [":tabm -1"]
+    },
+    {
+      // move tab to the right
+      "before": ["s", "."],
+      "commands": [":tabm +1"]
+    },
+    {
+      "before": ["s", "t"],
+      "commands": [":tabnew"]
+    },
+    {
+      "before": ["s", "v"],
+      "commands": [":vsplit"]
+    }
   ],
   "vim.normalModeKeyBindings": [
     {
-      "before": [
-        "leader",
-        "w"
-      ],
+      "before": ["leader", "w"],
       "commands": [
         {
           "command": "workbench.action.files.save",
@@ -121,10 +77,7 @@
       ]
     },
     {
-      "before": [
-        "leader",
-        "q"
-      ],
+      "before": ["leader", "q"],
       "commands": [
         {
           "command": "workbench.action.closeActiveEditor",
@@ -133,10 +86,7 @@
       ]
     },
     {
-      "before": [
-        "leader",
-        "p"
-      ],
+      "before": ["leader", "p"],
       "commands": [
         {
           "command": "copyRelativeFilePath",
@@ -145,81 +95,36 @@
       ]
     },
     {
-      "before": [
-        "c",
-        "l"
-      ],
-      "after": [
-        "c",
-        "$"
-      ]
+      "before": ["c", "l"],
+      "after": ["c", "$"]
     },
     {
-      "before": [
-        "d",
-        "l"
-      ],
-      "after": [
-        "d",
-        "$"
-      ]
+      "before": ["d", "l"],
+      "after": ["d", "$"]
     },
     {
-      "before": [
-        "s",
-        "h"
-      ],
-      "after": [
-        "<C-w>",
-        "h"
-      ]
+      "before": ["s", "h"],
+      "after": ["<C-w>", "h"]
     },
     {
-      "before": [
-        "s",
-        "l"
-      ],
-      "after": [
-        "<C-w>",
-        "l"
-      ]
+      "before": ["s", "l"],
+      "after": ["<C-w>", "l"]
     },
     {
-      "before": [
-        "s",
-        "n"
-      ],
-      "after": [
-        "g",
-        "t"
-      ]
+      "before": ["s", "n"],
+      "after": ["g", "t"]
     },
     {
-      "before": [
-        "s",
-        "p"
-      ],
-      "after": [
-        "g",
-        "T"
-      ]
+      "before": ["s", "p"],
+      "after": ["g", "T"]
     },
     {
-      "before": [
-        "O"
-      ],
-      "commands": [
-        ":<C-u>call append(expand('.'), '')<Cr>j"
-      ]
+      "before": ["O"],
+      "commands": [":<C-u>call append(expand('.'), '')<Cr>j"]
     },
     {
-      "before": [
-        "I"
-      ],
-      "after": [
-        "a",
-        "<Esc>"
-      ]
+      "before": ["I"],
+      "after": ["a", "<Esc>"]
     }
     // {
     //   "before": ["s", "H"],
@@ -255,8 +160,6 @@
   ],
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
-  "prettier.eslintIntegration": true,
-  "prettier.stylelintIntegration": true,
   "stylelint.enable": true,
   "typescript.tsserver.trace": "verbose",
   "[markdown]": {
@@ -274,5 +177,8 @@
   "editor.suggestSelection": "first",
   "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
   "workbench.editor.enablePreview": false,
-  "explorer.confirmDelete": false
+  "editor.codeActionsOnSaveTimeout": 2000,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
 }
