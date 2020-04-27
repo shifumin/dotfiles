@@ -127,7 +127,7 @@ autocmd FileType css setlocal iskeyword+=-
 set list                " 不可視文字の可視化
 set wrap                " 長いテキストの折り返し
 set textwidth=0         " 自動的に改行が入るのを無効化
-set colorcolumn=80      " その代わり80文字目にラインを入れる
+set colorcolumn=120      " その代わり120文字目にラインを入れる
 
 " デフォルト不可視文字は美しくないのでUnicodeで綺麗に
 set listchars=tab:»-,trail:-,extends:»,precedes:«,nbsp:%,eol:↲
@@ -238,8 +238,6 @@ set shiftwidth=2
 set smarttab
 " 構文毎に文字色を変化させる
 syntax on
-" カラースキーマの指定
-"colorscheme desert
 " 行番号の色
 highlight LineNr ctermfg=darkyellow
 """"""""""""""""""""""""""""""
@@ -305,7 +303,6 @@ set hlsearch " 検索結果をハイライト
 set whichwrap=b,s,h,l,<,>,[,],~ " カーソルの左右移動で行末から次の行の行頭への移動が可能になる
 set number " 行番号を表示
 set cursorline " カーソルラインをハイライト
-
 
 "" highlight設定後に書くこと
 " Colorscheme Solarized

@@ -69,10 +69,11 @@ call denite#custom#source('_', 'matchers', ['matcher/substring'])
 """"""""""""""""""""""""""""""
 " deoplete.nvim
 """"""""""""""""""""""""""""""
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#enable_smart_case = 1
-let g:deoplete#enable_camel_case = 1
-let g:deoplete#auto_complete_delay = 0
+call deoplete#custom#option({
+      \ 'auto_complete_delay': 200,
+      \ 'camel_case': v:true,
+      \ 'smart_case': v:true
+      \ })
 
 " <BS>: close popup and delete backword char.
 inoremap <expr><BS> deoplete#smart_close_popup()."\<C-h>"
