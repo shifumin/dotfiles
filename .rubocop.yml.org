@@ -1,0 +1,93 @@
+AllCops:
+  Include:
+    - '**/Gemfile'
+    - '**/Rakefile'
+    - '**/config.ru'
+  Exclude:
+    - 'db/**/*'
+    - 'config/**/*'
+    - 'script/**/*'
+    - 'tmp/**/*'
+    - 'bin/*'
+    - !ruby/regexp /old_and_unused\.rb$/
+  DisplayCopNames: true
+
+  # TargetRubyVersion: 2.3.1
+  # Rails:
+  #   Enabled: true
+
+
+# Ruby - Rubocopを使ってコーディングルールへの準拠チェックを自動化 - Qiita
+# http://qiita.com/yaotti/items/4f69a145a22f9c8f8333
+
+# 僕の使っている .rubocop.yml
+# https://gist.github.com/onk/38bfbd78899d892e0e83
+
+
+##################### Lint ##################################
+
+#Lint/AssignmentInCondition:
+#  Description: "Don't use assignment in conditions."
+#  StyleGuide: 'https://github.com/bbatsov/ruby-style-guide#safe-assignment-in-condition'
+#  Enabled: false
+
+
+###### Style ######
+
+# Check the naming of accessor methods for get_/set_.
+Naming/AccessorMethodName:
+  Enabled: false
+
+# Whether `and` and `or` are banned only in conditionals (conditionals) or completely (always).
+Style/AndOr:
+  EnforcedStyle: conditionals
+
+# Use only ascii symbols in comments.
+Style/AsciiComments:
+  Enabled: false
+
+# Checks style of children classes and modules.
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+# Document classes and non-namespace modules.
+Style/Documentation:
+  Enabled: false
+
+# Favor modifier if/unless usage when you have a single-line body.
+Style/IfUnlessModifier:
+  Enabled: false
+
+# Check the names of predicate methods.
+Naming/PredicateName:
+  # Predicate name prefices.
+  NamePrefix:
+    - is_
+    - have_
+  # Predicate name prefices that should be removed.
+  ForbiddenNames:
+    - is_
+    - have_
+
+# Checks if uses of quotes match the configured preference.
+Style/StringLiterals:
+  Enabled: false
+
+# Favor modifier while/until usage when you have a single-line body.
+Style/WhileUntilModifier:
+  Enabled: false
+
+
+###### Metrics ######
+
+# A calculated magnitude based on number of assignments, branches, and conditions.
+Metrics/AbcSize:
+  Max: 30
+
+# Limit lines to 80 characters.
+Metrics/LineLength:
+  Enabled: false
+
+# Avoid methods longer than 10 lines of code
+Metrics/MethodLength:
+  Enabled: false
