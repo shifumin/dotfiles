@@ -1,16 +1,18 @@
-## Settings
-Pry.config.color = true
+# frozen_string_literal: true
+
 Pry.config.editor = 'nvim'
 
-Pry.config.prompt = proc do |obj, level, _|
-  prompt = ""
-  prompt << "#{Rails.version}@" if defined?(Rails)
-  prompt << "#{RUBY_VERSION}"
-  "#{prompt} (#{obj})> "
-end
+rails_version =
+  defined?(Rails) ? Rails.version : nil
+Pry.config.prompt = Pry::Prompt.new(
+  'custom',
+  'my custom prompt',
+  [proc { |obj, nest_level, _| "#{rails_version}@#{RUBY_VERSION} (#{obj}:#{nest_level})> " }]
+)
+Pry.config.prompt_name = File.basename(Dir.pwd)
 
 # Alias
-Pry.commands.alias_command "lM", "ls -M"
+Pry.commands.alias_command 'lM', 'ls -M'
 Pry.commands.alias_command 'w', 'whereami'
 Pry.commands.alias_command '.clr', '.clear'
 
@@ -38,9 +40,9 @@ if defined? AwesomePrint
   begin
     require 'awesome_print'
     Pry.config.print = proc { |output, value| output.puts value.ai }
-  rescue LoadError => err
-    puts "no awesome_print :("
-    puts err
+  rescue LoadError => e
+    puts 'no awesome_print :('
+    puts e
   end
 end
 
