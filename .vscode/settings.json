@@ -1,6 +1,9 @@
 {
   "workbench.colorTheme": "Better Solarized Dark",
   "files.autoSave": "afterDelay",
+  // VS Code Neovimの設定
+  "vscode-neovim.neovimExecutablePaths.darwin": "/usr/local/bin/nvim",
+  "vscode-neovim.neovimInitVimPaths.darwin": "$HOME/dotfiles/.vscode/nvim/init.vim",
   //----------------------------------------------------------
   // vscode vimの設定
   // 割と突き詰めてやったvim→vscode移行 - Qiita
