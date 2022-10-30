@@ -525,4 +525,4 @@ zstyle ':completion:*:options' description 'yes'
 zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
 
 # asdf
-. /opt/homebrew/okt/asdf/libexec/asdf.sh
+. /opt/homebrew/opt/asdf/libexec/asdf.sh
