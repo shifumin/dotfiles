@@ -523,3 +523,6 @@ zstyle ':completion:*:options' description 'yes'
 
 # sudoも補完の対象
 zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
+
+# asdf
+. /opt/homebrew/okt/asdf/libexec/asdf.sh
