@@ -102,6 +102,7 @@
 
   # restore
   re = restore
+  res = restore --staged
 
   # status
   s   = status
@@ -221,9 +222,6 @@
   generic = G move-last-line
   generic = ^F move-page-down
   generic = ^B move-page-up
-
-[ghq]
-  root = ~/.ghq
 
 [commit]
   template = ~/.gitmessage.txt
