@@ -52,6 +52,7 @@ alias gpf='git push --force-with-lease'
 alias gs='git status'
 alias gst='git stash'
 alias gstp='git stash pop'
+compdef g=git
 
 # peco と alias -g で git に便利革命おきた - Qiita
 # http://qiita.com/Kuniwak/items/b711d6c3e402dfd9356b
@@ -80,6 +81,9 @@ esac
 
 alias lsd='\ls'
 
+# exact
+alias l='exa --all --long'
+
 # su
 alias su='su -l'
 
@@ -100,11 +104,15 @@ alias ts='tmux-new-session -s'
 alias tksv='tmux kill-server'
 alias tkss='tmux kill-session -t'
 
-# vim
+# Vim
 alias v='nvim'
 alias vi='nvim'
 alias vim='nvim'
 alias -g V='| nvim -'
+
+# VSCode
+alias c.='code .'
+alias c.r='code . -r'
 
 # Zsh
 alias z='zsh'
