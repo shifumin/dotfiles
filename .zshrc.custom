@@ -359,9 +359,9 @@ bindkey '^xi' anyframe-widget-put-history
 bindkey '^x^i' anyframe-widget-put-history
 
 # ghq管理ディレクトリ一覧をインクリメントサーチ $ 移動
-bindkey '^g' anyframe-widget-cd-ghq-repository
-bindkey '^xg' anyframe-widget-cd-ghq-repository
-bindkey '^x^g' anyframe-widget-cd-ghq-repository
+# bindkey '^g' anyframe-widget-cd-ghq-repository
+# bindkey '^xg' anyframe-widget-cd-ghq-repository
+# bindkey '^x^g' anyframe-widget-cd-ghq-repository
 
 # プロセス一覧をインクリメントサーチ & kill
 bindkey '^xk' anyframe-widget-kill
@@ -526,3 +526,36 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 
 # asdf
 . /opt/homebrew/opt/asdf/libexec/asdf.sh
+
+
+# ghq
+# ghq-handbook/05-ghq-list.md at master · Songmu/ghq-handbook
+# https://github.com/Songmu/ghq-handbook/blob/master/ja/05-ghq-list.md
+peco-src () {
+    local repo=$(ghq list | peco --query "$LBUFFER")
+    if [ -n "$repo" ]; then
+        repo=$(ghq list --full-path --exact $repo)
+        BUFFER="cd ${repo}"
+        zle accept-line
+    fi
+    zle clear-screen
+}
+zle -N peco-src
+bindkey '^G' peco-src
+
+# 個人的によく使うGitエイリアス、zshキーバインド - 本日も乙
+# https://blog.jicoman.info/2022/05/collection-of-git-aliases-that-i-often-use/
+bindkey '^o' open-git-remote
+function open-git-remote() {
+    local selected=$(ghq list | peco --query "$LBUFFER")
+    if [ -n "$selected" ]; then
+    if [ -x "`which wslview`" ]; then
+        BUFFER="wslview https://${selected}"
+    else
+        BUFFER="open https://${selected}"
+    fi
+    zle accept-line
+    fi
+    zle clear-screen
+}
+zle -N open-git-remote
