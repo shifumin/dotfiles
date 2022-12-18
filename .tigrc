@@ -1,8 +1,3 @@
-# Waningを消すための設定
-# bind generic <Ctrl-F> scroll-page-down
-# bind generic <Ctrl-B> scroll-page-up
-
-
 ## やけに丁寧なtigの設定ガイド（表示制御編） - Qiita
 ## http://qiita.com/yoshikazusawa/items/d99e8b5d6f6a45aa6e2e
 # main viewの左端にコミットIDを表示する
