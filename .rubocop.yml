@@ -1,33 +1,30 @@
-# inherit_from: .rubocop_todo.yml
+inherit_from: .rubocop_todo.yml
 require:
   - rubocop-performance
-  - rubocop-rails
+#   - rubocop-rails
 #   - rubocop-rspec
 
 AllCops:
-  TargetRubyVersion: 2.7
-  Exclude:
-    - 'db/schema.rb'
-    - '.git/**/*'
-    - 'tmp/**/*'
-    - 'vendor/**/*'
+  TargetRubyVersion: 3.2
+  NewCops: enable
 
-Metrics/BlockLength:
-  Max: 40
-
-Metrics/ClassLength:
-  Max: 120
-
-Layout/LineLength:
-  Max: 120
-
-Metrics/MethodLength:
-  Max: 50
-
-# Use only ascii symbols in comments.
 Style/AsciiComments:
   Enabled: false
 
-# Document classes and non-namespace modules.
 Style/Documentation:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+Layout/LineLength:
+  Enabled: false
+
+Metrics/BlockLength:
   Enabled: false
