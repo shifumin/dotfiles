@@ -1,187 +1,94 @@
 {
+  // Workbench settings
   "workbench.colorTheme": "Better Solarized Dark",
+  "workbench.editor.enablePreview": false,
+  "workbench.iconTheme": "vscode-icons",
+  "workbench.startupEditor": "none",
+  "window.zoomLevel": 3,
   "files.autoSave": "afterDelay",
-  // VS Code Neovimの設定
-  "vscode-neovim.neovimExecutablePaths.darwin": "/usr/local/bin/nvim",
-  "vscode-neovim.neovimInitVimPaths.darwin": "$HOME/dotfiles/.vscode/nvim/init.vim",
-  //----------------------------------------------------------
-  // vscode vimの設定
-  // 割と突き詰めてやったvim→vscode移行 - Qiita
-  // https://qiita.com/y-mattun/items/45776b7e1942edb2f727
-  //----------------------------------------------------------
-  // systemのclipboardを使用します
-  "vim.useSystemClipboard": true,
-  // hlsearchは必要だと思う
-  "vim.hlsearch": true,
-  "vim.easymotion": true,
-  "vim.easymotionMarkerFontSize": "25",
-  "vim.easymotionMarkerHeight": 25,
-  // wordを* or + で検索するでしょ?
-  "vim.visualstar": true,
-  "vim.useCtrlKeys": true,
-  // ignore case in search patterns.
-  "vim.ignorecase": true,
-  // show where a / search matches as you type it.
-  "vim.incsearch": true,
-  // enable the sneak plugin for vim.
-  "vim.sneak": true,
-  // VSCodeVimのキーバインドを変更する方法 - unii9ra’s blog
-  // http://unii9ra-blog.hatenablog.com/entry/2017/06/02/135449
-  "vim.insertModeKeyBindings": [
-    {
-      "before": ["j", "j"],
-      "after": ["<Esc>"]
-    }
-  ],
-  "vim.leader": "<space>",
-  "vim.normalModeKeyBindingsNonRecursive": [
-    {
-      // 2char search
-      "before": ["leader", "leader", "s"],
-      "after": ["leader", "leader", "2", "s"]
-    },
-    {
-      // next tab
-      "before": ["g", "t"],
-      "after": ["s", "n"]
-    },
-    {
-      // previous tab
-      "before": ["g", "T"],
-      "after": ["s", "p"]
-    },
-    {
-      // move tab to the left
-      "before": ["s", ","],
-      "commands": [":tabm -1"]
-    },
-    {
-      // move tab to the right
-      "before": ["s", "."],
-      "commands": [":tabm +1"]
-    },
-    {
-      "before": ["s", "t"],
-      "commands": [":tabnew"]
-    },
-    {
-      "before": ["s", "v"],
-      "commands": [":vsplit"]
-    }
-  ],
-  "vim.normalModeKeyBindings": [
-    {
-      "before": ["leader", "w"],
-      "commands": [
-        {
-          "command": "workbench.action.files.save",
-          "args": []
-        }
-      ]
-    },
-    {
-      "before": ["leader", "q"],
-      "commands": [
-        {
-          "command": "workbench.action.closeActiveEditor",
-          "args": []
-        }
-      ]
-    },
-    {
-      "before": ["leader", "p"],
-      "commands": [
-        {
-          "command": "copyRelativeFilePath",
-          "args": []
-        }
-      ]
-    },
-    {
-      "before": ["c", "l"],
-      "after": ["c", "$"]
-    },
-    {
-      "before": ["d", "l"],
-      "after": ["d", "$"]
-    },
-    {
-      "before": ["s", "h"],
-      "after": ["<C-w>", "h"]
-    },
-    {
-      "before": ["s", "l"],
-      "after": ["<C-w>", "l"]
-    },
-    {
-      "before": ["s", "n"],
-      "after": ["g", "t"]
-    },
-    {
-      "before": ["s", "p"],
-      "after": ["g", "T"]
-    },
-    {
-      "before": ["O"],
-      "commands": [":<C-u>call append(expand('.'), '')<Cr>j"]
-    },
-    {
-      "before": ["I"],
-      "after": ["a", "<Esc>"]
-    }
-    // {
-    //   "before": ["s", "H"],
-    //   "after": ["<C-w>", "H"]
-    // },
-    // {
-    //   "before": ["s", "L"],
-    //   "after": ["<C-w>", "L"]
-    // }
-  ],
+  "files.autoGuessEncoding": true,
+  "editor.fontSize": 14,
+  "editor.formatOnPaste": false, // 事故防止
+  "editor.formatOnSave": false, // 事故防止
+  "editor.formatOnType": false, // 事故防止
+
+  "editor.inlineSuggest.enabled": true,
+  "editor.inlineSuggest.showToolbar": "always",
+  "editor.renderLineHighlight": "all",
+  "editor.minimap.enabled": false,
+  "editor.renderWhitespace": "all",
+  "editor.suggestSelection": "recentlyUsedByPrefix",
+  "editor.wordWrap": "on",
+  "explorer.confirmDragAndDrop": false,
+  "security.workspace.trust.untrustedFiles": "open",
+  "terminal.external.osxExec": "iTerm.app",
+  "terminal.integrated.copyOnSelection": true,
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.env.osx": {
+    "DISABLE_SPRING": "true"
+  },
+
   // https://github.com/oukayuka/ReactBeginnersBook-2.0
-  "css.validate": true,
-  "editor.formatOnSave": true,
-  "eslint.autoFixOnSave": true,
-  "eslint.enable": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "explicit"
+  },
   "eslint.validate": [
-    {
-      "language": "javascript",
-      "autoFix": true
-    },
-    {
-      "language": "javascriptreact",
-      "autoFix": true
-    },
-    {
-      "language": "typescript",
-      "autoFix": true
-    },
-    {
-      "language": "typescriptreact",
-      "autoFix": true
-    }
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
   ],
+  "markdown.preview.fontSize": 14,
+  "debug.console.fontSize": 14,
+  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+  "vsicons.dontShowNewVersionMessage": true,
+
+  // Git
+  "githubPullRequests.pullBranch": "never",
+  "git-graph.openNewTabEditorGroup": "Beside",
+  "editor.semanticHighlighting.enabled": true, // Enable semantic highlighting
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
-  "stylelint.enable": true,
-  "typescript.tsserver.trace": "verbose",
+
+  // https://github.com/Shopify/ruby-lsp/tree/main/vscode#vs-code-configurations
+  "[ruby]": {
+    "editor.defaultFormatter": "Shopify.ruby-lsp", // Use the Ruby LSP as the default formatter
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": true,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "editor.rulers": [120],
+    "editor.semanticHighlighting.enabled": true,
+    "editor.insertSpaces": true
+  },
+  "[javascript][javascriptreact][typescript][typescriptreact][html][css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": true
+  },
+  "[json][jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": true
+  },
   "[markdown]": {
     "files.trimTrailingWhitespace": false
   },
-  // Add
-  "editor.enablePreview": false,
-  "editor.fontSize": 14,
-  "editor.suggestFontSize": 0,
-  "markdown.preview.fontSize": 14,
-  "terminal.integrated.fontSize": 14,
-  "debug.console.fontSize": 14,
-  "editor.renderWhitespace": "none",
-  "editor.minimap.enabled": false,
-  "editor.suggestSelection": "first",
-  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-  "workbench.editor.enablePreview": false,
-  "editor.codeActionsOnSaveTimeout": 2000,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  }
+
+  // RubyLSP
+  "rubyLsp.enableExperimentalFeatures": true,
+  "rubyLsp.formatter": "rubocop",
+  "rubyLsp.rubyVersionManager": {
+    "identifier": "asdf"
+  },
+  "rubyLsp.bundleGemfile": "Gemfile.lsp",
+  "rdbg.rubyVersionManager": "asdf",
+  "vscode-run-rspec-file.custom-command": "bundle exec rspec -f d --order defined",
+  "redhat.telemetry.enabled": false
 }
