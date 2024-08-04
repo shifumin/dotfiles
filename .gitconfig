@@ -27,12 +27,15 @@
 
 [pull]
   rebase = true
+  autostash = true
+
+[rebase]
+  autostash = true
 
 [pager]
   log = diff-highlight | less
   show = diff-highlight | less
   diff = diff-highlight | less
-
 
 [alias]
   # add
@@ -69,8 +72,6 @@
   puu = push -u
 
   # rebase
-  rbm = rebase --merge master       # masterへのrebaseはよく使うのでalias
-  rbd = rebase --merge develop
   rbc = rebase --continue
   rba = rebase --abort
   rbi = rebase -i
@@ -160,7 +161,6 @@
   d   = diff
   di  = diff
   dif = diff
-  dm  = diff master           # masterとのdiff
   dw  = diff --color-words    # 単語単位でいろつけてdiff
   dc  = diff --cached         # addされているものとのdiff
   ds  = diff --staged         # 同上(1.6.1移行)
@@ -192,8 +192,6 @@
   gr = grep
   gn = grep -n
   sm = submodule
-  smupdate = submodule foreach "git checkout master; git pull origin master"
-
 
   chpk = cherry-pick
 
@@ -213,9 +211,6 @@
   fs  = flow support
 
   fizzbuzz = "!f() { seq "$@" | awk '$0=NR%15?NR%5?NR%3?$0:\"Fizz\":\"Buzz\":\"FizzBuzz\"' ;}; f"
-
-[http]
-  sslVerify = false
 
 [tig "bind"]
   generic = g move-first-line
