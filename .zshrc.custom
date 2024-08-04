@@ -559,3 +559,9 @@ function open-git-remote() {
     zle clear-screen
 }
 zle -N open-git-remote
+
+# AWS CLI Command completion
+# https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-completion.html
+autoload bashcompinit && bashcompinit
+autoload -Uz compinit && compinit
+complete -C '/opt/homebrew/bin/aws_completer' aws
