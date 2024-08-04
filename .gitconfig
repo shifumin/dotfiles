@@ -9,28 +9,33 @@
   interactive = auto
   grep   = auto
 
-[push]
-  default = upstream  # defaultのpush先はtrackingしているリポジトリ
-
 [core]
   excludesfile = ~/.gitignore  # globalな.gitignoreの指定
   autocrlf = input             # CRLFを自動変換
   editor = nvim
   quotepath = false
 
+[init]
+  defaultBranch = main
+
 [merge]
-  tool = vimdiff
+  conflictstyle = zdiff3
   ff = false
+  tool = vimdiff
 
 [branch]
   autosetuprebase = always
 
 [pull]
   rebase = true
-  autostash = true
+  autoStash = true
+
+[push]
+  autoSetupRemote = true
+  default = current
 
 [rebase]
-  autostash = true
+  autoStash = true
 
 [pager]
   log = diff-highlight | less
