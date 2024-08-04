@@ -222,6 +222,3 @@
   generic = G move-last-line
   generic = <Ctrl-F> move-page-down
   generic = <Ctrl-B> move-page-up
-
-[commit]
-  template = ~/.gitmessage.txt
