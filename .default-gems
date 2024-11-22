@@ -5,4 +5,4 @@ rubocop
 rubocop-performance
 rubocop-rails
 rubocop-rspec
-solargraph
+ruby-lsp
