@@ -25,15 +25,6 @@ zplug 'zsh-users/zsh-history-substring-search', defer:3
 # ZSH Completion script for curl
 zplug 'Valodim/zsh-curl-completion'
 
-# Command-line JSON processor
-zplug "stedolan/jq", as:command, from:gh-r, rename-to:jq
-
-# Simplistic interactive filtering tool
-zplug 'peco/peco', as:command, from:gh-r
-
-# Remote repository management made easy
-zplug "motemen/ghq", as:command, from:gh-r, rename-to:ghq
-
 # fzf-tmux の peco バージョン
 zplug 'b4b4r07/dotfiles', as:command, use:bin/peco-tmux
 
