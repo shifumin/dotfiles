@@ -22,9 +22,6 @@ alias bo='brew outdated'
 # bundle
 alias be='bundle exec'
 
-# cat
-alias cat=ccat
-
 # ctags
 alias ctags='`brew --prefix`/bin/ctags'
 
