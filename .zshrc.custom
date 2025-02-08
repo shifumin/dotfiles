@@ -31,10 +31,6 @@ setopt noautoremoveslash
 
 ####################
 
-####################
-# hub
-eval "$(hub alias -s)"
-
 # .ctags
 # VimでPHP開発環境を作成 - Qiita
 # http://qiita.com/NanohaAsOnKai/items/0188fb3b60e8a79656a0
@@ -481,12 +477,6 @@ export PATH=$PATH:$HOME/bin:$GOPATH/bin
 
 # AWS settings
 export AWS_DEFAULT_REGION=ap-northeast-1
-####################
-
-####################
-# anyenv
-####################
-eval "$(anyenv init -)"
 ####################
 
 ####################
