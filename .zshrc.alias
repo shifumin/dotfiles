@@ -66,20 +66,8 @@ alias hlt='heroku logs --tail'
 # less
 alias less='less -qR'
 
-# ls
-case ${OSTYPE} in
-  darwin*)
-    alias ls='gls -la --color=auto'
-    ;;
-  linux*)
-    alias ls='ls -la --color=auto'
-    ;;
-esac
-
-alias lsd='\ls'
-
-# exact
-alias l='exa --all --long'
+# eza
+alias l='eza -all -all --long --git --group-directories-first --time-style=long-iso --total-size'
 
 # su
 alias su='su -l'
