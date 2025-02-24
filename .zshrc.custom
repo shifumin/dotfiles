@@ -480,12 +480,6 @@ export AWS_DEFAULT_REGION=ap-northeast-1
 ####################
 
 ####################
-# direnv
-####################
-eval "$(direnv hook zsh)"
-####################
-
-####################
 # Key bindings
 # コマンドラインの編集モードをViにする
 bindkey -v
@@ -514,9 +508,8 @@ zstyle ':completion:*:options' description 'yes'
 # sudoも補完の対象
 zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
 
-# asdf
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
-
+# mise
+eval "$(mise activate zsh)"
 
 # ghq
 # ghq-handbook/05-ghq-list.md at master · Songmu/ghq-handbook
