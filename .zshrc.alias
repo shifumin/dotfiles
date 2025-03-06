@@ -95,9 +95,8 @@ alias vi='nvim'
 alias vim='nvim'
 alias -g V='| nvim -'
 
-# VSCode
-alias c.='code .'
-alias c.r='code . -r'
+# Cursor
+alias c.='cursor .'
 
 # Zsh
 alias z='zsh'
