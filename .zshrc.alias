@@ -67,7 +67,7 @@ alias hlt='heroku logs --tail'
 alias less='less -qR'
 
 # eza
-alias l='eza -all -all --long --git --group-directories-first --time-style=long-iso --total-size'
+alias l='eza -all -all --long --git --group-directories-first --time-style=long-iso'
 
 # su
 alias su='su -l'
