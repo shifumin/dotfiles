@@ -1,0 +1,101 @@
+// ln -is $HOME/dotfiles/Cursor/settings.json $HOME/Library/Application\ Support/Cursor/User/settings.json
+{
+    // Workbench settings
+    "workbench.colorTheme": "Better Solarized Dark",
+    "workbench.editor.enablePreview": false,
+    "workbench.iconTheme": "vscode-icons",
+    "workbench.startupEditor": "none",
+    "files.autoSave": "afterDelay",
+    "files.autoGuessEncoding": true,
+    "editor.fontSize": 14,
+    "editor.formatOnPaste": false, // 事故防止
+    "editor.formatOnSave": false, // 事故防止
+    "editor.formatOnType": false, // 事故防止
+
+    "editor.inlineSuggest.enabled": true,
+    "editor.inlineSuggest.showToolbar": "always",
+    "editor.renderLineHighlight": "all",
+    "editor.minimap.enabled": false,
+    "editor.renderWhitespace": "all",
+    "editor.suggestSelection": "recentlyUsedByPrefix",
+    "editor.wordWrap": "on",
+    "explorer.confirmDragAndDrop": false,
+    "security.workspace.trust.untrustedFiles": "open",
+    "terminal.external.osxExec": "iTerm.app",
+    "terminal.integrated.copyOnSelection": true,
+    "terminal.integrated.fontSize": 14,
+    "terminal.integrated.env.osx": {
+      "DISABLE_SPRING": "true"
+    },
+
+    "redhat.telemetry.enabled": false,
+
+    // https://github.com/oukayuka/ReactBeginnersBook-2.0
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.fixAll.stylelint": "explicit"
+    },
+    "eslint.validate": [
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact"
+    ],
+    "markdown.preview.fontSize": 14,
+    "debug.console.fontSize": 14,
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "vsicons.dontShowNewVersionMessage": true,
+
+    // Git
+    "githubPullRequests.pullBranch": "never",
+    "git-graph.openNewTabEditorGroup": "Beside",
+    "editor.semanticHighlighting.enabled": true, // Enable semantic highlighting
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+
+    // https://github.com/Shopify/ruby-lsp/tree/main/vscode#vs-code-configurations
+    "[ruby]": {
+      "editor.defaultFormatter": "Shopify.ruby-lsp", // Use the Ruby LSP as the default formatter
+      "editor.formatOnSave": true, // Format files automatically when saving
+      "editor.tabSize": 2, // Use 2 spaces for indentation
+      "editor.insertSpaces": true, // Use spaces and not tabs for indentation
+      "editor.semanticHighlighting.enabled": true, // Enable semantic highlighting
+      "editor.formatOnType": true, // Enable formatting while typing
+      "editor.formatOnPaste": true,
+      "files.trimTrailingWhitespace": true,
+      "files.insertFinalNewline": true,
+      "files.trimFinalNewlines": true,
+      "editor.rulers": [120]
+    },
+    "[javascript][javascriptreact][typescript][typescriptreact][html][css]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true,
+      "editor.formatOnPaste": true,
+      "editor.formatOnType": true
+    },
+    "[json][jsonc]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "editor.formatOnSave": true,
+      "editor.formatOnPaste": true,
+      "editor.formatOnType": true
+    },
+    "[markdown]": {
+      "files.trimTrailingWhitespace": false
+    },
+    "rubyLsp.formatter": "rubocop",
+    "rubyLsp.rubyVersionManager": {
+      "identifier": "mise"
+    },
+    "rubyLsp.featureFlags": {
+      "all": true
+    },
+    // "rubyLsp.bundleGemfile": "lsp/Gemfile",
+
+    "vscode-run-rspec-file.custom-command": "bundle exec rspec -f d --order defined",
+    "editor.accessibilitySupport": "off",
+
+    "github.copilot.advanced": {},
+    "github.copilot.chat.localeOverride": "ja",
+    "git.autofetch": true,
+    "workbench.activityBar.orientation": "vertical"
+  }
