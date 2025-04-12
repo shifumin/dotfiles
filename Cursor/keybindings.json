@@ -1,0 +1,7 @@
+// ln -is ~/dotfiles/Cursor/keybindings.json ~/Library/Application\ Support/Cursor/User/keybindings.json
+[
+    {
+        "key": "cmd+shift+b",
+        "command": "workbench.action.toggleActivityBarVisibility"
+    }
+]
