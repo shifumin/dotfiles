@@ -3,8 +3,6 @@
     // Workbench settings
     "workbench.colorTheme": "Better Solarized Dark",
     "workbench.editor.enablePreview": false,
-    "workbench.iconTheme": "vscode-icons",
-    "workbench.startupEditor": "none",
     "files.autoSave": "afterDelay",
     "files.autoGuessEncoding": true,
     "editor.fontSize": 14,
@@ -20,6 +18,7 @@
     "editor.suggestSelection": "recentlyUsedByPrefix",
     "editor.wordWrap": "on",
     "explorer.confirmDragAndDrop": false,
+    "git.autofetch": true,
     "security.workspace.trust.untrustedFiles": "open",
     "terminal.external.osxExec": "iTerm.app",
     "terminal.integrated.copyOnSelection": true,
@@ -43,19 +42,17 @@
     ],
     "markdown.preview.fontSize": 14,
     "debug.console.fontSize": 14,
-    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-    "vsicons.dontShowNewVersionMessage": true,
 
     // Git
     "githubPullRequests.pullBranch": "never",
-    "git-graph.openNewTabEditorGroup": "Beside",
     "editor.semanticHighlighting.enabled": true, // Enable semantic highlighting
     "files.insertFinalNewline": true,
     "files.trimTrailingWhitespace": true,
 
     // https://github.com/Shopify/ruby-lsp/tree/main/vscode#vs-code-configurations
     "[ruby]": {
-      "editor.defaultFormatter": "Shopify.ruby-lsp", // Use the Ruby LSP as the default formatter
+      // "editor.defaultFormatter": "Shopify.ruby-lsp", // Use the Ruby LSP as the default formatter
+      "editor.defaultFormatter": "rubocop.vscode-rubocop",
       "editor.formatOnSave": true, // Format files automatically when saving
       "editor.tabSize": 2, // Use 2 spaces for indentation
       "editor.insertSpaces": true, // Use spaces and not tabs for indentation
@@ -96,6 +93,5 @@
 
     "github.copilot.advanced": {},
     "github.copilot.chat.localeOverride": "ja",
-    "git.autofetch": true,
     "workbench.activityBar.orientation": "vertical"
   }
