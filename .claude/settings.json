@@ -1,0 +1,30 @@
+// ln -s ~/ghq/github.com/shifumin/dotfiles/.claude/settings.json ~/.claude/
+{
+    "model": "opus",
+    "theme": "dark",
+    "cleanupPeriodDays": 30,
+    "permission": {
+        "allow": [
+            "Bash(cargo:*)",
+            "Bash(cat:*)",
+            "Bash(git add:*)",
+            "Bash(git restore:*)",
+            "Bash(ls:*)",
+            "Bash(mkdir:*)",
+            "Bash(mv:*)",
+            "Bash(npm:*)",
+            "Edit(*)",
+            "List(*)",
+            "Read(**)",
+            "webFetch(domain:*)"
+        ],
+        "deny": [
+            "Bash(rm -rf /)",
+            "Bash(rm -rf ~)",
+            "Bash(rm -rf /*)"
+        ]
+    },
+    "apiKeyHelper": null,
+    "includeCoAuthoredBy": false,
+    "preferredNotifChannel": "terminal_bell"
+}
