@@ -84,10 +84,6 @@ set matchtime=1
 " バックスペースキーの有効化
 set backspace=indent,eol,start
 
-" Vimの「%」を拡張する
-source $VIMRUNTIME/macros/matchit.vim
-
-
 """"""""""""""""""""""""""""""
 " Filetype
 """"""""""""""""""""""""""""""
@@ -214,8 +210,6 @@ set title
 set wildmenu
 " バックアップディレクトリの指定(でもバックアップは使ってない)
 set backupdir=$HOME/.vimbackup
-" バッファで開いているファイルのディレクトリでエクスクローラを開始する(でもエクスプローラって使ってない)
-set browsedir=buffer
 " 暗い背景色に合わせた配色にする
 set background=dark
 " タブ入力を複数の空白入力に置き換える
