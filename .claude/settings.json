@@ -4,8 +4,11 @@
   "cleanupPeriodDays": 30,
   "permissions": {
     "allow": [
+      "Bash(bundle:*)",
       "Bash(cat:*)",
+      "Bash(find:*)",
       "Bash(git add:*)",
+      "Bash(git remote:*)",
       "Bash(git restore:*)",
       "Bash(go:*)",
       "Bash(ls:*)",
