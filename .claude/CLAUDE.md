@@ -11,83 +11,29 @@
 5. **ドキュメントの更新** - 必要に応じてREADME.mdとCLAUDE.mdを更新する
 6. **CLAUDE.mdへの記載形式** - CLAUDE.mdに内容を追加する際は、Claude Codeが理解しやすい明確で構造化された形式で記載する
 
-## 📋 作業前チェックリスト
+## 💡 コード品質ガイドライン
 
+### クリーンコードの原則
+- **変数名・関数名は意図を明確に** - 読み手が推測せずに理解できる名前を使用する
+- **関数・メソッドは単一責任の原則（Single Responsibility Principle）に則る** - 1つの関数は1つの責任のみを持つ
+- **複雑なロジックには説明を追加する** - コメントやドキュメンテーションで意図を明確にする
+- **必要な場合は早期returnを利用する** - ネストを深くせず、読みやすいコードを心がける
+- **エラーメッセージは明確にする** - 何が問題で、どう解決すべきかを示す
+- **マジックナンバーは避ける** - 定数や設定値として意味のある名前を付ける
+
+### 既存コードの尊重
+- プロジェクトの命名規則に従う
+- 既存のコードパターンを踏襲する
+- プロジェクト固有の設定ファイル（.rubocop.yml、.eslintrc等）に従う
+
+## 🔄 標準ワークフロー
+
+### 1. 作業開始前のチェックリスト
 - [ ] README.mdを読んだか？
 - [ ] 既存のコードパターンを理解したか？
 - [ ] 使用可能なツールとコマンドを確認したか？
 - [ ] テストの実行方法を確認したか？
 
-## 🛠️ 言語別コマンドリファレンス
-
-### 共通原則
-- プロジェクトで使用されているツールを確認する（package.json、Gemfile、requirements.txt等）
-- 既存のスクリプトやコマンドを優先的に使用する
-- プロジェクト固有の設定ファイルに従う
-
-### Ruby
-
-#### 必須コマンド
-```bash
-# リンター実行（コミット前に必須）
-rubocop
-
-# 自動修正
-rubocop -a  # または rubocop --auto-correct
-
-# テスト実行（コミット前に必須）
-rspec  # または bundle exec rspec
-```
-
-#### バージョン管理
-1. `.ruby-version`ファイルでRubyバージョンを指定
-2. `Gemfile`で`.ruby-version`を参照:
-   ```ruby
-   ruby File.read('.ruby-version').strip
-   ```
-
-#### テスト実行パターン
-```bash
-# 全テスト実行
-rspec
-
-# 特定ファイルのテスト
-rspec spec/path/to/spec_file.rb
-
-# 特定行のテスト
-rspec spec/path/to/spec_file.rb:42
-```
-
-#### コーディング規約
-- プロジェクトの`.rubocop.yml`に従う
-- 既存のコードパターンを踏襲する
-
-### その他の言語
-
-#### 基本的な確認項目
-- **リンター/フォーマッター**: プロジェクトで使用されているツールを確認
-- **テストフレームワーク**: テストの実行方法を確認
-- **ビルドツール**: ビルドやコンパイルの方法を確認
-- **パッケージマネージャー**: 依存関係の管理方法を確認
-
-#### コマンド例（プロジェクトに応じて調整）
-```bash
-# JavaScript/TypeScript
-npm run lint / npm test
-
-# Python
-ruff check / pytest
-
-# Go
-go fmt / go test
-
-# Java
-mvn checkstyle:check / mvn test
-```
-
-## 🔄 標準ワークフロー
-
-### 1. 作業開始前
 ```bash
 # 現在の状態を確認
 git status
@@ -98,13 +44,13 @@ git diff
 # 例: rspec, npm test, pytest, go test 等
 ```
 
-### 2. 実装中
+### 2. 実装中の注意点
 - 既存パターンに従う
 - エラーハンドリングを実装
 - テストを同時に作成・更新
 - **実装変更後は必ずテストを実行** - 変更した機能に関連するテストが通ることを確認
 
-### 3. 作業完了前
+### 3. 作業完了前の必須チェック
 ```bash
 # リンター実行
 # [プロジェクトのリンターコマンド]
@@ -114,6 +60,53 @@ git diff
 
 # 変更内容の確認
 git diff
+```
+
+## 🛠️ 言語別コマンドリファレンス
+
+### 共通原則
+- プロジェクトで使用されているツールを確認する（package.json、Gemfile、requirements.txt等）
+- 既存のスクリプトやコマンドを優先的に使用する
+- プロジェクト固有の設定ファイルに従う
+
+### Ruby
+```bash
+# リンター実行（コミット前に必須）
+rubocop
+rubocop -a  # 自動修正
+
+# テスト実行（コミット前に必須）
+rspec  # または bundle exec rspec
+rspec spec/path/to/spec_file.rb  # 特定ファイル
+rspec spec/path/to/spec_file.rb:42  # 特定行
+
+# バージョン管理
+# .ruby-versionファイルでRubyバージョンを指定
+# Gemfileで ruby File.read('.ruby-version').strip を使用
+```
+
+### JavaScript/TypeScript
+```bash
+npm run lint  # リンター実行
+npm test  # テスト実行
+```
+
+### Python
+```bash
+ruff check  # リンター実行
+pytest  # テスト実行
+```
+
+### Go
+```bash
+go fmt  # フォーマッター実行
+go test  # テスト実行
+```
+
+### Java
+```bash
+mvn checkstyle:check  # リンター実行
+mvn test  # テスト実行
 ```
 
 ## ⚠️ 絶対に避けるべきこと
@@ -126,9 +119,7 @@ git diff
 
 ## 🔧 トラブルシューティング
 
-### よくあるエラーと対処法
-
-#### テスト失敗時
+### テスト失敗時
 ```bash
 # 特定のテストのみ実行して原因を特定
 # [プロジェクトのテストコマンド] [失敗したテストファイル] [オプション]
@@ -138,7 +129,7 @@ rspec spec/failing_spec.rb -fd
 rspec --only-failures
 ```
 
-#### リンターエラー時
+### リンターエラー時
 ```bash
 # 自動修正を試みる
 # [プロジェクトのリンターコマンド] [自動修正オプション]
@@ -148,7 +139,7 @@ rubocop -a
 rubocop path/to/file.rb
 ```
 
-#### 依存関係エラー時
+### 依存関係エラー時
 ```bash
 # 依存関係をインストール
 # [プロジェクトのパッケージマネージャー] install
