@@ -93,5 +93,6 @@
 
   "github.copilot.advanced": {},
   "github.copilot.chat.localeOverride": "ja",
-  "workbench.activityBar.orientation": "vertical"
+  "workbench.activityBar.orientation": "vertical",
+  "workbench.activityBar.location": "hidden"
 }
