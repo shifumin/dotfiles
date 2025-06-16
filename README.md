@@ -16,8 +16,10 @@ This is my dotfiles.
 
 This repository includes custom commands for Claude Code located in `.claude/commands/`:
 
-- **at** - テストを必要十分な状態にする
+- **check_srp** - 単一責任の原則（SRP）を満たしているか確認
+- **finish** - 仕上げの作業をまとめたもの
 - **push** - 変更内容を適切な粒度でcommit/push
-- **csrp** - 単一責任の原則を満たしているか確認
-- **ud** - ドキュメント（CLAUDE.md/README.md）を更新
-- **ucm** - 指定内容でCLAUDE.mdを更新
+- **rubocop** - Rubyのリンター実行
+- **update_claude_md** - 指定内容でCLAUDE.mdを更新
+- **update_test** - テストを必要十分な状態にする
+- **update_document** - ドキュメント（CLAUDE.md/README.md）を更新
