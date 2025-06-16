@@ -1,0 +1,8 @@
+- 仕上げの作業をしてください
+- 指示
+  - 以下のcommandsを順番に全て実行する
+    - @~/.claude/commands/check_srp.md
+    - @~/.claude/commands/update_test.mb
+    - @~/.claude/commands/rubocop.md
+    - @~/.claude/commands/update_document.md
+    - @~/.claude/commands/push.md
