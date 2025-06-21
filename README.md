@@ -16,10 +16,10 @@ This is my dotfiles.
 
 This repository includes custom commands for Claude Code located in `.claude/commands/`:
 
-- **check_srp** - 単一責任の原則（SRP）を満たしているか確認
-- **finish** - 仕上げの作業をまとめたもの
-- **push** - 変更内容を適切な粒度でcommit/push
-- **rubocop** - Rubyのリンター実行
-- **update_claude_md** - 指定内容でCLAUDE.mdを更新
-- **update_test** - テストを必要十分な状態にする
-- **update_document** - ドキュメント（CLAUDE.md/README.md）を更新
+- **check_srp** - Check if the code follows Single Responsibility Principle (SRP)
+- **finish** - Run finishing tasks (linting, tests, etc.)
+- **push** - Commit and push changes with appropriate granularity
+- **rubocop** - Run Ruby linter
+- **update_claude_md** - Update CLAUDE.md with specified content
+- **update_test** - Update tests to a necessary and sufficient state
+- **update_document** - Update documentation (CLAUDE.md/README.md)
