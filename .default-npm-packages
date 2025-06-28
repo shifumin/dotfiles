@@ -3,3 +3,5 @@ typescript
 ts-node
 typesync
 npm-check-updates
+@anthropic-ai/claude-code
+@google/gemini-cli
