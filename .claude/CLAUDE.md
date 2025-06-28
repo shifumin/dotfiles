@@ -222,6 +222,11 @@ bundle update gem_name
   - 実装コードのSRP違反をチェック
   - 必要に応じてリファクタリング
 - **finish** - 仕上げの作業をまとめたもの
+  - リンターとテストを実行
+  - 必要に応じてドキュメントを更新
+- **gemini-search** - Google Gemini CLIを使用したWeb検索
+  - 組み込みのWeb_Searchツールの代わりに使用
+  - `gemini --prompt "WebSearch: <query>"`で実行
 - **push** - 変更内容を適切な粒度でcommit/push
   - 変更内容を確認して適切にコミット
   - コミットメッセージは変更内容を正確に反映
