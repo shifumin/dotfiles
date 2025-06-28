@@ -218,7 +218,7 @@ bundle update gem_name
 
 ~/.claude/commands/に以下のカスタムコマンドが定義されています：
 
-- **check_srp** - 単一責任の原則（SRP）を満たしているか確認
+- **check-srp** - 単一責任の原則（SRP）を満たしているか確認
   - 実装コードのSRP違反をチェック
   - 必要に応じてリファクタリング
 - **finish** - 仕上げの作業をまとめたもの
@@ -226,12 +226,12 @@ bundle update gem_name
   - 変更内容を確認して適切にコミット
   - コミットメッセージは変更内容を正確に反映
 - **rubocop** - Rubyのリンター実行
-- **update_claude_md** - 指定内容でCLAUDE.mdを更新
+- **update-claude-md** - 指定内容でCLAUDE.mdを更新
   - 内容を理解しやすい形式に整理して追加
-- **update_test** - テストを必要十分な状態にする
+- **update-test** - テストを必要十分な状態にする
   - 既存テストの過不足を確認し、適切に調整
   - 実装ファイルごとにテストの存在を確認
-- **update_document** - ドキュメント（CLAUDE.md/README.md）を更新
+- **update-document** - ドキュメント（CLAUDE.md/README.md）を更新
   - 重複内容の整理と必要情報の追加
 
 ## 📝 プロジェクト固有の設定
