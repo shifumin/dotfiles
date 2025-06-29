@@ -31,8 +31,26 @@ await mcp__playwright__browser_navigate({ url: "https://gemini.google.com/app?hl
 // Take snapshot to check current state
 const snapshot = await mcp__playwright__browser_snapshot();
 
-// If model selector is visible, select Gemini 2.5 Pro
-// Note: Model selection UI may vary or not be available
+// Check if current model is not 2.5 Pro
+if (!snapshot.includes("2.5 Pro")) {
+  // Click on model selector button
+  await mcp__playwright__browser_click({ 
+    element: "Model selector button", 
+    ref: "dynamic-ref" // ref from button containing model name
+  });
+  
+  // Wait for model menu to appear
+  await mcp__playwright__browser_wait_for({ time: 1 });
+  
+  // Select 2.5 Pro model
+  await mcp__playwright__browser_click({ 
+    element: "2.5 Pro model option", 
+    ref: "dynamic-ref" // ref from menuitem containing "2.5 Pro"
+  });
+  
+  // Handle any feature introduction dialog by pressing Escape
+  await mcp__playwright__browser_press_key({ key: "Escape" });
+}
 ```
 
 ### 4. Execute Prompt
@@ -54,8 +72,11 @@ await mcp__playwright__browser_type({
   submit: false // Don't submit yet
 });
 
-// Submit the prompt
-await mcp__playwright__browser_press_key({ key: "Enter" });
+// Submit the prompt by clicking send button
+await mcp__playwright__browser_click({ 
+  element: "Send prompt button", 
+  ref: "dynamic-ref" // ref from button with send icon
+});
 ```
 
 ### 5. Wait for Response
@@ -69,10 +90,13 @@ while (waitTime < 90) {
   // Take snapshot to check status
   const snapshot = await mcp__playwright__browser_snapshot();
   
-  // Check if generation is complete
-  // Look for indicators that response is still being generated
-  if (!snapshot.includes("生成中") && !snapshot.includes("入力中") && !snapshot.includes("考え中")) {
-    break;
+  // Check if generation is complete by looking for stop button
+  // When response is being generated, there's a "回答を停止" (Stop response) button
+  if (!snapshot.includes("回答を停止") && !snapshot.includes("stop")) {
+    // Also check that some response content is visible
+    if (snapshot.includes("paragraph") && snapshot.includes("ref=e")) {
+      break;
+    }
   }
 }
 ```
