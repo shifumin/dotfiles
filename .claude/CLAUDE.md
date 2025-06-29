@@ -252,6 +252,10 @@ bundle update gem_name
   - Playwright MCPを使用してClaude Opus 4でプロンプトを実行
   - Web検索機能を有効にして最新情報を取得
   - **重要**: Claudeの回答は要約せずオリジナルのまま出力
+- **multi-llm-search** - 3つのLLMで同時にWeb検索を実行
+  - ChatGPT O3、Claude Opus 4、Gemini 2.5 Proで同じプロンプトを実行
+  - 各LLMのWeb検索機能を有効化
+  - **重要**: 全てのLLMの回答を要約せずオリジナルのまま出力
 
 ## 📝 プロジェクト固有の設定
 
