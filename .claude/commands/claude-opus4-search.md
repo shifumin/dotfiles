@@ -53,40 +53,38 @@ if (!snapshot.includes("Opus 4")) {
 
 ### 4. Enable Web Search
 ```javascript
-// Look for web search toggle or button
-// Note: The exact UI element may vary based on Claude's interface
+// Click Research button to enable web search
+// Note: Research feature may require specific prompts or additional steps
 await mcp__playwright__browser_click({ 
-  element: "Web search toggle/button", 
-  ref: "dynamic-ref" // actual ref will be determined from snapshot
+  element: "Research button", 
+  ref: "dynamic-ref" // ref from button with Research text
 });
+
+// Note: Web search may not be automatically triggered for all queries
+// Claude may ask clarifying questions before performing searches
 ```
 
 ### 5. Execute Prompt
 ```javascript
-// Click on the message input area
+// Click on the message input area (paragraph element)
 await mcp__playwright__browser_click({ 
-  element: "Message input field", 
-  ref: "dynamic-ref" // actual ref will be determined from snapshot
+  element: "Message input area", 
+  ref: "dynamic-ref" // ref from paragraph with "How can I help you today?"
 });
-
-// Clear any existing text
-await mcp__playwright__browser_press_key({ key: "Control+a" });
 
 // Type the prompt
 await mcp__playwright__browser_type({ 
-  element: "Message input field", 
-  ref: "dynamic-ref", // actual ref will be determined from snapshot
+  element: "Message input area", 
+  ref: "dynamic-ref", // same ref as above
   text: "{{prompt}}",
   submit: false // Don't submit yet
 });
 
-// Submit the prompt
-await mcp__playwright__browser_press_key({ key: "Enter" });
-// Or click send button if available
-// await mcp__playwright__browser_click({ 
-//   element: "Send button", 
-//   ref: "dynamic-ref"
-// });
+// Click send button
+await mcp__playwright__browser_click({ 
+  element: "Send message button", 
+  ref: "dynamic-ref" // ref from send button
+});
 ```
 
 ### 6. Wait for Response
@@ -100,11 +98,11 @@ while (waitTime < 120) {
   // Take snapshot to check status
   const snapshot = await mcp__playwright__browser_snapshot();
   
-  // Check if generation is complete
-  // Look for indicators that response is still being generated
-  if (!snapshot.includes("Thinking") && !snapshot.includes("Searching") && !snapshot.includes("Writing")) {
-    // Check that response content is visible
-    if (snapshot.includes("paragraph") || snapshot.includes("text")) {
+  // Check if generation is complete by looking for stop button
+  // When response is being generated, there's a "Stop response" button
+  if (!snapshot.includes("Stop response")) {
+    // Also check that some response content is visible
+    if (snapshot.includes("paragraph") && snapshot.includes("ref=e")) {
       break;
     }
   }
@@ -134,10 +132,12 @@ Once the response is complete:
 ## Notes
 - Claude.ai login is required
 - Access to Opus 4 model is required (may require subscription)
-- Web search feature availability may depend on account settings
+- Web search feature (Research) availability may depend on account settings
 - Response generation may take longer with web search enabled (30 seconds to 2 minutes)
 - **IMPORTANT**: The original Opus 4 response must be returned as-is without any summarization or modification
 - The permanent link to the chat should be included in the report
 - Interface elements may change; adjust selectors as needed
+- The Research feature may not automatically trigger web searches for all queries
+- Claude may ask clarifying questions before performing web searches
 
 ARGUMENTS: {{prompt}}
