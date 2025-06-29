@@ -248,6 +248,10 @@ bundle update gem_name
 - **gemini-25pro-search** - Gemini 2.5 ProモデルでWeb検索を実行
   - Playwright MCPを使用してGemini 2.5 Proでプロンプトを実行
   - **重要**: Geminiの回答は要約せずオリジナルのまま出力
+- **claude-opus4-search** - Claude Opus 4モデルでWeb検索を実行
+  - Playwright MCPを使用してClaude Opus 4でプロンプトを実行
+  - Web検索機能を有効にして最新情報を取得
+  - **重要**: Claudeの回答は要約せずオリジナルのまま出力
 
 ## 📝 プロジェクト固有の設定
 
