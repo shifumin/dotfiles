@@ -241,6 +241,16 @@ bundle update gem_name
 - **notebooklm-upload** - NotebookLMにファイルをアップロードして音声概要を作成
   - Playwright MCPを使用してNotebookLMにファイルをアップロード
   - 音声概要（ポッドキャスト形式）の生成を自動化
+- **chatgpt-o3-search** - ChatGPT O3モデルでWeb検索を実行
+  - Playwright MCPを使用してChatGPT O3モデルでプロンプトを実行
+  - Web検索機能を有効にして最新情報を取得
+  - **重要**: O3の回答は要約せずオリジナルのまま出力
+- **gemini-25pro-search** - Gemini 2.5 ProモデルでWeb検索を実行
+  - Playwright MCPを使用してGemini 2.5 Proでプロンプトを実行
+  - **重要**: Geminiの回答は要約せずオリジナルのまま出力
+- **original-output** - LLMレスポンスを要約せずに出力
+  - LLMツールからの回答を完全にそのまま出力
+  - 要約・言い換え・解釈を加えない
 
 ## 📝 プロジェクト固有の設定
 
