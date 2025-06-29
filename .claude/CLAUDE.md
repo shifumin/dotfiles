@@ -248,9 +248,6 @@ bundle update gem_name
 - **gemini-25pro-search** - Gemini 2.5 ProモデルでWeb検索を実行
   - Playwright MCPを使用してGemini 2.5 Proでプロンプトを実行
   - **重要**: Geminiの回答は要約せずオリジナルのまま出力
-- **original-output** - LLMレスポンスを要約せずに出力
-  - LLMツールからの回答を完全にそのまま出力
-  - 要約・言い換え・解釈を加えない
 
 ## 📝 プロジェクト固有の設定
 
