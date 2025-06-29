@@ -238,6 +238,9 @@ bundle update gem_name
   - 実装ファイルごとにテストの存在を確認
 - **update-document** - ドキュメント（CLAUDE.md/README.md）を更新
   - 重複内容の整理と必要情報の追加
+- **notebooklm-upload** - NotebookLMにファイルをアップロードして音声概要を作成
+  - Playwright MCPを使用してNotebookLMにファイルをアップロード
+  - 音声概要（ポッドキャスト形式）の生成を自動化
 
 ## 📝 プロジェクト固有の設定
 
