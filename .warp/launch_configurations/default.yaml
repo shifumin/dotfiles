@@ -26,41 +26,31 @@
 name: default
 windows:
   - tabs:
-      - title: home
+      - title: dotfiles
         layout:
-          cwd: $HOME
+          cwd: /Users/shifumin/ghq/github.com/shifumin/dotfiles
         color: red
-      - title: home2
+      - title: dotfiles2
         layout:
-          cwd: $HOME
+          cwd: /Users/shifumin/ghq/github.com/shifumin/dotfiles
         color: green
-      - title: home3
+      - title: my-vault
         layout:
-          cwd: $HOME
+          cwd: "/Users/shifumin/Library/Mobile Documents/com~apple~CloudDocs/my-vault"
         color: yellow
-      - title: home4
+      - title: my-vault2
         layout:
-          cwd: $HOME
+          cwd: "/Users/shifumin/Library/Mobile Documents/com~apple~CloudDocs/my-vault"
         color: blue
       - title: home5
         layout:
-          cwd: $HOME
+          cwd: /Users/shifumin
         color: magenta
       - title: home6
         layout:
-          cwd: $HOME
+          cwd: /Users/shifumin
         color: cyan
       - title: home7
         layout:
-          cwd: $HOME
-        color: red
-      - title: home8
-        layout:
-          cwd: $HOME
-        color: green
-      - title: dotfiles
-        layout:
-          cwd: $HOME
-          commands:
-            - exec: c $HOME/dotfiles
-        color: yellow
+          cwd: /Users/shifumin
+        color: white
