@@ -1,6 +1,5 @@
 {
   "model": "opus",
-  "theme": "dark",
   "cleanupPeriodDays": 30,
   "permissions": {
     "allow": [
@@ -58,6 +57,5 @@
       "Write(~/.ssh/id_*)"
     ]
   },
-  "includeCoAuthoredBy": false,
-  "preferredNotifChannel": "terminal_bell"
+  "includeCoAuthoredBy": false
 }
