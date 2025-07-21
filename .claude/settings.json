@@ -1,6 +1,6 @@
 {
-  "model": "opus",
   "cleanupPeriodDays": 30,
+  "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
       "Bash(bundle:*)",
@@ -57,5 +57,5 @@
       "Write(~/.ssh/id_*)"
     ]
   },
-  "includeCoAuthoredBy": false
+  "model": "opus"
 }
