@@ -1,13 +1,13 @@
 # create-github-repo
 
-GitHubのリポジトリを作成し、ghqでcloneして、作業ディレクトリに移動するカスタムコマンド
+GitHubのリポジトリを作成し、ghqでcloneするカスタムコマンド
 
 ## 実行内容
 
 1. GitHubリポジトリの作成に必要な情報を収集
 2. GitHubリポジトリを作成（README.mdと.gitignore付き）
 3. `ghq get -p`でリポジトリをclone
-4. cloneしたディレクトリに移動
+4. 作業ディレクトリへの移動コマンドを表示
 
 ## 必要な情報
 
@@ -41,8 +41,11 @@ gh repo create [owner/]repo-name \
 # 3. ghqでclone
 ghq get -p github.com/[owner]/repo-name
 
-# 4. 作業ディレクトリに移動
-cd $(ghq root)/github.com/[owner]/repo-name
+# 4. 作業ディレクトリへの移動コマンドを表示
+echo "✅ リポジトリの作成とcloneが完了しました。"
+echo "作業ディレクトリに移動するには以下のコマンドを実行してください:"
+echo ""
+echo "cd $(ghq root)/github.com/[owner]/repo-name"
 ```
 
 ## 使用例
@@ -58,7 +61,11 @@ cd $(ghq root)/github.com/[owner]/repo-name
 GitHubリポジトリを作成しています...
 ✓ リポジトリを作成しました: https://github.com/username/my-awesome-project
 ✓ ghqでcloneしました
-✓ 作業ディレクトリに移動しました: ~/ghq/github.com/username/my-awesome-project
+
+✅ リポジトリの作成とcloneが完了しました。
+作業ディレクトリに移動するには以下のコマンドを実行してください:
+
+cd /Users/shifumin/ghq/github.com/username/my-awesome-project
 ```
 
 ## 注意事項
@@ -66,3 +73,4 @@ GitHubリポジトリを作成しています...
 - GitHub CLIがインストールされ、認証されている必要があります
 - ghqがインストールされている必要があります
 - 不足している情報はインタラクティブに質問します
+- Claude Codeのセッション上では作業ディレクトリの移動ができないため、移動コマンドをコピペ可能な形式で表示します
