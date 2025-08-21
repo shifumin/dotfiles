@@ -66,6 +66,16 @@
 
 
 
+## 📊 GitHub PR参照方法
+
+### GitHub PRのURLが提供された場合
+- **必ず`gh`コマンドを使用してPR情報を取得する** - 直接URLにアクセスせず、GitHub CLIを使用
+- 以下のコマンドを順番に実行してPR情報を網羅的に取得:
+  1. `gh pr view <PR番号> --repo <オーナー/リポジトリ名> --json title,body,state,author,createdAt,url,headRefName,baseRefName`
+  2. `gh pr view <PR番号> --repo <オーナー/リポジトリ名> --json files,additions,deletions,changedFiles`
+  3. `gh pr diff <PR番号> --repo <オーナー/リポジトリ名>`
+- PR情報を取得できない場合は、プライベートリポジトリか認証の問題である可能性を説明
+
 ## 🔧 トラブルシューティング
 
 ### 一般的なデバッグのヒント
