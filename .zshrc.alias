@@ -98,9 +98,6 @@ alias -g V='| nvim -'
 # Cursor
 alias c.='cursor .'
 
-# Zsh
-alias z='zsh'
-
 # other
 alias cdu='cd-gitroot'
 alias cl='clear'
