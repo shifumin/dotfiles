@@ -548,3 +548,7 @@ zle -N open-git-remote
 autoload bashcompinit && bashcompinit
 autoload -Uz compinit && compinit
 complete -C '/opt/homebrew/bin/aws_completer' aws
+
+# zoxide - A smarter cd command
+# https://github.com/ajeetdsouza/zoxide
+eval "$(zoxide init zsh)"
