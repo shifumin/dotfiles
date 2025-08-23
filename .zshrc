@@ -1,7 +1,7 @@
 # Check if zplug is installed
 if [[ ! -d ~/.zplug ]]; then
   git clone https://github.com/zplug/zplug ~/.zplug
-  source ~/.zplug/linit.zsh && zplug update --self
+  source ~/.zplug/init.zsh && zplug update --self
 fi
 
 # Essential
@@ -32,13 +32,13 @@ zplug 'b4b4r07/dotfiles', as:command, use:bin/peco-tmux
 zplug 'mollifier/anyframe'
 
 # 🚀 A next-generation cd command with an interactive filter
-zplug "b4b4r07/enhancd", use:init.sh
+zplug "babarot/enhancd", use:init.sh
 
 # zsh plugin to cd to git repository root directory.
 zplug 'mollifier/cd-gitroot'
 
 # Install plugins if there are plugins that have not been installed
-if ! zplug check --verbose; then
+if ! zplug check; then
     printf "Install? [y/N]: "
     if read -q; then
         echo; zplug install
