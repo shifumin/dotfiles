@@ -31,9 +31,6 @@ zplug 'b4b4r07/dotfiles', as:command, use:bin/peco-tmux
 # peco/percol/fzf wrapper plugin for zsh
 zplug 'mollifier/anyframe'
 
-# 🚀 A next-generation cd command with an interactive filter
-zplug "babarot/enhancd", use:init.sh
-
 # zsh plugin to cd to git repository root directory.
 zplug 'mollifier/cd-gitroot'
 
