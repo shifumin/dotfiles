@@ -29,18 +29,6 @@ setopt multios
 # 最後がディレクトリ名で終わっている場合末尾の / を自動的に取り除かない
 setopt noautoremoveslash
 
-####################
-
-# .ctags
-# VimでPHP開発環境を作成 - Qiita
-# http://qiita.com/NanohaAsOnKai/items/0188fb3b60e8a79656a0
-# tagsCmd='ctags --languages=php -f'
-# tagsVariable=''
-# tagsVariable="$tagsVariable cd $HOME/sample1; $tagsCmd $HOME/.vim/tags/sample1.tags $HOME/sample1;"
-# tagsVariable="$tagsVariable cd $HOME/sample2; $tagsCmd $HOME/.vim/tags/sample2.tags $HOME/sample2;"
-# tagsVariable="$tagsVariable cd;"
-# alias TAGS=$tagsVariable
-####################
 
 ####################
 # vcs_info 設定
