@@ -137,6 +137,37 @@
 ### その他
 - **notebooklm-upload** - NotebookLMに音声概要を作成
 
+## 🐙 GitHub連携
+
+GitHubのURL参照やプルリクエスト操作は必ず`gh`コマンドを使用してください：
+
+```bash
+# プルリクエストの詳細確認
+gh pr view [PR番号]
+
+# プルリクエストの差分確認  
+gh pr diff [PR番号]
+
+# プルリクエストのコメント確認
+gh api repos/[owner]/[repo]/pulls/[PR番号]/comments
+
+# プルリクエストの作成
+gh pr create --title "タイトル" --body "本文"
+
+# プルリクエストの一覧確認
+gh pr list
+
+# GitHub Issues の確認
+gh issue list
+gh issue view [Issue番号]
+```
+
+**重要原則**:
+- GitHubのURLを直接参照しない（404エラーの原因となるため）
+- WebFetch tool でのGitHub URL アクセスは禁止
+- 必ず`gh`コマンドを使用してリポジトリ情報にアクセスする
+- エラーが発生した場合は`gh auth status`で認証状態を確認
+
 ## 📝 プロジェクト固有の設定
 
 プロジェクト固有の追加情報がある場合は、以下に記載してください：
