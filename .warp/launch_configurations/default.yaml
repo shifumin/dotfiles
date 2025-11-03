@@ -26,6 +26,14 @@
 name: default
 windows:
   - tabs:
+      - title: my-vault
+        layout:
+          cwd: /Users/shifumin/ghq/github.com/shifumin/my-vault
+        color: yellow
+      - title: my-vault2
+        layout:
+          cwd: /Users/shifumin/ghq/github.com/shifumin/my-vault
+        color: blue
       - title: dotfiles
         layout:
           cwd: /Users/shifumin/ghq/github.com/shifumin/dotfiles
@@ -34,14 +42,6 @@ windows:
         layout:
           cwd: /Users/shifumin/ghq/github.com/shifumin/dotfiles
         color: green
-      - title: my-vault
-        layout:
-          cwd: "/Users/shifumin/Library/Mobile Documents/com~apple~CloudDocs/my-vault"
-        color: yellow
-      - title: my-vault2
-        layout:
-          cwd: "/Users/shifumin/Library/Mobile Documents/com~apple~CloudDocs/my-vault"
-        color: blue
       - title: home5
         layout:
           cwd: /Users/shifumin
