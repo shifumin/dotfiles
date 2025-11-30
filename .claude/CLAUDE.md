@@ -23,7 +23,6 @@
 - **エラーメッセージは明確にする** - 何が問題で、どう解決すべきかを示す
 - **マジックナンバーは避ける** - 定数や設定値として意味のある名前を付ける
 
-
 ### メソッドの可視性
 - **publicインターフェースの明確化** - ヘルパーメソッドはprivateにし、必要最小限のpublicメソッドのみを公開
 
@@ -54,28 +53,15 @@
 - リンターとテストを実行
 - 変更内容を確認（git diff）
 
-## 📄 ファイル作成・編集時の注意事項
+## 📄 ファイル操作
 
-### 文字エンコーディングの扱い
-**重要**: 日本語を含むファイルの作成・編集時は以下を徹底する
-- **新規ファイル作成時**:
-  - 空ファイルを作成する場合は`touch`コマンドを使用
-  - 内容があるファイルを作成する場合は、最初に`Read`ツールで読み込んでから`Write`ツールを使用
-  - 日本語を含むファイルは必ずUTF-8エンコーディングで保存
-- **既存ファイル編集時**:
-  - 必ず先に`Read`ツールでファイルを読み込む
-  - `Edit`または`Write`ツールで編集を行う
-- **文字化けが発生した場合**:
-  - ファイルを再度`Read`ツールで読み込み
-  - 正しい内容で`Write`ツールを使用して上書き保存
+- 日本語ファイルはUTF-8で保存
+- 編集前に必ず`Read`ツールでファイルを読み込む
+- 新規ファイル作成は`Write`ツールを使用
 
-### ファイル操作のベストプラクティス
-- **Writeツールの使用を優先** - `touch`コマンドで空ファイルを作成してから書き込むより、直接`Write`ツールで内容を書き込む
-- **エンコーディングの確認** - 日本語ファイルの読み込み後、文字化けしていないか確認
-- **段階的な編集** - 大きな変更は複数の小さな編集に分けて実行
+## 🔐 セキュリティ
 
-### コミット・プッシュ前の秘匿情報確認
-**重要**: コミット前に以下が含まれていないか確認
+**コミット前に以下が含まれていないか確認**:
 - APIキー、トークン、パスワード
 - 公開を意図しない個人情報
 - 内部URL、秘密鍵、証明書
@@ -83,36 +69,7 @@
 
 `git diff --staged`で確認し、秘匿情報が含まれている場合は即座にユーザーに報告。
 
-
-
-
-## 📊 GitHub PR参照方法
-
-### GitHub PRのURLが提供された場合
-- **必ず`gh`コマンドを使用してPR情報を取得する** - 直接URLにアクセスせず、GitHub CLIを使用
-- 以下のコマンドを順番に実行してPR情報を網羅的に取得:
-  1. `gh pr view <PR番号> --repo <オーナー/リポジトリ名> --json title,body,state,author,createdAt,url,headRefName,baseRefName`
-  2. `gh pr view <PR番号> --repo <オーナー/リポジトリ名> --json files,additions,deletions,changedFiles`
-  3. `gh pr diff <PR番号> --repo <オーナー/リポジトリ名>`
-- PR情報を取得できない場合は、プライベートリポジトリか認証の問題である可能性を説明
-
-## 🔧 トラブルシューティング
-
-### 一般的なデバッグのヒント
-- verbose/debugフラグを活用して詳細情報を確認
-- dry-runオプションで変更内容をプレビュー
-- ログファイルやエラー出力を確認
-
-### テスト失敗時
-特定のテストのみ実行して原因を特定
-
-### リンターエラー時
-自動修正オプションを試みる
-
-### 依存関係エラー時
-パッケージマネージャーで依存関係をインストール
-
-## 🛡️ Claude Codeカスタムコマンド
+## 🛡️ カスタムコマンド
 
 ~/.claude/commands/に以下のカスタムコマンドが定義されています：
 
@@ -123,50 +80,56 @@
 
 ### リファクタリング・更新コマンド
 - **check-srp** - 単一責任の原則（SRP）違反をチェックしてリファクタリング
+- **check-performance** - パフォーマンス改善点をチェック
 - **update-test** - テストを必要十分な状態に調整
 - **update-document** - CLAUDE.md/README.mdを更新
 - **update-claude-md** - CLAUDE.mdに内容を追加
 
-### Web検索コマンド
-- **multi-llm-search** - ChatGPT O3、Claude Opus 4、Gemini 2.5 Proで同時検索
-- **chatgpt-o3-search** - ChatGPT O3でWeb検索
-- **claude-opus4-search** - Claude Opus 4でWeb検索  
-- **gemini-25pro-search** - Gemini 2.5 ProでWeb検索
-- **gemini-search** - Google Gemini CLIでWeb検索
+### GitHub連携コマンド
+- **create-github-repo** - GitHubリポジトリを作成
+- **review-pr** - プルリクエストをレビュー
+- **review-pr-comment** - PRコメントを確認
+
+### カレンダーコマンド
+- **list-calendar-events** - カレンダーの予定を一覧表示
+- **create-calendar-event** - カレンダーに予定を作成
+- **update-calendar-event** - カレンダーの予定を更新
+- **delete-calendar-event** - カレンダーの予定を削除
 
 ### その他
+- **multi-llm-search** - 複数LLMで同時検索
 - **notebooklm-upload** - NotebookLMに音声概要を作成
 
 ## 🐙 GitHub連携
 
-GitHubのURL参照やプルリクエスト操作は必ず`gh`コマンドを使用してください：
-
-```bash
-# プルリクエストの詳細確認
-gh pr view [PR番号]
-
-# プルリクエストの差分確認  
-gh pr diff [PR番号]
-
-# プルリクエストのコメント確認
-gh api repos/[owner]/[repo]/pulls/[PR番号]/comments
-
-# プルリクエストの作成
-gh pr create --title "タイトル" --body "本文"
-
-# プルリクエストの一覧確認
-gh pr list
-
-# GitHub Issues の確認
-gh issue list
-gh issue view [Issue番号]
-```
+GitHubのURL参照やプルリクエスト操作は必ず`gh`コマンドを使用。
 
 **重要原則**:
-- GitHubのURLを直接参照しない（404エラーの原因となるため）
-- WebFetch tool でのGitHub URL アクセスは禁止
-- 必ず`gh`コマンドを使用してリポジトリ情報にアクセスする
-- エラーが発生した場合は`gh auth status`で認証状態を確認
+- GitHubのURLを直接参照しない（404エラーの原因）
+- WebFetch toolでのGitHub URLアクセスは禁止
+- 必ず`gh`コマンドを使用
+- エラー時は`gh auth status`で認証確認
+
+### PR情報取得（URLが提供された場合）
+```bash
+# 基本情報
+gh pr view <PR番号> --repo <owner/repo> --json title,body,state,author,url,headRefName,baseRefName
+
+# ファイル変更情報
+gh pr view <PR番号> --repo <owner/repo> --json files,additions,deletions,changedFiles
+
+# 差分
+gh pr diff <PR番号> --repo <owner/repo>
+```
+
+### その他のコマンド
+```bash
+gh pr list                    # PR一覧
+gh pr create --title "" --body ""  # PR作成
+gh issue list                 # Issue一覧
+gh issue view [番号]           # Issue詳細
+gh api repos/[owner]/[repo]/pulls/[番号]/comments  # PRコメント
+```
 
 ## 📅 Google Calendar連携
 
