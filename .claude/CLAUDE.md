@@ -147,17 +147,17 @@ gh api repos/[owner]/[repo]/pulls/[番号]/comments  # PRコメント
 ### スクリプトパスと実行方法
 
 すべてのスクリプトは以下のディレクトリに配置:
-`/Users/shifumin/ghq/github.com/shifumin/google-calendar-tools-ruby/`
+`~/ghq/github.com/shifumin/google-calendar-tools-ruby/`
 
 実行時は必ず`mise exec`を使用:
 ```bash
-mise exec --cd /Users/shifumin/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby <script_name>.rb [options]
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby <script_name>.rb [options]
 ```
 
 ### 予定取得（google_calendar_fetcher.rb）
 
 ```bash
-mise exec --cd /Users/shifumin/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_fetcher.rb [date_arg]
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_fetcher.rb [date_arg]
 ```
 
 - **引数**: 日付（`tomorrow`, `YYYY-MM-DD`形式、または引数なしで今日）
@@ -173,7 +173,7 @@ mise exec --cd /Users/shifumin/ghq/github.com/shifumin/google-calendar-tools-rub
 ### 予定作成（google_calendar_creator.rb）
 
 ```bash
-mise exec --cd /Users/shifumin/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_creator.rb --summary='<タイトル>' --start='<開始日時>' --end='<終了日時>' [--description='<説明>'] [--calendar='<カレンダーID>']
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_creator.rb --summary='<タイトル>' --start='<開始日時>' --end='<終了日時>' [--description='<説明>'] [--calendar='<カレンダーID>']
 ```
 
 - **必須情報**: タイトル、開始日時
@@ -185,7 +185,7 @@ mise exec --cd /Users/shifumin/ghq/github.com/shifumin/google-calendar-tools-rub
 ### 予定更新（google_calendar_updater.rb）
 
 ```bash
-mise exec --cd /Users/shifumin/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_updater.rb --event-id='<イベントID>' [--summary='<新タイトル>'] [--start='<新開始日時>'] [--end='<新終了日時>'] [--description='<新説明>'] [--location='<新場所>']
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_updater.rb --event-id='<イベントID>' [--summary='<新タイトル>'] [--start='<新開始日時>'] [--end='<新終了日時>'] [--description='<新説明>'] [--location='<新場所>']
 ```
 
 - **処理フロー**:
@@ -197,7 +197,7 @@ mise exec --cd /Users/shifumin/ghq/github.com/shifumin/google-calendar-tools-rub
 ### 予定削除（google_calendar_deleter.rb）
 
 ```bash
-mise exec --cd /Users/shifumin/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_deleter.rb --event-id='<イベントID>'
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_deleter.rb --event-id='<イベントID>'
 ```
 
 - **処理フロー**:
@@ -210,7 +210,7 @@ mise exec --cd /Users/shifumin/ghq/github.com/shifumin/google-calendar-tools-rub
 
 認証トークンエラーが発生した場合、以下のコマンドの実行を案内:
 ```bash
-mise exec --cd /Users/shifumin/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_authenticator.rb --mode=readwrite
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_authenticator.rb --mode=readwrite
 ```
 
 ## 📝 プロジェクト固有の設定
