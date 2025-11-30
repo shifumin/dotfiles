@@ -28,7 +28,7 @@ ARGUMENTS: $ARGUMENTS
 
 5. 解釈した内容をユーザーに確認してから、以下のコマンドを実行:
    ```bash
-   mise exec --cd /Users/shifumin/ghq/github.com/shifumin/google-calendar-fetcher-ruby -- ruby google_calendar_creator.rb --summary='<タイトル>' --start='<開始日時>' --end='<終了日時>' [--description='<説明>'] [--calendar='<カレンダーID>']
+   mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_creator.rb --summary='<タイトル>' --start='<開始日時>' --end='<終了日時>' [--description='<説明>'] [--calendar='<カレンダーID>']
    ```
 
 6. 実行結果をユーザーにわかりやすく伝える
@@ -44,4 +44,4 @@ ARGUMENTS: $ARGUMENTS
 
 ## 注意事項
 
-- 認証トークンが存在しない場合のエラーが出たら、先に `mise exec --cd /Users/shifumin/ghq/github.com/shifumin/google-calendar-fetcher-ruby -- ruby google_calendar_authenticator.rb --mode=write` の実行が必要と伝える
+- 認証トークンが存在しない場合のエラーが出たら、先に `mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_authenticator.rb --mode=readwrite` の実行が必要と伝える
