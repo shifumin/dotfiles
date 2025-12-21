@@ -155,3 +155,6 @@ yarn-debug.log*
 /storage/*
 !/storage/.keep
 /public/uploads
+
+# Claude Code
+.claude/settings.local.json
