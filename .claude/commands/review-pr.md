@@ -88,7 +88,7 @@ gh pr diff <PR番号> --repo <オーナー>/<リポジトリ>
 #### 3-2. SmartHR Design Systemリポジトリの確認（フロントエンド変更時のみ）
 
 **リポジトリパス**:
-- 絶対パス: `~/ghq/github.com/kufu/smarthr-design-system`
+- パス: `~/ghq/github.com/kufu/smarthr-design-system`
 
 **確認対象**:
 - コンポーネントガイドライン: `src/content/`
@@ -341,7 +341,7 @@ scope :confirmed, -> { where.not(confirmed_at: nil) }
 - ❌ 存在しないメソッドやコードについて**言及する**
 - ❌ 修正不要な項目を「⚠️ 修正が必要な点」に**含める**
 - ❌ 「結論: 問題なし」のような**無意味な項目を書く**
-- ❌ `~`を使ったパス表記（必ず絶対パス `~/...` を使用）
+- ❌ 絶対パス `/Users/<username>/...` を使った表記（`~` を使用すること）
 
 ---
 
