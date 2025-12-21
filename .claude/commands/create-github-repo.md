@@ -65,7 +65,7 @@ GitHubリポジトリを作成しています...
 ✅ リポジトリの作成とcloneが完了しました。
 作業ディレクトリに移動するには以下のコマンドを実行してください:
 
-cd /Users/shifumin/ghq/github.com/username/my-awesome-project
+cd ~/ghq/github.com/username/my-awesome-project
 ```
 
 ## 注意事項
