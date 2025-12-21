@@ -35,7 +35,7 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 - **カレンダー名マッピング**:
   - `work@example.com` → `【仕事】`
   - `personal@group.calendar.google.com` → `【しふみん】`
-  - `shifumin4230@gmail.com` → `【私用】`
+  - `private@example.com` → `【私用】`
 
 ## 予定作成（google_calendar_creator.rb）
 

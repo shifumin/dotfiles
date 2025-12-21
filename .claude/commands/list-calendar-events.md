@@ -46,7 +46,7 @@ Rubyスクリプト（google_calendar_fetcher.rb）を使用してGoogleカレ�
 |---|---|---|---|
 | `work@example.com` | `work@example.com` | `【仕事】` | 仕事用 |
 | `personal@group.calendar.google.com` | `しふみん` | `【しふみん】` | 個人用 |
-| `shifumin4230@gmail.com` | `shifumin` | `【私用】` | 個人用2 |
+| `private@example.com` | `Private Calendar` | `【私用】` | 個人用2 |
 
 ## 処理手順
 
@@ -104,7 +104,7 @@ Rubyスクリプト（google_calendar_fetcher.rb）を使用してGoogleカレ�
      - **カレンダー名の判定**:
        - `id`が`work@example.com` → `【仕事】`
        - `id`が`personal@group.calendar.google.com` → `【しふみん】`
-       - `id`が`shifumin4230@gmail.com` → `【私用】`
+       - `id`が`private@example.com` → `【私用】`
        - 上記以外のカレンダーID → `【不明】`
      - **予定名のクリーンアップ**:
        - 末尾の不要な記号（✔︎、！、✓など）を除去
@@ -213,7 +213,7 @@ Rubyスクリプト（google_calendar_fetcher.rb）を使用してGoogleカレ�
       "events": [
         {
           "id": "event_id",
-          "summary": "デイリースクラム",
+          "summary": "ミーティング",
           "description": null,
           "start": {
             "date_time": "2025-11-16T10:30:00+09:00",
