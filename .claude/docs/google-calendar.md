@@ -34,8 +34,8 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
   - 時間指定: `HH:MM-HH:MM 予定名【カレンダー名】`
 - **カレンダー名マッピング**:
   - `work@example.com` → `【仕事】`
-  - `d05uihnd5h2o08hohn57q6k940@group.calendar.google.com` → `【しふみん】`
-  - `shifumin4230@gmail.com` → `【私用】`
+  - `personal@group.calendar.google.com` → `【しふみん】`
+  - `private@example.com` → `【私用】`
 
 ## 予定作成（google_calendar_creator.rb）
 
@@ -46,7 +46,7 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 - **必須情報**: タイトル、開始日時
 - **日時形式**: ISO8601（例: 2025-12-01T19:00:00）
 - **終了日時省略時**: 開始時刻から30分後
-- **デフォルトカレンダー**: しふみん（`d05uihnd5h2o08hohn57q6k940@group.calendar.google.com`）
+- **デフォルトカレンダー**: しふみん（`personal@group.calendar.google.com`）
 - **実行前に必ずユーザーに確認する**
 
 ## 予定更新（google_calendar_updater.rb）

@@ -45,8 +45,8 @@ Rubyスクリプト（google_calendar_fetcher.rb）を使用してGoogleカレ�
 | Calendar ID | カレンダー名 | 表記 | 用途 |
 |---|---|---|---|
 | `work@example.com` | `work@example.com` | `【仕事】` | 仕事用 |
-| `d05uihnd5h2o08hohn57q6k940@group.calendar.google.com` | `しふみん` | `【しふみん】` | 個人用 |
-| `shifumin4230@gmail.com` | `Shifumi Fukunaga` | `【私用】` | 個人用2 |
+| `personal@group.calendar.google.com` | `しふみん` | `【しふみん】` | 個人用 |
+| `private@example.com` | `Private Calendar` | `【私用】` | 個人用2 |
 
 ## 処理手順
 
@@ -103,8 +103,8 @@ Rubyスクリプト（google_calendar_fetcher.rb）を使用してGoogleカレ�
        - 対象日を完全に含む長期予定: `00:00-23:59 予定名【カレンダー名】`
      - **カレンダー名の判定**:
        - `id`が`work@example.com` → `【仕事】`
-       - `id`が`d05uihnd5h2o08hohn57q6k940@group.calendar.google.com` → `【しふみん】`
-       - `id`が`shifumin4230@gmail.com` → `【私用】`
+       - `id`が`personal@group.calendar.google.com` → `【しふみん】`
+       - `id`が`private@example.com` → `【私用】`
        - 上記以外のカレンダーID → `【不明】`
      - **予定名のクリーンアップ**:
        - 末尾の不要な記号（✔︎、！、✓など）を除去
@@ -213,7 +213,7 @@ Rubyスクリプト（google_calendar_fetcher.rb）を使用してGoogleカレ�
       "events": [
         {
           "id": "event_id",
-          "summary": "デイリースクラム",
+          "summary": "ミーティング",
           "description": null,
           "start": {
             "date_time": "2025-11-16T10:30:00+09:00",
@@ -228,7 +228,7 @@ Rubyスクリプト（google_calendar_fetcher.rb）を使用してGoogleカレ�
       ]
     },
     {
-      "id": "d05uihnd5h2o08hohn57q6k940@group.calendar.google.com",
+      "id": "personal@group.calendar.google.com",
       "summary": "しふみん",
       "description": null,
       "timezone": "Asia/Tokyo",
