@@ -30,6 +30,19 @@
 
 `git diff --staged`で確認し、秘匿情報が含まれている場合は即座にユーザーに報告。
 
+## シェルコマンド
+
+環境設定が必要なコマンド（bundle, rails, rspec, pnpm など）は、必ず `mise exec` を使用して実行する。
+
+**理由**: miseで管理されているツールと環境変数を正しく読み込むため
+
+**実行例**:
+```bash
+mise exec -- bundle exec rspec spec/models/post_spec.rb
+mise exec -- pnpm install
+mise exec -- rails console
+```
+
 ## カスタムコマンド
 
 ~/.claude/commands/ に定義されたコマンド:
