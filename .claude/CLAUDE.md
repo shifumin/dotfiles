@@ -111,7 +111,7 @@ bundle exec rspec spec/models/post_spec.rb
 | `update-test` | テストを調整 |
 | `update-document` | CLAUDE.md/README.mdを更新 |
 | `update-claude-md` | CLAUDE.mdに内容を追加 |
-| `improve-doc` | ドキュメントをAIフレンドリーに改善 |
+| `optimize-for-ai` | ドキュメントをAI向けに最適化 |
 
 ### GitHub
 
