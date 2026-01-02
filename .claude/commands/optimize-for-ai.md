@@ -1,6 +1,6 @@
-# improve-doc [ドキュメントパス]
+# optimize-for-ai [ドキュメントパス]
 
-指定されたドキュメントをAIフレンドリーに改善します。
+指定されたドキュメントをAI向けに最適化します。
 
 ---
 
@@ -142,7 +142,7 @@ Write: 日記_2025-01-01.md
 編集完了後、以下の形式でサマリーを出力:
 
 ```
-## ドキュメント改善完了
+## ドキュメント最適化完了
 
 **対象ファイル**: [ファイルパス]
 
@@ -200,14 +200,14 @@ Write: 日記_2025-01-01.md
 ## 📚 使用例
 
 ```bash
-# CLAUDE.mdを改善
-/improve-doc CLAUDE.md
+# CLAUDE.mdを最適化
+/optimize-for-ai CLAUDE.md
 
-# カスタムコマンドを改善
-/improve-doc ~/.claude/commands/push.md
+# カスタムコマンドを最適化
+/optimize-for-ai ~/.claude/commands/push.md
 
-# プロジェクト固有のドキュメントを改善
-/improve-doc ~/project/CONTRIBUTING.md
+# プロジェクト固有のドキュメントを最適化
+/optimize-for-ai ~/project/CONTRIBUTING.md
 ```
 
 ---
