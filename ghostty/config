@@ -4,7 +4,7 @@ theme = "Solarized Dark Higher Contrast"
 # フォント
 font-family = "JetBrains Mono"
 font-family = "BIZ UDGothic Bold"
-font-size = 15
+font-size = 16
 font-thicken = true
 
 # 外観
