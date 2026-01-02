@@ -70,6 +70,8 @@ mise exec -- rails console
 - **update-calendar-event** - 予定を更新
 - **delete-calendar-event** - 予定を削除
 
+> **注意**: Googleカレンダーの操作はMCPツールではなく、上記のカスタムコマンド（スクリプト）を使用すること
+
 ### その他
 - **multi-llm-search** - 複数LLMで同時検索
 - **notebooklm-upload** - NotebookLMに音声概要を作成
