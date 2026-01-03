@@ -1,0 +1,146 @@
+[[plugins]]
+# MRU plugin includes unite.vim/denite.nvim MRU sources
+repo = 'Shougo/neomru.vim'
+
+[[plugins]]
+# Interactive command execution in Vim.
+repo = 'Shougo/vimproc.vim'
+build = 'make'
+
+[[plugins]]
+# Saves yank history includes unite.vim history/yank source.
+repo = 'Shougo/neoyank.vim'
+on_if = 1
+on_event = 'TextYankPost'
+on_source = ['denite.nvim']
+
+[[plugins]]
+# 🐉 Dark powered asynchronous unite all interfaces for Neovim/Vim8
+repo = 'Shougo/denite.nvim'
+depends = ['neomru.vim', 'neoyank.vim']
+on_cmd = 'Denite'
+
+[[plugins]]
+# denite-rails is a Denite.nvim source for Rails.
+repo = '5t111111/denite-rails'
+depends = ['denite.nvim']
+on_ft = ['ruby']
+
+[[plugins]]
+# Context filetype library for Vim script
+repo = 'Shougo/context_filetype.vim'
+
+[[plugins]]
+# A vim plugin to accelerate up-down moving!
+repo = 'rhysd/accelerated-jk'
+on_map = {n = '<Plug>'}
+hook_add = '''
+  nmap <silent>j <Plug>(accelerated_jk_gj)
+  nmap <silent>k <Plug>(accelerated_jk_gk)
+'''
+
+[[plugins]]
+# Insert several candidates with a single key
+repo = 'kana/vim-smartchr'
+on_event = 'InsertCharPre'
+hook_source = '''
+  inoremap <buffer> <expr> = smartchr#loop('=', '==', ' = ', ' == ')
+  inoremap <buffer> <expr> & smartchr#loop('&', '&&', ' & ', ' && ')
+  inoremap <buffer> <expr> + smartchr#loop('+', ' + ')
+  inoremap <buffer> <expr> - smartchr#loop('-', '--', ' - ')
+  inoremap <buffer> <expr> , smartchr#loop(',', ', ')
+  inoremap <buffer> <expr> > smartchr#loop('>', ' ->')
+  inoremap <buffer> <expr> . smartchr#loop('.', '..', '<%=  %>', '<%  %>')
+'''
+
+[[plugins]]
+# Vim operator mapping to enclose text objects with surrounds like paren, quote and so on.
+repo = 'rhysd/vim-operator-surround'
+depends = 'vim-operator-user'
+on_map = {n = '<Plug>'}
+hook_add = '''
+  nmap <silent>ys <Plug>(operator-surround-append)
+  nmap <silent>ds <Plug>(operator-surround-delete)
+  nmap <silent>cs <Plug>(operator-surround-replace)
+'''
+
+[[plugins]]
+# GitHub Flavored Markdown syntax highlight extension for Vim
+repo = 'rhysd/vim-gfm-syntax'
+on_event = 'BufRead'
+
+# JavaScript
+[[plugins]]
+# Typescript syntax files for Vim
+repo = 'leafgarland/typescript-vim'
+on_ft = ['typescript']
+
+[[plugins]]
+# 🔦 [Vim script] JSX syntax pretty highlighting for vim.
+repo = 'MaxMEllon/vim-jsx-pretty'
+on_ft = ['typescript']
+
+# Ruby
+[[plugins]]
+# Highlight Ruby local variables
+repo = 'todesking/ruby_hl_lvar.vim'
+on_ft = ['ruby']
+
+[[plugins]]
+# Ruby on Rails: easy file navigation, enhanced syntax highlighting, and more
+repo = 'tpope/vim-rails'
+on_ft = ['ruby']
+
+[[plugins]]
+# Ruby code completion.
+repo = 'osyo-manga/vim-monster'
+on_ft = ['ruby']
+
+[[plugins]]
+# Ruby code completion.
+repo = 'fishbullet/deoplete-ruby'
+on_ft = ['ruby']
+
+[[plugins]]
+# Ruby code completion.
+repo = 'Shougo/deoplete-rct'
+on_ft = ['ruby']
+
+# Python
+[[plugins]]
+# Using the jedi autocompletion library for VIM.
+repo = 'davidhalter/jedi-vim'
+if = "!has('nvim')"
+on_ft = 'python'
+hook_source = '''
+  let g:jedi#completions_enabled = 0
+  let g:jedi#auto_vim_configuration = 0
+  let g:jedi#smart_auto_mappings = 0
+  let g:jedi#show_call_signatures = 0
+'''
+
+[[plugins]]
+# deoplete.nvim source for Python
+repo = 'zchee/deoplete-jedi'
+on_ft = 'python'
+
+[[plugins]]
+# A nicer Python indentation style for vim.
+repo = 'hynek/vim-python-pep8-indent'
+on_ft = 'python'
+
+[[plugins]]
+# Flake8 plugin for Vim
+repo = 'nvie/vim-flake8'
+on_ft = 'python'
+
+# Terraform
+[[plugins]]
+# basic vim/terraform integration
+repo = 'hashivim/vim-terraform'
+on_ft = 'tf'
+hook_source = '''
+  let g:terraform_fmt_on_save = 1
+  let g:terraform_align = 1
+  let g:terraform_fold_sections = 1
+'''

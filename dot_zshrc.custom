@@ -1,0 +1,542 @@
+# setopt
+setopt auto_name_dirs
+# setopt auto_remove_slash
+
+# 指定したコマンド名がなく、ディレクトリ名と一致した場合 cd する
+setopt auto_cd
+
+# コマンドのスペルチェックをする
+setopt correct
+
+# 上書きリダイレクトの禁止
+setopt no_clobber
+
+# 補完候補リストを詰めて表示
+setopt list_packed
+
+# auto_list の補完候補一覧で、ls -F のようにファイルの種別をマーク表示
+setopt list_types
+
+# カッコの対応などを自動的に補完する
+setopt auto_param_keys
+
+# {a-c} を a b c に展開する機能を使えるようにする
+setopt brace_ccl
+
+# 複数のリダイレクトやパイプなど、必要に応じて tee や cat の機能が使われる
+setopt multios
+
+# 最後がディレクトリ名で終わっている場合末尾の / を自動的に取り除かない
+setopt noautoremoveslash
+
+
+####################
+# vcs_info 設定
+####################
+RPROMPT=""
+
+autoload -Uz vcs_info
+autoload -Uz add-zsh-hook
+autoload -Uz is-at-least
+autoload -Uz colors
+
+# 以下の3つのメッセージをエクスポートする
+#   $vcs_info_msg_0_ : 通常メッセージ用 (緑)
+#   $vcs_info_msg_1_ : 警告メッセージ用 (黄色)
+#   $vcs_info_msg_2_ : エラーメッセージ用 (赤)
+zstyle ':vcs_info:*' max-exports 3
+
+zstyle ':vcs_info:*' enable git svn hg bzr
+# 標準のフォーマット(git 以外で使用)
+# misc(%m) は通常は空文字列に置き換えられる
+zstyle ':vcs_info:*' formats '(%s)-[%b]'
+zstyle ':vcs_info:*' actionformats '(%s)-[%b]' '%m' '<!%a>'
+zstyle ':vcs_info:(svn|bzr):*' branchformat '%b:r%r'
+zstyle ':vcs_info:bzr:*' use-simple true
+
+
+if is-at-least 4.3.10; then
+    # git 用のフォーマット
+    # git のときはステージしているかどうかを表示
+    zstyle ':vcs_info:git:*' formats '(%s)-[%b]' '%c%u %m'
+    zstyle ':vcs_info:git:*' actionformats '(%s)-[%b]' '%c%u %m' '<!%a>'
+    zstyle ':vcs_info:git:*' check-for-changes true
+    zstyle ':vcs_info:git:*' stagedstr "+"    # %c で表示する文字列
+    zstyle ':vcs_info:git:*' unstagedstr "-"  # %u で表示する文字列
+fi
+
+# hooks 設定
+if is-at-least 4.3.11; then
+    # git のときはフック関数を設定する
+
+    # formats '(%s)-[%b]' '%c%u %m' , actionformats '(%s)-[%b]' '%c%u %m' '<!%a>'
+    # のメッセージを設定する直前のフック関数
+    # 今回の設定の場合はformat の時は2つ, actionformats の時は3つメッセージがあるので
+    # 各関数が最大3回呼び出される。
+    zstyle ':vcs_info:git+set-message:*' hooks \
+                                            git-hook-begin \
+                                            git-untracked \
+                                            git-push-status \
+                                            git-nomerge-branch \
+                                            git-stash-count
+
+    # フックの最初の関数
+    # git の作業コピーのあるディレクトリのみフック関数を呼び出すようにする
+    # (.git ディレクトリ内にいるときは呼び出さない)
+    # .git ディレクトリ内では git status --porcelain などがエラーになるため
+    function +vi-git-hook-begin() {
+        if [[ $(command git rev-parse --is-inside-work-tree 2> /dev/null) != 'true' ]]; then
+            # 0以外を返すとそれ以降のフック関数は呼び出されない
+            return 1
+        fi
+
+        return 0
+    }
+
+    # untracked ファイル表示
+    #
+    # untracked ファイル(バージョン管理されていないファイル)がある場合は
+    # unstaged (%u) に ? を表示
+    function +vi-git-untracked() {
+        # zstyle formats, actionformats の2番目のメッセージのみ対象にする
+        if [[ "$1" != "1" ]]; then
+            return 0
+        fi
+
+        if command git status --porcelain 2> /dev/null \
+            | awk '{print $1}' \
+            | command grep -F '??' > /dev/null 2>&1 ; then
+
+            # unstaged (%u) に追加
+            hook_com[unstaged]+='?'
+        fi
+    }
+
+    # push していないコミットの件数表示
+    #
+    # リモートリポジトリに push していないコミットの件数を
+    # pN という形式で misc (%m) に表示する
+    function +vi-git-push-status() {
+        # zstyle formats, actionformats の2番目のメッセージのみ対象にする
+        if [[ "$1" != "1" ]]; then
+            return 0
+        fi
+
+        if [[ "${hook_com[branch]}" != "master" ]]; then
+            # master ブランチでない場合は何もしない
+            return 0
+        fi
+
+        # push していないコミット数を取得する
+        local ahead
+        ahead=$(command git rev-list origin/master..master 2>/dev/null \
+            | wc -l \
+            | tr -d ' ')
+
+        if [[ "$ahead" -gt 0 ]]; then
+            # misc (%m) に追加
+            hook_com[misc]+="(p${ahead})"
+        fi
+    }
+
+    # マージしていない件数表示
+    #
+    # master 以外のブランチにいる場合に、
+    # 現在のブランチ上でまだ master にマージしていないコミットの件数を
+    # (mN) という形式で misc (%m) に表示
+    function +vi-git-nomerge-branch() {
+        # zstyle formats, actionformats の2番目のメッセージのみ対象にする
+        if [[ "$1" != "1" ]]; then
+            return 0
+        fi
+
+        if [[ "${hook_com[branch]}" == "master" ]]; then
+            # master ブランチの場合は何もしない
+            return 0
+        fi
+
+        local nomerged
+        nomerged=$(command git rev-list master..${hook_com[branch]} 2>/dev/null | wc -l | tr -d ' ')
+
+        if [[ "$nomerged" -gt 0 ]] ; then
+            # misc (%m) に追加
+            hook_com[misc]+="(m${nomerged})"
+        fi
+    }
+
+
+    # stash 件数表示
+    #
+    # stash している場合は :SN という形式で misc (%m) に表示
+    function +vi-git-stash-count() {
+        # zstyle formats, actionformats の2番目のメッセージのみ対象にする
+        if [[ "$1" != "1" ]]; then
+            return 0
+        fi
+
+        local stash
+        stash=$(command git stash list 2>/dev/null | wc -l | tr -d ' ')
+        if [[ "${stash}" -gt 0 ]]; then
+            # misc (%m) に追加
+            hook_com[misc]+=":S${stash}"
+        fi
+    }
+
+fi
+
+function _update_vcs_info_msg() {
+    local -a messages
+    local prompt
+
+    LANG=en_US.UTF-8 vcs_info
+
+    if [[ -z ${vcs_info_msg_0_} ]]; then
+        # vcs_info で何も取得していない場合はプロンプトを表示しない
+        prompt=""
+    else
+        # vcs_info で情報を取得した場合
+        # $vcs_info_msg_0_ , $vcs_info_msg_1_ , $vcs_info_msg_2_ を
+        # それぞれ緑、黄色、赤で表示する
+        [[ -n "$vcs_info_msg_0_" ]] && messages+=( "%F{green}${vcs_info_msg_0_}%f" )
+        [[ -n "$vcs_info_msg_1_" ]] && messages+=( "%F{yellow}${vcs_info_msg_1_}%f" )
+        [[ -n "$vcs_info_msg_2_" ]] && messages+=( "%F{red}${vcs_info_msg_2_}%f" )
+
+        # 間にスペースを入れて連結する
+        prompt="${(j: :)messages}"
+    fi
+
+    RPROMPT="$prompt"
+}
+add-zsh-hook precmd _update_vcs_info_msg
+####################
+
+####################
+# LS_COLORS
+# LS_COLORSを設定しよう - Qiita
+# http://qiita.com/yuyuchu3333/items/84fa4e051c3325098be3
+####################
+if [ -f ~/.dircolors ]; then
+    if type dircolors > /dev/null 2>&1; then
+        eval $(dircolors ~/.dircolors)
+    elif type gdircolors > /dev/null 2>&1; then
+        eval $(gdircolors ~/.dircolors)
+    fi
+fi
+
+if [ -n "$LS_COLORS" ]; then
+    zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+fi
+####################
+
+####################
+# Enter で ls と git status を表示すると便利 - Qiita
+# http://qiita.com/yuyuchu3333/items/e9af05670c95e2cc5b4d
+####################
+function do_enter() {
+    if [ -n "$BUFFER" ]; then
+        zle accept-line
+        return 0
+    fi
+    echo
+    ls
+    # ↓おすすめ
+    # ls_abbrev
+    if [ "$(git rev-parse --is-inside-work-tree 2> /dev/null)" = 'true' ]; then
+        echo
+        echo -e "\e[0;33m--- git status ---\e[0m"
+        git status -sb
+    fi
+    zle reset-prompt
+    return 0
+}
+zle -N do_enter
+bindkey '^m' do_enter
+####################
+
+####################
+# tmux
+# [tmux] 端末起動時に自動で新規セッションを作成 or 既存セッションにアタッチ - Qiita<Paste>
+# https://qiita.com/ssh0/items/a9956a74bff8254a606a
+####################
+tmux-new-session() {
+  if [[ -n $TMUX ]]; then
+    tmux switch-client -t "$(TMUX= tmux -S "${TMUX%,*,*}" new-session -dP "$@")"
+  else
+    tmux new-session "$@"
+  fi
+}
+
+tmux_sessions() {
+  # Select existing session or create session with fuzzy search tool
+  # get the IDs
+  if ! ID="$(tmux list-sessions 2>/dev/null)"; then
+    # tmux returned error, so try cleaning up /tmp
+    /bin/rm -rf /tmp/tmux*
+  fi
+  create_new_session="Create New Session"
+  if [[ -n "$ID" ]]; then
+    ID="${create_new_session}:\n$ID"
+  else
+    ID="${create_new_session}:"
+  fi
+  ID="$(echo $ID | $PERCOL | cut -d: -f1)"
+  if [[ "$ID" = "${create_new_session}" ]]; then
+    tmux-new-session
+  elif [[ -n "$ID" ]]; then
+    if [[ -n $TMUX ]]; then
+      tmux switch-client -t "$ID"
+    else
+      tmux attach-session -t "$ID"
+    fi
+  else
+    :  # Start terminal normally
+  fi
+}
+
+# Aliases
+if [[ -n $TMUX ]]; then
+  alias ta='tmux switch-client -t'
+else
+  alias ta='tmux attach-session -t'
+fi
+
+if ${TMUX_AUTO_START:-false} && [[ ! -n $TMUX && $- == *l* ]]; then
+  tmux_sessions
+fi
+####################
+
+## fpath settings
+fpath=($HOME/.zplug/repos/zsh-users/zsh-completions/src(N-/) $fpath)
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+fi
+
+####################
+# anyframe
+####################
+# zshでpecoと連携するためのanyframeというプラグインを作った - Qiita
+# http://qiita.com/mollifier/items/81b18c012d7841ab33c3
+# 新社会人に送る。peco + anyframe + zshで実現する快適コマンドライン環境 | eureka tech blog
+# https://developers.eure.jp/event/peco_anyframe_zsh/
+fpath=($HOME/.zsh/anyframe(N-/) $fpath)
+autoload -Uz anyframe-init
+anyframe-init
+
+# cdrコマンドの導入
+autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+add-zsh-hook chpwd chpwd_recent_dirs
+
+# よく移動するディレクトリ一覧をインクリメントサーチ & 移動
+bindkey '^@' anyframe-widget-cdr
+bindkey '^xb' anyframe-widget-cdr
+
+# branch一覧をインクリメントサーチ & checkout
+bindkey '^b' anyframe-widget-checkout-git-branch
+bindkey '^x^b' anyframe-widget-checkout-git-branch
+
+bindkey '^xr' anyframe-widget-execute-history
+bindkey '^x^r' anyframe-widget-execute-history
+
+# history一覧インクリメントサーチ & コマンドラインに挿入
+bindkey '^r' anyframe-widget-put-history
+bindkey '^xi' anyframe-widget-put-history
+bindkey '^x^i' anyframe-widget-put-history
+
+# ghq管理ディレクトリ一覧をインクリメントサーチ $ 移動
+# bindkey '^g' anyframe-widget-cd-ghq-repository
+# bindkey '^xg' anyframe-widget-cd-ghq-repository
+# bindkey '^x^g' anyframe-widget-cd-ghq-repository
+
+# プロセス一覧をインクリメントサーチ & kill
+bindkey '^xk' anyframe-widget-kill
+bindkey '^x^k' anyframe-widget-kill
+
+bindkey '^xe' anyframe-widget-insert-git-branch
+bindkey '^x^e' anyframe-widget-insert-git-branch
+####################
+
+####################
+# Autoloadings
+# フック機能を有効にする
+# autoload -Uz add-zsh-hook
+
+# コマンドのオプションや引数を補完する
+autoload -Uz compinit && compinit -u
+
+# URLをエスケープする
+autoload -Uz url-quote-magic
+
+# 文字入力時にURLをエスケープする
+zle -N self-insert url-quote-magic
+
+# VCS情報の表示を有効にする
+# autoload -Uz vcs_info
+####################
+
+####################
+# General settings
+# 補完候補を一覧で表示する
+setopt auto_list
+
+# 補完キー連打で候補順に自動で補完する
+setopt auto_menu
+
+# cd 時に自動でディレクトリスタックに追加する
+setopt auto_pushd
+
+# コマンド履歴に実行時間も記録する
+setopt extended_history
+
+# 履歴中の重複行をすべて削除する
+setopt hist_ignore_all_dups
+
+# 直前と重複するコマンドを記録しない
+setopt hist_ignore_dups
+
+# コマンド中の余分なスペースは削除して履歴に記録する
+setopt hist_reduce_blanks
+
+# 履歴と重複するコマンドを記録しない
+setopt hist_save_no_dups
+
+# ^D でシェルを終了しない
+setopt ignore_eof
+
+# 履歴をすぐに追加する（通常はシェル終了時）
+setopt inc_append_history
+
+# # 以降をコメントとして扱う
+setopt interactive_comments
+
+# ビープを無効にする
+setopt no_beep
+setopt no_hist_beep
+setopt no_list_beep
+
+# = 以降も補完する（例：--option=value）
+setopt magic_equal_subst
+
+# バックグラウンド処理の状態変化をすぐに通知する
+setopt notify
+
+# 8bit文字を有効にする
+setopt print_eight_bit
+
+# VCS情報の表示を有効にする
+setopt prompt_subst
+
+# ディレクトリスタックと重複したディレクトリをスタックに追加しない
+setopt pushd_ignore_dups
+
+# rm * の前に確認をとる
+setopt rm_star_wait
+
+# Zsh間で履歴を共有する
+setopt share_history
+
+# コマンド実行後は右プロンプトを消す
+setopt transient_rprompt
+
+
+# ディレクトリ名の補完で末尾の / を自動的に付加し、次の補完に備える
+setopt auto_param_slash
+
+# history (fc -l) コマンドをヒストリリストから取り除く。
+setopt hist_no_store
+####################
+
+####################
+# Exports
+export EDITOR=nvim
+export PERCOL=peco
+
+# コマンド履歴を保存するファイルを指定する
+export HISTFILE=$HOME/.zsh_history
+# メモリに保存する履歴の件数を指定する
+export HISTSIZE=1000
+# ファイルに保存する履歴の件数を指定する
+export SAVEHIST=1000000
+
+# 文字コードを設定する
+export LANG=ja_JP.UTF-8
+
+export GOPATH=$HOME/.go
+export PATH=$PATH:$HOME/bin:$GOPATH/bin
+
+# AWS settings
+export AWS_DEFAULT_REGION=ap-northeast-1
+####################
+
+####################
+# Key bindings
+# コマンドラインの編集モードをViにする
+bindkey -v
+
+bindkey '^A' beginning-of-line
+bindkey '^E' end-of-line
+
+bindkey '^N' down-line-or-history
+bindkey '^P' up-line-or-history
+####################
+
+####################
+# Module settings
+# 補完の表示方法を変更する
+zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*' group-name ''
+# zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+zstyle ':completion:*' use-cache true
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*:default' menu select=2
+zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
+zstyle ':completion:*:options' description 'yes'
+####################
+
+# sudoも補完の対象
+zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
+
+# mise
+eval "$(mise activate zsh)"
+
+# ghq
+# ghq-handbook/05-ghq-list.md at master · Songmu/ghq-handbook
+# https://github.com/Songmu/ghq-handbook/blob/master/ja/05-ghq-list.md
+peco-src () {
+    local repo=$(ghq list | peco --query "$LBUFFER")
+    if [ -n "$repo" ]; then
+        repo=$(ghq list --full-path --exact $repo)
+        BUFFER="cd ${repo}"
+        zle accept-line
+    fi
+    zle clear-screen
+}
+zle -N peco-src
+bindkey '^G' peco-src
+
+# 個人的によく使うGitエイリアス、zshキーバインド - 本日も乙
+# https://blog.jicoman.info/2022/05/collection-of-git-aliases-that-i-often-use/
+bindkey '^o' open-git-remote
+function open-git-remote() {
+    local selected=$(ghq list | peco --query "$LBUFFER")
+    if [ -n "$selected" ]; then
+    if [ -x "`which wslview`" ]; then
+        BUFFER="wslview https://${selected}"
+    else
+        BUFFER="open https://${selected}"
+    fi
+    zle accept-line
+    fi
+    zle clear-screen
+}
+zle -N open-git-remote
+
+# AWS CLI Command completion
+# https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-completion.html
+autoload bashcompinit && bashcompinit
+autoload -Uz compinit && compinit
+complete -C '/opt/homebrew/bin/aws_completer' aws
+
+# zoxide - A smarter cd command
+# https://github.com/ajeetdsouza/zoxide
+eval "$(zoxide init zsh)"

@@ -1,0 +1,81 @@
+# Google Calendar連携
+
+ユーザーがカレンダーの予定に関する操作をリクエストした場合、以下のRubyスクリプトを使用して自動的に処理する。スラッシュコマンドの明示的な呼び出しは不要。
+
+## 対応する操作とキーワード例
+
+| 操作 | トリガーとなる表現例 |
+|------|---------------------|
+| 予定取得 | 「今日の予定」「明日のスケジュール」「12/5の予定を教えて」 |
+| 予定作成 | 「予定を作成」「〜を登録」「カレンダーに追加」 |
+| 予定更新 | 「予定を変更」「時間を〜に変更」「〜を更新」 |
+| 予定削除 | 「予定を削除」「〜をキャンセル」「予定を消して」 |
+
+## スクリプトパスと実行方法
+
+すべてのスクリプトは以下のディレクトリに配置:
+`~/ghq/github.com/shifumin/google-calendar-tools-ruby/`
+
+実行時は必ず`mise exec`を使用:
+```bash
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby <script_name>.rb [options]
+```
+
+## 予定取得（google_calendar_fetcher.rb）
+
+```bash
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_fetcher.rb [date_arg]
+```
+
+- **引数**: 日付（`tomorrow`, `YYYY-MM-DD`形式、または引数なしで今日）
+- **出力**: JSON形式（カレンダーごとのイベント情報）
+- **表示形式**:
+  - 終日予定: `[終日] 予定名【カレンダー名】`
+  - 時間指定: `HH:MM-HH:MM 予定名【カレンダー名】`
+- **カレンダー名マッピング**:
+  - `***REMOVED***` → `【仕事】`
+  - `***REMOVED***` → `【しふみん】`
+  - `***REMOVED***` → `【私用】`
+
+## 予定作成（google_calendar_creator.rb）
+
+```bash
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_creator.rb --summary='<タイトル>' --start='<開始日時>' --end='<終了日時>' [--description='<説明>'] [--calendar='<カレンダーID>']
+```
+
+- **必須情報**: タイトル、開始日時
+- **日時形式**: ISO8601（例: 2025-12-01T19:00:00）
+- **終了日時省略時**: 開始時刻から30分後
+- **デフォルトカレンダー**: しふみん（`***REMOVED***`）
+- **実行前に必ずユーザーに確認する**
+
+## 予定更新（google_calendar_updater.rb）
+
+```bash
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_updater.rb --event-id='<イベントID>' [--summary='<新タイトル>'] [--start='<新開始日時>'] [--end='<新終了日時>'] [--description='<新説明>'] [--location='<新場所>']
+```
+
+- **処理フロー**:
+  1. fetcherでイベント一覧を取得
+  2. キーワードで対象イベントを特定
+  3. 0件: 該当なしを通知、1件: 確認後更新、複数件: 選択を求める
+  4. 更新前後の内容をユーザーに確認してから実行
+
+## 予定削除（google_calendar_deleter.rb）
+
+```bash
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_deleter.rb --event-id='<イベントID>'
+```
+
+- **処理フロー**:
+  1. fetcherでイベント一覧を取得
+  2. キーワードで対象イベントを特定
+  3. 0件: 該当なしを通知、1件: 確認後削除、複数件: 選択を求める
+  4. **削除は取り消せないため、必ずユーザーに確認してから実行**
+
+## 認証エラー時
+
+認証トークンエラーが発生した場合、以下のコマンドの実行を案内:
+```bash
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_authenticator.rb --mode=readwrite
+```
