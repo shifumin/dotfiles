@@ -1,0 +1,112 @@
+# nocorrect
+alias bundle='nocorrect bundle'
+alias cp="nocorrect cp -irp"
+alias git='nocorrect git'
+alias vim='nocorrect vim'
+
+# global aliases
+alias -g G='| grep'
+alias -g H='| head'
+alias -g J='| jq'
+alias -g L='| less'
+alias -g M='| more'
+alias -g T='| tail'
+alias -g P='| peco'
+alias -g REPOALL="--enablerepo=remi,epel,ius,rpmforge"
+
+# Homebrew
+alias bu='brew update'
+alias bug='brew upgrade'
+alias bo='brew outdated'
+
+# bundle
+alias be='bundle exec'
+
+# ctags
+alias ctags='`brew --prefix`/bin/ctags'
+
+# Docker
+alias do='docker'
+alias doi='docker images'
+alias dormi='docker rmi'
+alias dorminone="docker images | awk '/<none/{print $3}' | xargs docker rmi"
+alias dc='docker-compose'
+alias ds='docker-sync start'
+
+# git
+alias g='git'
+alias gi='git'
+alias ga='git add'
+alias gap='git add --patch'
+alias gb='git branch -vv'
+alias gca='git commit --amend'
+alias gcano='git commit --amend --no-edit'
+alias gcm='git commit --message'
+alias gd='git diff'
+alias gf='git fetch'
+alias gl='git log'
+alias gpf='git push --force-with-lease'
+alias gs='git status'
+alias gst='git stash'
+alias gstp='git stash pop'
+compdef g=git
+
+# peco と alias -g で git に便利革命おきた - Qiita
+# http://qiita.com/Kuniwak/items/b711d6c3e402dfd9356b
+alias -g B='`git branch -a | peco --prompt "GIT BRANCH>" | head -n 1 | sed -e "s/^\*\s*//g"`'
+alias -g R='`git remote | peco --prompt "GIT REMOTE>" | head -n 1`'
+alias -g D='`echo S | sed "s/\([0-9a-f]*\)/\1..\1^/" | xargs git diff --name-only | peco --prompt "GIT DIFF FILE>" | head -n 1 | sed "s/^\(\S*\).*/\1/"`'
+
+# grep
+alias gr='grep --color=auto -ERUIn'
+
+# heroku
+alias hlt='heroku logs --tail'
+
+# less
+alias less='less -qR'
+
+# eza
+alias l='eza -all -all --long --git --group-directories-first --time-style=long-iso'
+
+# su
+alias su='su -l'
+
+# Tig
+alias t='tig'
+alias ti='tig'
+alias tb='tig blame -w'
+alias tst='tig stash'
+
+# tmux
+if [[ -n $TMUX ]]; then
+  alias ta='tmux switch-client -t'
+else
+  alias ta='tmux attach-session -t'
+fi
+alias tl='tmux_sessions'
+alias ts='tmux-new-session -s'
+alias tksv='tmux kill-server'
+alias tkss='tmux kill-session -t'
+
+# Vim
+alias v='nvim'
+alias vi='nvim'
+alias vim='nvim'
+alias -g V='| nvim -'
+
+# Cursor
+alias c.='cursor .'
+
+# other
+alias cdu='cd-gitroot'
+alias cl='clear'
+alias mv='mv -i'
+alias rm='rm -i'
+alias mkdir='mkdir -p'
+
+# sudoの後のコマンドでエイリアスを有効にする
+alias sudo="sudo "
+
+# crontabの誤消去防止
+alias crontab="crontab -i"

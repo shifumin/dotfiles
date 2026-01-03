@@ -1,0 +1,13 @@
+# ~/.tmuxinator/default.yml
+
+name: default
+root: ~/
+
+windows:
+  - my-vault: cd ~/ghq/github.com/shifumin/my-vault
+  - my-vault2: cd ~/ghq/github.com/shifumin/my-vault
+  - dotfiles: cd ~/ghq/github.com/shifumin/dotfiles
+  - dotfiles2: cd ~/ghq/github.com/shifumin/dotfiles
+  - home5:
+  - home6:
+  - home7:

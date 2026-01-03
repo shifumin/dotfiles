@@ -1,0 +1,17 @@
+# ~/.tmuxinator/home.yml
+
+name: home
+root: ~/
+
+pre:
+  - echo start mux start home
+
+windows:
+  - mac:
+    - cd ~/Dropbox/Kobito
+    - brew update
+  - work1:
+  - work2:
+  - work3:
+  - dotfiles: cd ~/.ghq/github.com/shifumin/dotfiles
+  - setupfiles: cd ~/.ghq/github.com/shifumin/setupfiles
