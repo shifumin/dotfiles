@@ -57,7 +57,6 @@ chezmoi apply   # Apply dotfiles
 ### Other
 
 - `.default-npm-packages` - Default npm packages
-- `.ctags` - ctags configuration
 - `.claude/` - Claude Code settings and custom commands
 
 ## Workflow
