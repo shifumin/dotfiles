@@ -1,0 +1,71 @@
+# Sheldon - Zsh Plugin Manager Configuration
+# https://sheldon.cli.rs/
+
+shell = "zsh"
+
+[plugins]
+
+# ============================================================
+# Deferred loading support
+# ============================================================
+[plugins.zsh-defer]
+github = "romkatv/zsh-defer"
+
+# ============================================================
+# Theme
+# ============================================================
+[plugins.dracula]
+github = "dracula/zsh"
+
+# ============================================================
+# Completions
+# ============================================================
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+
+[plugins.zsh-curl-completion]
+github = "Valodim/zsh-curl-completion"
+
+# ============================================================
+# Fish-like autosuggestions for zsh
+# ============================================================
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+use = ["{{ name }}.zsh"]
+
+# ============================================================
+# Syntax highlighting (defer:2 equivalent)
+# ============================================================
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
+apply = ["defer"]
+
+# ============================================================
+# History substring search (defer:3 equivalent)
+# ============================================================
+[plugins.zsh-history-substring-search]
+github = "zsh-users/zsh-history-substring-search"
+apply = ["defer"]
+
+# ============================================================
+# Utility plugins
+# ============================================================
+[plugins.anyframe]
+github = "mollifier/anyframe"
+
+[plugins.cd-gitroot]
+github = "mollifier/cd-gitroot"
+
+# ============================================================
+# Command: peco-tmux
+# ============================================================
+[plugins.peco-tmux]
+github = "b4b4r07/dotfiles"
+dir = "bin"
+apply = ["PATH"]
+
+# ============================================================
+# Templates
+# ============================================================
+[templates]
+defer = "{{ hooks?.pre | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks?.post | nl }}"
