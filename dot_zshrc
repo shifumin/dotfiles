@@ -45,5 +45,5 @@ fi
 # Then, source plugins and add commands to $PATH
 zplug load --verbose
 
-[ -f $HOME/dotfiles/.zshrc.custom ] && source $HOME/dotfiles/.zshrc.custom
-[ -f $HOME/dotfiles/.zshrc.alias ] && source $HOME/dotfiles/.zshrc.alias
+[ -f $HOME/.zshrc.custom ] && source $HOME/.zshrc.custom
+[ -f $HOME/.zshrc.alias ] && source $HOME/.zshrc.alias
