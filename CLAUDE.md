@@ -60,10 +60,15 @@ Zsh plugins are managed with [Sheldon](https://sheldon.cli.rs/).
 ```bash
 sheldon lock           # Install/update plugins
 sheldon lock --update  # Force update all plugins
-sheldon list           # List configured plugins
 ```
 
 Plugin configuration: `~/.config/sheldon/plugins.toml`
+
+### Key Plugins
+
+- **[fzf](https://github.com/junegunn/fzf)** - Fuzzy finder (`Ctrl+R`, `Ctrl+T`, `Alt+C`)
+- **[forgit](https://github.com/wfxr/forgit)** - Git with fzf (`ga`, `gcb`, `glo`, `gd`)
+- **[fzf-zsh-plugin](https://github.com/unixorn/fzf-zsh-plugin)** - tmux, kill, etc. (`tm`, `fzf-kill`)
 
 ## Workflow
 

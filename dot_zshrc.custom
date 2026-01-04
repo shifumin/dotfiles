@@ -235,95 +235,11 @@ zle -N do_enter
 bindkey '^m' do_enter
 ####################
 
-####################
-# tmux
-# [tmux] 端末起動時に自動で新規セッションを作成 or 既存セッションにアタッチ - Qiita<Paste>
-# https://qiita.com/ssh0/items/a9956a74bff8254a606a
-####################
-tmux-new-session() {
-  if [[ -n $TMUX ]]; then
-    tmux switch-client -t "$(TMUX= tmux -S "${TMUX%,*,*}" new-session -dP "$@")"
-  else
-    tmux new-session "$@"
-  fi
-}
-
-tmux_sessions() {
-  # Select existing session or create session with fuzzy search tool
-  # get the IDs
-  if ! ID="$(tmux list-sessions 2>/dev/null)"; then
-    # tmux returned error, so try cleaning up /tmp
-    /bin/rm -rf /tmp/tmux*
-  fi
-  create_new_session="Create New Session"
-  if [[ -n "$ID" ]]; then
-    ID="${create_new_session}:\n$ID"
-  else
-    ID="${create_new_session}:"
-  fi
-  ID="$(echo $ID | $PERCOL | cut -d: -f1)"
-  if [[ "$ID" = "${create_new_session}" ]]; then
-    tmux-new-session
-  elif [[ -n "$ID" ]]; then
-    if [[ -n $TMUX ]]; then
-      tmux switch-client -t "$ID"
-    else
-      tmux attach-session -t "$ID"
-    fi
-  else
-    :  # Start terminal normally
-  fi
-}
-
-if ${TMUX_AUTO_START:-false} && [[ ! -n $TMUX && $- == *l* ]]; then
-  tmux_sessions
-fi
-####################
-
 ## fpath settings
 fpath=($HOME/.local/share/sheldon/repos/github.com/zsh-users/zsh-completions/src(N-/) $fpath)
 if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
 fi
-
-####################
-# anyframe
-####################
-# zshでpecoと連携するためのanyframeというプラグインを作った - Qiita
-# http://qiita.com/mollifier/items/81b18c012d7841ab33c3
-# 新社会人に送る。peco + anyframe + zshで実現する快適コマンドライン環境 | eureka tech blog
-# https://developers.eure.jp/event/peco_anyframe_zsh/
-fpath=($HOME/.local/share/sheldon/repos/github.com/mollifier/anyframe(N-/) $fpath)
-autoload -Uz anyframe-init
-anyframe-init
-
-# cdrコマンドの導入
-autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
-add-zsh-hook chpwd chpwd_recent_dirs
-
-# よく移動するディレクトリ一覧をインクリメントサーチ & 移動
-bindkey '^@' anyframe-widget-cdr
-bindkey '^xb' anyframe-widget-cdr
-
-# branch一覧をインクリメントサーチ & checkout
-bindkey '^b' anyframe-widget-checkout-git-branch
-bindkey '^x^b' anyframe-widget-checkout-git-branch
-
-bindkey '^xr' anyframe-widget-execute-history
-bindkey '^x^r' anyframe-widget-execute-history
-
-# history一覧インクリメントサーチ & コマンドラインに挿入
-bindkey '^r' anyframe-widget-put-history
-bindkey '^xi' anyframe-widget-put-history
-bindkey '^x^i' anyframe-widget-put-history
-
-# プロセス一覧をインクリメントサーチ & kill
-bindkey '^xk' anyframe-widget-kill
-bindkey '^x^k' anyframe-widget-kill
-
-bindkey '^xe' anyframe-widget-insert-git-branch
-bindkey '^x^e' anyframe-widget-insert-git-branch
-####################
 
 ####################
 # Autoloadings
@@ -415,7 +331,6 @@ setopt hist_no_store
 ####################
 # Exports
 export EDITOR=nvim
-export PERCOL=peco
 
 # コマンド履歴を保存するファイルを指定する
 export HISTFILE=$HOME/.zsh_history
@@ -466,33 +381,17 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 # mise
 eval "$(mise activate zsh)"
 
-# ghq
-# ghq-handbook/05-ghq-list.md at master · Songmu/ghq-handbook
-# https://github.com/Songmu/ghq-handbook/blob/master/ja/05-ghq-list.md
-peco-src () {
-    local repo=$(ghq list | peco --query "$LBUFFER")
-    if [ -n "$repo" ]; then
-        repo=$(ghq list --full-path --exact $repo)
-        BUFFER="cd ${repo}"
-        zle accept-line
-    fi
-    zle clear-screen
+# ghq + fzf
+fzf-ghq() {
+  local repo=$(ghq list | fzf --query "$LBUFFER")
+  if [[ -n "$repo" ]]; then
+    BUFFER="cd $(ghq root)/${repo}"
+    zle accept-line
+  fi
+  zle reset-prompt
 }
-zle -N peco-src
-bindkey '^G' peco-src
-
-# 個人的によく使うGitエイリアス、zshキーバインド - 本日も乙
-# https://blog.jicoman.info/2022/05/collection-of-git-aliases-that-i-often-use/
-bindkey '^o' open-git-remote
-function open-git-remote() {
-    local selected=$(ghq list | peco --query "$LBUFFER")
-    if [ -n "$selected" ]; then
-        BUFFER="open https://${selected}"
-        zle accept-line
-    fi
-    zle clear-screen
-}
-zle -N open-git-remote
+zle -N fzf-ghq
+bindkey '^g' fzf-ghq
 
 # AWS CLI Command completion
 # https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-completion.html
@@ -503,3 +402,15 @@ complete -C '/opt/homebrew/bin/aws_completer' aws
 # zoxide - A smarter cd command
 # https://github.com/ajeetdsouza/zoxide
 eval "$(zoxide init zsh)"
+
+####################
+# fzf - Fuzzy Finder
+# https://github.com/junegunn/fzf
+####################
+# Key bindings (Ctrl+R: history, Ctrl+T: file, Alt+C: cd)
+source "$(brew --prefix)/opt/fzf/shell/key-bindings.zsh"
+# Completion
+source "$(brew --prefix)/opt/fzf/shell/completion.zsh"
+
+# fzf options
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'

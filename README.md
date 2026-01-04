@@ -26,6 +26,9 @@ chezmoi apply   # Apply dotfiles
 - `.zshrc`, `.zshrc.alias`, `.zshrc.custom` - Zsh configuration
 - `.zprofile`, `.zshenv` - Zsh environment
 - `.config/sheldon/` - Zsh plugin manager ([Sheldon](https://sheldon.cli.rs/))
+  - [fzf](https://github.com/junegunn/fzf) - Fuzzy finder
+  - [forgit](https://github.com/wfxr/forgit) - Git with fzf
+  - [fzf-zsh-plugin](https://github.com/unixorn/fzf-zsh-plugin) - fzf integrations
 
 ### Git
 

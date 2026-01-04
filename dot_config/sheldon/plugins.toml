@@ -50,19 +50,17 @@ apply = ["defer"]
 # ============================================================
 # Utility plugins
 # ============================================================
-[plugins.anyframe]
-github = "mollifier/anyframe"
-
 [plugins.cd-gitroot]
 github = "mollifier/cd-gitroot"
 
 # ============================================================
-# Command: peco-tmux
+# fzf integrations
 # ============================================================
-[plugins.peco-tmux]
-github = "b4b4r07/dotfiles"
-dir = "bin"
-apply = ["PATH"]
+[plugins.forgit]
+github = "wfxr/forgit"
+
+[plugins.fzf-zsh-plugin]
+github = "unixorn/fzf-zsh-plugin"
 
 # ============================================================
 # Templates
