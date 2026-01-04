@@ -21,9 +21,6 @@ alias bo='brew outdated'
 # bundle
 alias be='bundle exec'
 
-# ctags
-alias ctags='`brew --prefix`/bin/ctags'
-
 # Docker
 alias do='docker'
 alias doi='docker images'
