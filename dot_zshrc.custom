@@ -293,13 +293,6 @@ tmux_sessions() {
   fi
 }
 
-# Aliases
-if [[ -n $TMUX ]]; then
-  alias ta='tmux switch-client -t'
-else
-  alias ta='tmux attach-session -t'
-fi
-
 if ${TMUX_AUTO_START:-false} && [[ ! -n $TMUX && $- == *l* ]]; then
   tmux_sessions
 fi
@@ -359,9 +352,6 @@ bindkey '^x^e' anyframe-widget-insert-git-branch
 # Autoloadings
 # フック機能を有効にする
 # autoload -Uz add-zsh-hook
-
-# コマンドのオプションや引数を補完する
-autoload -Uz compinit && compinit -u
 
 # URLをエスケープする
 autoload -Uz url-quote-magic
