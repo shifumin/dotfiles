@@ -46,7 +46,7 @@ autoload -Uz colors
 #   $vcs_info_msg_2_ : エラーメッセージ用 (赤)
 zstyle ':vcs_info:*' max-exports 3
 
-zstyle ':vcs_info:*' enable git svn hg bzr
+zstyle ':vcs_info:*' enable git
 # 標準のフォーマット(git 以外で使用)
 # misc(%m) は通常は空文字列に置き換えられる
 zstyle ':vcs_info:*' formats '(%s)-[%b]'
@@ -122,14 +122,14 @@ if is-at-least 4.3.11; then
             return 0
         fi
 
-        if [[ "${hook_com[branch]}" != "master" ]]; then
-            # master ブランチでない場合は何もしない
+        if [[ "${hook_com[branch]}" != "main" ]]; then
+            # main ブランチでない場合は何もしない
             return 0
         fi
 
         # push していないコミット数を取得する
         local ahead
-        ahead=$(command git rev-list origin/master..master 2>/dev/null \
+        ahead=$(command git rev-list origin/main..main 2>/dev/null \
             | wc -l \
             | tr -d ' ')
 
@@ -150,13 +150,13 @@ if is-at-least 4.3.11; then
             return 0
         fi
 
-        if [[ "${hook_com[branch]}" == "master" ]]; then
-            # master ブランチの場合は何もしない
+        if [[ "${hook_com[branch]}" == "main" ]]; then
+            # main ブランチの場合は何もしない
             return 0
         fi
 
         local nomerged
-        nomerged=$(command git rev-list master..${hook_com[branch]} 2>/dev/null | wc -l | tr -d ' ')
+        nomerged=$(command git rev-list main..${hook_com[branch]} 2>/dev/null | wc -l | tr -d ' ')
 
         if [[ "$nomerged" -gt 0 ]] ; then
             # misc (%m) に追加
@@ -208,24 +208,6 @@ function _update_vcs_info_msg() {
     RPROMPT="$prompt"
 }
 add-zsh-hook precmd _update_vcs_info_msg
-####################
-
-####################
-# LS_COLORS
-# LS_COLORSを設定しよう - Qiita
-# http://qiita.com/yuyuchu3333/items/84fa4e051c3325098be3
-####################
-if [ -f ~/.dircolors ]; then
-    if type dircolors > /dev/null 2>&1; then
-        eval $(dircolors ~/.dircolors)
-    elif type gdircolors > /dev/null 2>&1; then
-        eval $(gdircolors ~/.dircolors)
-    fi
-fi
-
-if [ -n "$LS_COLORS" ]; then
-    zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-fi
 ####################
 
 ####################
@@ -334,11 +316,6 @@ bindkey '^x^r' anyframe-widget-execute-history
 bindkey '^r' anyframe-widget-put-history
 bindkey '^xi' anyframe-widget-put-history
 bindkey '^x^i' anyframe-widget-put-history
-
-# ghq管理ディレクトリ一覧をインクリメントサーチ $ 移動
-# bindkey '^g' anyframe-widget-cd-ghq-repository
-# bindkey '^xg' anyframe-widget-cd-ghq-repository
-# bindkey '^x^g' anyframe-widget-cd-ghq-repository
 
 # プロセス一覧をインクリメントサーチ & kill
 bindkey '^xk' anyframe-widget-kill
@@ -510,12 +487,8 @@ bindkey '^o' open-git-remote
 function open-git-remote() {
     local selected=$(ghq list | peco --query "$LBUFFER")
     if [ -n "$selected" ]; then
-    if [ -x "`which wslview`" ]; then
-        BUFFER="wslview https://${selected}"
-    else
         BUFFER="open https://${selected}"
-    fi
-    zle accept-line
+        zle accept-line
     fi
     zle clear-screen
 }
