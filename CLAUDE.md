@@ -46,11 +46,24 @@ chezmoi cd
 ```
 dot_zshrc, dot_zshrc.alias, dot_zshrc.custom  # Zsh configuration
 dot_config/
+├── sheldon/       # Zsh plugin manager (sheldon)
 ├── nvim/          # Neovim (dein.vim plugin manager)
 └── ghostty/       # Ghostty terminal
 dot_tmuxinator/    # tmuxinator project configs
 dot_claude/        # Claude Code settings and custom commands
 ```
+
+## Zsh Plugin Management
+
+Zsh plugins are managed with [Sheldon](https://sheldon.cli.rs/).
+
+```bash
+sheldon lock           # Install/update plugins
+sheldon lock --update  # Force update all plugins
+sheldon list           # List configured plugins
+```
+
+Plugin configuration: `~/.config/sheldon/plugins.toml`
 
 ## Workflow
 

@@ -25,6 +25,7 @@ chezmoi apply   # Apply dotfiles
 
 - `.zshrc`, `.zshrc.alias`, `.zshrc.custom` - Zsh configuration
 - `.zprofile`, `.zshenv` - Zsh environment
+- `.config/sheldon/` - Zsh plugin manager ([Sheldon](https://sheldon.cli.rs/))
 
 ### Git
 
