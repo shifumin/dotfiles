@@ -1,43 +1,50 @@
-変更内容をcommitしてpushしてください
+変更内容をcommitしてpushする。
+
+---
 
 ## 手順
 
-### 1. 現在の状態を確認
-- `git status` で変更ファイルを確認
-- 変更がない場合 → 「変更がありません」と報告して終了
+### 1. 状態確認
 
-### 2. 変更内容を分析
-- `git diff` で未ステージの変更内容を確認
-- `git diff --staged` でステージ済みの変更内容を確認
+```bash
+git status
+git diff
+git diff --staged
+```
 
-### 3. コミット粒度を判断
-以下の基準で変更を論理的なまとまりに分ける:
-- 機能追加 (feat)
-- バグ修正 (fix)
-- リファクタリング (refactor)
-- ドキュメント (docs)
-- スタイル修正 (style)
-- テスト (test)
-- その他 (chore)
+変更がない場合 → 「変更がありません」と報告して終了
 
-複数の種類が混在する場合は、種類ごとに別コミットにする。
-1種類の変更のみの場合は、1コミットにまとめる。
+### 2. コミット粒度を判断
 
-### 4. コミットを作成
-- 各コミットに対して `git add` → `git commit` を実行
-- コミットメッセージは Conventional Commits 形式（英語）:
-  - `feat: add ...`
-  - `fix: fix ...`
-  - `refactor: refactor ...`
-  - `docs: update ...`
-  - `style: fix code style`
-  - `test: add tests for ...`
-  - `chore: update ...`
+| 種類 | prefix | 例 |
+|------|--------|-----|
+| 機能追加 | `feat` | `feat: add user search` |
+| バグ修正 | `fix` | `fix: handle null input` |
+| リファクタリング | `refactor` | `refactor: extract helper` |
+| ドキュメント | `docs` | `docs: update README` |
+| スタイル | `style` | `style: format code` |
+| テスト | `test` | `test: add unit tests` |
+| その他 | `chore` | `chore: update deps` |
 
-### 5. pushを実行
-- `git push` を実行
-- push失敗時はエラー内容を報告
+**ルール**: 複数種類が混在 → 種類ごとに別コミット
 
-## 注意事項
-- 秘匿情報（APIキー、パスワード等）が含まれていないか確認
-- push先ブランチが正しいか確認
+### 3. コミット作成
+
+```bash
+git add <files>
+git commit -m "<prefix>: <description>"
+```
+
+### 4. push
+
+```bash
+git push
+```
+
+失敗時はエラー内容を報告
+
+---
+
+## 🔴 必須チェック
+
+コミット前に `git diff --staged` で秘匿情報がないか確認（詳細は CLAUDE.md「セキュリティ」セクション参照）
