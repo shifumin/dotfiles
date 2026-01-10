@@ -157,6 +157,24 @@ mise exec -- rails console
 bundle exec rspec spec/models/post_spec.rb
 ```
 
+### chezmoi
+
+| 状況 | 対応 |
+|------|------|
+| `chezmoi apply` 成功 | そのまま続行 |
+| エラー発生（競合など） | ユーザーに報告し、対応を確認 |
+
+**理由**: `--force` による強制適用はユーザーの意図しない上書きを引き起こす可能性があるため
+
+```bash
+# ❌ NG: エラー時に勝手に強制適用
+chezmoi apply --force
+
+# ✅ OK: エラー内容を報告し、ユーザーに確認
+「chezmoi apply でエラーが発生しました: [エラー内容]
+どのように対応しますか？」
+```
+
 ---
 
 ## カスタムコマンド
