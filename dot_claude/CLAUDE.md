@@ -107,7 +107,14 @@ EOF
 
 ---
 
-## セキュリティ
+## Git
+
+### コミットメッセージ
+
+| ルール | 説明 |
+|--------|------|
+| **英語で記述** | `feat: add user search` 形式 |
+| **Conventional Commits** | `feat`, `fix`, `refactor`, `docs`, `test`, `chore` |
 
 ### コミット前チェック（必須）
 
