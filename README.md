@@ -57,7 +57,7 @@ chezmoi apply   # Apply dotfiles
 ### Other
 
 - `.default-npm-packages` - Default npm packages
-- `.claude/` - Claude Code settings and custom commands
+- `.claude/` - Claude Code settings, custom commands, and skills
 
 ## Workflow
 
