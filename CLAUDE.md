@@ -21,25 +21,14 @@ Directories use `dot_` prefix: `dot_config/` → `~/.config/`
 
 ## Common Commands
 
-```bash
-# Preview changes before applying
-chezmoi diff
-
-# Apply changes to home directory
-chezmoi apply
-
-# Add a new file to chezmoi
-chezmoi add ~/.newfile
-
-# Edit a managed file (opens source file)
-chezmoi edit ~/.zshrc
-
-# Pull and apply latest from remote
-chezmoi update
-
-# Go to this source directory
-chezmoi cd
-```
+| Command | Description |
+|---------|-------------|
+| `chezmoi diff` | Preview changes |
+| `chezmoi apply` | Apply to home directory |
+| `chezmoi add <file>` | Add file to chezmoi |
+| `chezmoi edit <file>` | Edit source file |
+| `chezmoi update` | Pull and apply from remote |
+| `chezmoi cd` | Go to source directory |
 
 ## Directory Structure
 
@@ -50,7 +39,9 @@ dot_config/
 ├── nvim/          # Neovim (dein.vim plugin manager)
 └── ghostty/       # Ghostty terminal
 dot_tmuxinator/    # tmuxinator project configs
-dot_claude/        # Claude Code settings and custom commands
+dot_claude/        # Claude Code settings
+├── commands/      # Custom slash commands
+└── skills/        # Skills (google-calendar, github)
 ```
 
 ## Zsh Plugin Management
@@ -72,7 +63,6 @@ Plugin configuration: `~/.config/sheldon/plugins.toml`
 
 ## Workflow
 
-1. Edit files in this source directory (files with `dot_` prefixes)
-2. Run `chezmoi diff` to preview
-3. Run `chezmoi apply` to apply to home directory
-4. Commit and push changes
+1. Edit source files (with `dot_` prefixes)
+2. `chezmoi diff` → `chezmoi apply`
+3. Commit and push
