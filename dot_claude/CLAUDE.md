@@ -156,10 +156,25 @@ bundle exec rspec spec/models/post_spec.rb
 
 ### chezmoi
 
+> **🔴 重要**: chezmoi管理下のファイルは**直接編集禁止**
+
+| 対象パス | ソースディレクトリ |
+|----------|-------------------|
+| `~/.claude/*` | `~/.local/share/chezmoi/dot_claude/` |
+| `~/.config/*` | `~/.local/share/chezmoi/dot_config/` |
+| `~/.zshrc` 等 | `~/.local/share/chezmoi/dot_zshrc` 等 |
+
+**編集手順**:
+1. ソースディレクトリのファイルを編集
+2. `chezmoi diff` で差分確認
+3. `chezmoi apply` で適用
+
 | 状況 | 対応 |
 |------|------|
 | `chezmoi apply` 成功 | そのまま続行 |
 | エラー発生（競合など） | ユーザーに報告し対応を確認（`--force` 禁止） |
+
+**理由**: 直接編集するとソースとターゲットの不整合が発生する
 
 ---
 
