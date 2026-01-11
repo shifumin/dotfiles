@@ -22,13 +22,14 @@ git diff --staged
 | バグ修正 | `fix` | `fix: handle null input` |
 | リファクタリング | `refactor` | `refactor: extract helper` |
 | ドキュメント | `docs` | `docs: update README` |
-| スタイル | `style` | `style: format code` |
 | テスト | `test` | `test: add unit tests` |
 | その他 | `chore` | `chore: update deps` |
 
 **ルール**: 複数種類が混在 → 種類ごとに別コミット
 
 ### 3. コミット作成
+
+🔴 **コミット前**: `git diff --staged` で秘匿情報がないか確認（CLAUDE.md「コミット前チェック」参照）
 
 ```bash
 git add <files>
@@ -41,10 +42,7 @@ git commit -m "<prefix>: <description>"
 git push
 ```
 
-失敗時はエラー内容を報告
-
----
-
-## 🔴 必須チェック
-
-コミット前に `git diff --staged` で秘匿情報がないか確認（詳細は CLAUDE.md「セキュリティ」セクション参照）
+| 結果 | 対応 |
+|------|------|
+| 成功 | 完了報告 |
+| 失敗 | エラー内容を報告し、対処法を提案 |
