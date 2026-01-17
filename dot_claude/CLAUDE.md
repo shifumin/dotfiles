@@ -183,6 +183,20 @@ IF リクエストに「メール」「Gmail」「受信」「送信者」を含
 
 スキル定義: `~/.claude/skills/`
 
+### Notion連携
+
+Notionリンク（`https://www.notion.so/...`）のリンク先情報が必要な場合、Notion MCPを使用する。
+
+| 操作 | ツール | 用途 |
+|------|--------|------|
+| ページ取得 | `mcp__notion__API-retrieve-a-page` | プロパティ取得 |
+| 内容取得 | `mcp__notion__API-get-block-children` | ページ本文取得 |
+| 検索 | `mcp__notion__API-post-search` | タイトルで検索 |
+
+**ページIDの抽出**: URLの末尾32文字（ハイフンなし）をUUID形式に変換
+- 例: `https://www.notion.so/WF-1000XM4-6199211160cd4d0d9211311a3229c58b`
+  → ページID: `61992111-60cd-4d0d-9211-311a3229c58b`
+
 ---
 
 ## プロジェクト固有の設定
