@@ -108,7 +108,14 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 1. ユーザー入力から情報を解釈
 2. 不足情報があれば**AskUserQuestion**で確認（タイトル、開始日時）
 3. 解釈内容をユーザーに表示し、**確認を取ってから**実行
-4. 実行結果を報告
+4. 実行結果を報告（URL付記）
+
+### 出力形式
+
+```
+✅ YYYY-MM-DD [終日] 予定名【カレンダー名】
+URL: https://www.google.com/calendar/event?eid=...
+```
 
 ### 実行コマンド
 
