@@ -35,8 +35,8 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby <scr
 
 | カレンダー名 | カレンダーID | 表記 |
 |-------------|-------------|------|
-| しふみん（デフォルト） | {{ .calendar.shifumin_calendar_id }} | 【しふみん】 |
-| 私用 | {{ .calendar.personal_email }} | 【私用】 |
+| 私用（デフォルト） | {{ .calendar.personal_email }} | 【私用】 |
+| しふみん | {{ .calendar.shifumin_calendar_id }} | 【しふみん】 |
 | 仕事 | {{ .calendar.work_email }} | 【仕事】 |
 
 ### 日付の解釈ルール
@@ -101,7 +101,7 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 | start_time（開始日時） | 必須 | - |
 | end_time（終了日時） | 任意 | 開始時刻から30分後 |
 | description（説明） | 任意 | なし |
-| calendar（カレンダー名） | 任意 | しふみん |
+| calendar（カレンダー名） | 任意 | 私用 |
 
 ### 処理フロー
 
@@ -125,8 +125,8 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 
 | 入力 | summary | start | end | calendar |
 |------|---------|-------|-----|----------|
-| 明日の19時から、買い物 | 買い物 | 明日19:00 | 明日19:30 | しふみん |
-| 12/5 14:00-15:30 定例会議 | 定例会議 | 12/5 14:00 | 12/5 15:30 | しふみん |
+| 明日の19時から、買い物 | 買い物 | 明日19:00 | 明日19:30 | 私用 |
+| 12/5 14:00-15:30 定例会議 | 定例会議 | 12/5 14:00 | 12/5 15:30 | 私用 |
 | しふみん 明日10時 歯医者 | 歯医者 | 明日10:00 | 明日10:30 | しふみん |
 
 ---
