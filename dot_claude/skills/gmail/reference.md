@@ -23,9 +23,11 @@
 | `--query` | 必須 | Gmail検索クエリ |
 | `--max-results` | 任意 | 最大取得件数（デフォルト: 10, 最大: 100） |
 | `--no-body` | 任意 | 本文を除外（高速化） |
+| `--include-html` | 任意 | HTML本文を取得（HTMLメール用） |
 
 ### JSON出力構造
 
+デフォルト:
 ```json
 {
   "query": "from:amazon.co.jp",
@@ -46,6 +48,16 @@
       }
     }
   ]
+}
+```
+
+`--include-html`使用時:
+```json
+{
+  "body": {
+    "plain_text": "本文テキスト...",
+    "html": "<html>...</html>"
+  }
 }
 ```
 

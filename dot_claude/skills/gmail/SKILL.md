@@ -70,7 +70,8 @@ mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby <script_name>.
 mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_searcher.rb \
   --query='<検索クエリ>' \
   [--max-results=N] \
-  [--no-body]
+  [--no-body] \
+  [--include-html]
 ```
 
 ### オプション
@@ -80,6 +81,7 @@ mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_searcher
 | `--query` | 必須 | - | Gmail検索クエリ |
 | `--max-results` | 任意 | 10 | 最大取得件数（最大100） |
 | `--no-body` | 任意 | false | 本文を除外（高速化） |
+| `--include-html` | 任意 | false | HTML本文を取得（HTMLメール用） |
 
 ### 出力の整形
 
@@ -106,8 +108,9 @@ JSON出力を以下のMarkdown形式に変換:
 2. **送信者表示**: `"Name" <email>` 形式をそのまま表示
 3. **snippet**: blockquote（`>`）で表示
 4. **本文**: 要求があれば `body.plain_text` を表示（長い場合は最初の500文字+省略）
-5. **0件の場合**: 「該当するメールが見つかりませんでした」と表示
-6. **ラベル**: 日本語で表示（`INBOX` → 受信トレイ）
+5. **HTMLメール**: `plain_text`が空で`has_html: true`の場合、`--include-html`で再取得し`body.html`を使用
+6. **0件の場合**: 「該当するメールが見つかりませんでした」と表示
+7. **ラベル**: 日本語で表示（`INBOX` → 受信トレイ）
 
 ---
 
