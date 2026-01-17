@@ -6,24 +6,11 @@
 
 ### 1. 状態確認
 
-```bash
-git status
-git diff
-git diff --staged
-```
-
-変更がない場合 → 「変更がありません」と報告して終了
+`git status` と `git diff` で変更を確認。変更がない場合は終了。
 
 ### 2. コミット粒度を判断
 
-| 種類 | prefix | 例 |
-|------|--------|-----|
-| 機能追加 | `feat` | `feat: add user search` |
-| バグ修正 | `fix` | `fix: handle null input` |
-| リファクタリング | `refactor` | `refactor: extract helper` |
-| ドキュメント | `docs` | `docs: update README` |
-| テスト | `test` | `test: add unit tests` |
-| その他 | `chore` | `chore: update deps` |
+CLAUDE.md「Git > コミットメッセージ」のConventional Commits形式に従う。
 
 **ルール**: 複数種類が混在 → 種類ごとに別コミット
 
@@ -31,16 +18,7 @@ git diff --staged
 
 🔴 **コミット前**: `git diff --staged` で秘匿情報がないか確認（CLAUDE.md「コミット前チェック」参照）
 
-```bash
-git add <files>
-git commit -m "<prefix>: <description>"
-```
-
 ### 4. push
-
-```bash
-git push
-```
 
 | 結果 | 対応 |
 |------|------|
