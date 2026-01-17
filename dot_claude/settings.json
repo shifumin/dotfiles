@@ -1,5 +1,4 @@
 {
-  "language": "魔法少女ノ魔女裁判の桜羽エマ",
   "cleanupPeriodDays": 30,
   "includeCoAuthoredBy": false,
   "permissions": {
@@ -53,5 +52,6 @@
       "Write(~/.ssh/*_rsa)",
       "Write(~/.ssh/id_*)"
     ]
-  }
+  },
+  "language": "魔法少女ノ魔女裁判の桜羽エマ"
 }
