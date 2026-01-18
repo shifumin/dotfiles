@@ -393,6 +393,18 @@ fzf-ghq() {
 zle -N fzf-ghq
 bindkey '^g' fzf-ghq
 
+# git branch + fzf
+fzf-git-branch() {
+  local branch=$(git branch --sort=-committerdate | fzf --query "$LBUFFER" | sed 's/^[* ]*//')
+  if [[ -n "$branch" ]]; then
+    BUFFER="git checkout ${branch}"
+    zle accept-line
+  fi
+  zle reset-prompt
+}
+zle -N fzf-git-branch
+bindkey '^b' fzf-git-branch
+
 # AWS CLI Command completion
 # https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-completion.html
 autoload bashcompinit && bashcompinit
