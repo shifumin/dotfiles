@@ -1,31 +1,10 @@
 # Gmail技術仕様
 
-統合スキル `~/.claude/skills/gmail/SKILL.md` から参照される技術仕様。
-
-## スクリプト一覧
-
-| スクリプト | 用途 |
-|-----------|------|
-| gmail_searcher.rb | メール検索 |
-| gmail_fetcher.rb | メール取得 |
-| gmail_authenticator.rb | OAuth認証 |
-
-パス: `~/ghq/github.com/shifumin/gmail-tools-ruby/`
+SKILL.mdから参照される技術仕様。引数・実行方法はSKILL.mdを参照。
 
 ---
 
-## Searcher (gmail_searcher.rb)
-
-### 引数
-
-| 引数 | 必須 | 説明 |
-|------|------|------|
-| `--query` | 必須 | Gmail検索クエリ |
-| `--max-results` | 任意 | 最大取得件数（デフォルト: 10, 最大: 100） |
-| `--no-body` | 任意 | 本文を除外（高速化） |
-| `--include-html` | 任意 | HTML本文を取得（HTMLメール用） |
-
-### JSON出力構造
+## Searcher JSON出力構造
 
 デフォルト:
 ```json
@@ -63,14 +42,7 @@
 
 ---
 
-## Fetcher (gmail_fetcher.rb)
-
-### 引数
-
-| 引数 | 必須 | 説明 |
-|------|------|------|
-| `--message-id` | 必須 | メッセージID |
-| `--format` | 任意 | 取得形式（デフォルト: full） |
+## Fetcher
 
 ### formatオプション
 
@@ -250,10 +222,12 @@
 | エラーメッセージ | 原因 | 対処 |
 |-----------------|------|------|
 | `No credentials found` | 初回認証未実施 | authenticator実行 |
-| `invalid_grant` | トークン期限切れ | トークン削除後、authenticator再実行 |
+| `invalid_grant` | トークン期限切れ | トークン削除後、authenticator再実行（下記コマンド参照） |
 | `GOOGLE_CLIENT_ID is not set` | 環境変数未設定 | mise.local.toml確認 |
 | `Error: --query is required` | 必須引数不足 | クエリを指定 |
 | `Invalid format` | 不正なformat値 | full/minimal/metadata/rawから選択 |
+
+再認証コマンドはSKILL.mdの「認証エラー時」セクションを参照。
 
 ---
 
