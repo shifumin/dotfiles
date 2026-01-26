@@ -18,19 +18,13 @@ description: Gmailのメール検索・取得を行う。
 
 ## 共通設定
 
-### スクリプトパスと実行方法
+スクリプトパス: `~/ghq/github.com/shifumin/gmail-tools-ruby/`
 
-すべてのスクリプトは以下のディレクトリに配置:
-`~/ghq/github.com/shifumin/gmail-tools-ruby/`
-
-実行時は必ず`mise exec`を使用:
-```bash
-mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby <script_name>.rb [options]
-```
+実行: `mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby <script>.rb [options]`
 
 ---
 
-## 操作1: メール検索
+## メール検索
 
 ### 処理フロー
 
@@ -76,12 +70,12 @@ mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_searcher
 
 ### オプション
 
-| オプション | 必須 | デフォルト | 説明 |
-|-----------|------|-----------|------|
-| `--query` | 必須 | - | Gmail検索クエリ |
-| `--max-results` | 任意 | 10 | 最大取得件数（最大100） |
-| `--no-body` | 任意 | false | 本文を除外（高速化） |
-| `--include-html` | 任意 | false | HTML本文を取得（HTMLメール用） |
+| オプション | 説明 |
+|-----------|------|
+| `--query` | **必須** Gmail検索クエリ |
+| `--max-results` | 最大取得件数（デフォルト: 10、最大: 100） |
+| `--no-body` | 本文を除外（高速化） |
+| `--include-html` | HTML本文を取得 |
 
 ### 出力の整形
 
@@ -104,17 +98,19 @@ JSON出力を以下のMarkdown形式に変換:
 
 ### 整形ルール
 
-1. **日付フォーマット**: RFC2822形式 → `YYYY-MM-DD HH:MM` に変換
-2. **送信者表示**: `"Name" <email>` 形式をそのまま表示
-3. **snippet**: blockquote（`>`）で表示
-4. **本文**: 要求があれば `body.plain_text` を表示（長い場合は最初の500文字+省略）
-5. **HTMLメール**: `plain_text`が空で`has_html: true`の場合、`--include-html`で再取得し`body.html`を使用
-6. **0件の場合**: 「該当するメールが見つかりませんでした」と表示
-7. **ラベル**: 日本語で表示（`INBOX` → 受信トレイ）
+| 項目 | ルール |
+|------|--------|
+| 日付 | RFC2822 → `YYYY-MM-DD HH:MM` |
+| 送信者 | `"Name" <email>` 形式をそのまま表示 |
+| snippet | blockquote（`>`）で表示 |
+| 本文 | 要求時のみ表示（500文字超は省略） |
+| HTMLメール | `plain_text`が空の場合、`--include-html`で再取得 |
+| 0件 | 「該当するメールが見つかりませんでした」 |
+| ラベル | 日本語表示（変換表はreference.md参照） |
 
 ---
 
-## 操作2: メール取得
+## メール取得
 
 ### 処理フロー
 
@@ -132,10 +128,10 @@ mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_fetcher.
 
 ### オプション
 
-| オプション | 必須 | デフォルト | 説明 |
-|-----------|------|-----------|------|
-| `--message-id` | 必須 | - | メッセージID |
-| `--format` | 任意 | full | 取得形式 |
+| オプション | 説明 |
+|-----------|------|
+| `--message-id` | **必須** メッセージID |
+| `--format` | 取得形式: full/minimal/metadata/raw（デフォルト: full） |
 
 ### 出力の整形
 
@@ -163,19 +159,27 @@ mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_fetcher.
 
 ## 認証エラー時
 
-認証トークンエラーが発生した場合、以下のコマンドの実行を案内:
-
-```bash
-mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenticator.rb
-```
-
 ### エラーメッセージの判定
 
 | エラーパターン | 対処 |
 |---------------|------|
 | `No credentials found` | 初回認証が必要。authenticatorを実行 |
-| `invalid_grant` | トークン期限切れ。authenticatorを再実行 |
+| `invalid_grant` | トークン期限切れ。トークン削除後、authenticatorを再実行 |
 | `GOOGLE_CLIENT_ID is not set` | 環境変数の設定を案内 |
+
+### 再認証コマンド
+
+`invalid_grant`（トークン期限切れ）の場合、トークンファイルを削除してから再認証する:
+
+```bash
+rm ~/.credentials/gmail-readonly-token.yaml && mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenticator.rb
+```
+
+`No credentials found`（初回認証）の場合:
+
+```bash
+mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenticator.rb
+```
 
 ---
 
