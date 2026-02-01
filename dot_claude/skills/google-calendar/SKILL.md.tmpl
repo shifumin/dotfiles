@@ -49,7 +49,7 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby <scr
 
 ---
 
-## 操作1: 予定取得
+## 予定取得
 
 ### 引数
 
@@ -65,6 +65,8 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby <scr
 ```bash
 mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_fetcher.rb [date_arg]
 ```
+
+**注意**: 出力は常にJSON形式。`--json`等の追加オプションは存在しない。
 
 ### 出力の整形
 
@@ -91,7 +93,7 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 
 ---
 
-## 操作2: 予定作成
+## 予定作成
 
 ### 必要な情報
 
@@ -138,7 +140,7 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 
 ---
 
-## 操作3: 予定更新
+## 予定更新
 
 ### 処理フロー
 
@@ -171,6 +173,8 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
   [--location='<新場所>']
 ```
 
+**終日イベントの日付移動**: `--start='YYYY-MM-DD' --end='翌日のYYYY-MM-DD'`（例: 2/6に移動→`--start='2026-02-06' --end='2026-02-07'`）
+
 ### 入力例
 
 | 入力 | キーワード | 日付 | 更新内容 |
@@ -179,9 +183,16 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 | 明日の歯医者を15時からに変更 | 歯医者 | 明日 | start: 15:00 |
 | ランチを12時から13時に変更 | ランチ | 今日 | start: 12:00, end: 13:00 |
 
+### 出力形式
+
+```
+✅ YYYY-MM-DD [終日] 予定名【カレンダー名】
+URL: https://www.google.com/calendar/event?eid=...
+```
+
 ---
 
-## 操作4: 予定削除
+## 予定削除
 
 ### 処理フロー
 
@@ -211,14 +222,20 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 | 明日の会議をキャンセル | 会議 | 明日 |
 | 12/5の定例を消して | 定例 | 12/5 |
 
+### 出力形式
+
+```
+🗑️ YYYY-MM-DD [終日] 予定名【カレンダー名】を削除しました
+```
+
 ---
 
 ## 認証エラー時
 
-認証トークンエラーが発生した場合、以下のコマンドの実行を案内:
+認証トークンエラー（`Token has been expired or revoked`）が発生した場合、**トークン削除→再認証**の順で実行:
 
 ```bash
-mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_authenticator.rb --mode=readwrite
+rm -f ~/.credentials/calendar-readwrite-token.yaml && mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_authenticator.rb --mode=readwrite
 ```
 
 ---

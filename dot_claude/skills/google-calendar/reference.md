@@ -151,15 +151,17 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 
 ### 認証エラー対処
 
+トークン期限切れ時は**削除→再認証**の順で実行:
+
 ```bash
-mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_authenticator.rb --mode=readwrite
+rm -f ~/.credentials/calendar-readwrite-token.yaml && mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_authenticator.rb --mode=readwrite
 ```
 
 ### 認証ファイル
 
 | ファイル | 説明 |
 |----------|------|
-| `~/.credentials/calendar-fetcher-token.yaml` | 読み取り用トークン |
+| `~/.credentials/calendar-readonly-token.yaml` | 読み取り用トークン |
 | `~/.credentials/calendar-readwrite-token.yaml` | 読み書き用トークン |
 
 ---
