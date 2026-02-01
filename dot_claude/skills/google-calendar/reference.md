@@ -73,6 +73,26 @@
 | 終日 | `"2025-01-15"` | `null` |
 | 時間指定 | `null` | `"2025-01-15T10:00:00+09:00"` |
 
+### jqアクセスパス
+
+JSON出力を処理する際のjqパス:
+
+| 目的 | jqパス |
+|------|--------|
+| 全イベント | `.calendars[].events[]` |
+| タイトルのみ | `.calendars[].events[].summary` |
+| 特定カレンダーのイベント | `.calendars[] \| select(.id == "calendar_id") \| .events[]` |
+| キーワード検索（大文字小文字無視） | `.calendars[].events[] \| select(.summary \| test("キーワード"; "i"))` |
+| 終日イベントのみ | `.calendars[].events[] \| select(.start.date != null)` |
+| 時間指定イベントのみ | `.calendars[].events[] \| select(.start.date_time != null)` |
+
+**注意**: jqコマンドはシングルクォートで囲むこと（シェルの特殊文字解釈を防ぐため）
+
+### 制限事項
+
+- fetcherは**単一日付のみ対応**（2引数目は無視される）
+- 日付範囲検索は、forループで各日を個別に取得して結合する
+
 ---
 
 ## Creator (google_calendar_creator.rb)
