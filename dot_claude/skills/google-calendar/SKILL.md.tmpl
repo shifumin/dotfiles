@@ -13,6 +13,7 @@ description: Googleカレンダーの予定を取得・作成・更新・削除�
 | 操作 | トリガーとなる表現例 | 使用スクリプト |
 |------|---------------------|---------------|
 | 取得 | 「今日の予定」「明日のスケジュール」「予定を教えて」 | google_calendar_fetcher.rb |
+| 検索 | 「〜の予定はある？」「〜を検索」「未来の〜」 | google_calendar_fetcher.rb + jq |
 | 作成 | 「予定を作成」「〜を登録」「カレンダーに追加」「〜入れて」 | google_calendar_creator.rb |
 | 更新 | 「予定を変更」「時間を〜に変更」「〜を更新」「移動して」 | google_calendar_updater.rb |
 | 削除 | 「予定を削除」「〜をキャンセル」「予定を消して」 | google_calendar_deleter.rb |
@@ -90,6 +91,74 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 ```
 
 予定が0件の場合: 「予定はありません」と表示
+
+---
+
+## 予定検索（キーワード）
+
+### トリガー
+
+「〜の予定はある？」「〜を検索」「未来の〜」などの表現
+
+### 処理フロー
+
+1. キーワードと検索期間を解釈（期間指定なし→今日から3ヶ月後まで）
+2. 期間内の各日についてfetcherを実行し、結果を結合
+3. jqでキーワードフィルタ
+4. 結果を整形して表示（0件なら「該当なし」）
+
+### 制限事項
+
+- fetcherは**単一日付のみ対応**（日付範囲は未サポート）
+- 長期間の検索は複数回実行が必要
+
+### JSON構造とjqパス
+
+fetcherの出力構造:
+```json
+{
+  "date": "YYYY-MM-DD",
+  "calendars": [
+    {
+      "id": "calendar_id",
+      "events": [
+        { "id": "...", "summary": "イベント名", "start": {...}, "end": {...} }
+      ]
+    }
+  ]
+}
+```
+
+| 目的 | jqパス |
+|------|--------|
+| 全イベント | `.calendars[].events[]` |
+| タイトルのみ | `.calendars[].events[].summary` |
+| キーワード検索 | `.calendars[].events[] \| select(.summary \| test("キーワード"; "i"))` |
+
+### 実行例
+
+**単一日のキーワード検索:**
+```bash
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_fetcher.rb 2026-02-01 | jq '.calendars[].events[] | select(.summary | test("キーワード"; "i"))'
+```
+
+**複数日を検索（forループ）:**
+```bash
+bash -c 'for d in 2026-02-{01..28}; do mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_fetcher.rb "$d" 2>/dev/null; done' | jq -s '[.[].calendars[].events[]] | map(select(.summary | test("キーワード"; "i")))'
+```
+
+**注意**: zsh環境では`bash -c '...'`で囲む必要がある（zshのevalがfor文を正しく解釈しないため）
+
+### 出力形式
+
+該当あり:
+```markdown
+## 検索結果: 「キーワード」
+
+- YYYY-MM-DD HH:MM-HH:MM 予定名【カレンダー名】
+```
+
+該当なし: 「該当する予定はありません」と表示
 
 ---
 
