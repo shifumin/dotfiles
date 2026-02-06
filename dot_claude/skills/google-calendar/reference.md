@@ -41,7 +41,7 @@
       "events": [
         {
           "id": "event_id_12345",
-          "summary": "イベント名",
+          "summary": "予定名",
           "description": "説明文",
           "start": {
             "date_time": "2025-01-15T10:00:00+09:00",
@@ -59,14 +59,14 @@
 }
 ```
 
-### イベント種別
+### 予定種別
 
 | event_type | 説明 | 処理 |
 |------------|------|------|
-| `default` | 通常イベント | 表示 |
+| `default` | 通常予定 | 表示 |
 | `workingLocation` | 勤務場所 | **除外** |
 
-### 終日イベント vs 時間指定イベント
+### 終日予定 vs 時間指定予定
 
 | タイプ | start.date | start.date_time |
 |--------|-----------|-----------------|
@@ -79,12 +79,12 @@ JSON出力を処理する際のjqパス:
 
 | 目的 | jqパス |
 |------|--------|
-| 全イベント | `.calendars[].events[]` |
+| 全予定 | `.calendars[].events[]` |
 | タイトルのみ | `.calendars[].events[].summary` |
-| 特定カレンダーのイベント | `.calendars[] \| select(.id == "calendar_id") \| .events[]` |
+| 特定カレンダーの予定 | `.calendars[] \| select(.id == "calendar_id") \| .events[]` |
 | キーワード検索（大文字小文字無視） | `.calendars[].events[] \| select(.summary \| test("キーワード"; "i"))` |
-| 終日イベントのみ | `.calendars[].events[] \| select(.start.date != null)` |
-| 時間指定イベントのみ | `.calendars[].events[] \| select(.start.date_time != null)` |
+| 終日予定のみ | `.calendars[].events[] \| select(.start.date != null)` |
+| 時間指定予定のみ | `.calendars[].events[] \| select(.start.date_time != null)` |
 
 **注意**: jqコマンドはシングルクォートで囲むこと（シェルの特殊文字解釈を防ぐため）
 
@@ -101,7 +101,7 @@ JSON出力を処理する際のjqパス:
 
 | 引数 | 必須 | 説明 |
 |------|------|------|
-| `--summary` | 必須 | イベントタイトル |
+| `--summary` | 必須 | 予定タイトル |
 | `--start` | 必須 | 開始日時（ISO8601） |
 | `--end` | 任意 | 終了日時（ISO8601）。省略時は開始から30分後 |
 | `--description` | 任意 | 説明文 |
@@ -125,7 +125,7 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 
 | 引数 | 必須 | 説明 |
 |------|------|------|
-| `--event-id` | 必須 | 更新対象のイベントID |
+| `--event-id` | 必須 | 更新対象の予定ID |
 | `--summary` | 任意 | 新しいタイトル |
 | `--start` | 任意 | 新しい開始日時（ISO8601） |
 | `--end` | 任意 | 新しい終了日時（ISO8601） |
@@ -149,7 +149,7 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 
 | 引数 | 必須 | 説明 |
 |------|------|------|
-| `--event-id` | 必須 | 削除対象のイベントID |
+| `--event-id` | 必須 | 削除対象の予定ID |
 
 ### 実行例
 
