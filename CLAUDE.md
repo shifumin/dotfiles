@@ -1,7 +1,5 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Repository Overview
 
 Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/). This is the **source directory** (`~/.local/share/chezmoi/`), not the target home directory.
@@ -26,43 +24,39 @@ Directories use `dot_` prefix: `dot_config/` → `~/.config/`
 | `chezmoi diff` | Preview changes |
 | `chezmoi apply` | Apply to home directory |
 | `chezmoi add <file>` | Add file to chezmoi |
-| `chezmoi edit <file>` | Edit source file |
-| `chezmoi update` | Pull and apply from remote |
-| `chezmoi cd` | Go to source directory |
 
 ## Directory Structure
 
 ```
 dot_zshrc, dot_zshrc.alias, dot_zshrc.custom  # Zsh configuration
+dot_zprofile                                   # Zsh profile
+dot_gitconfig, dot_gitignore                   # Git
+dot_tigrc                                      # tig (Git UI)
+dot_tmux.conf                                  # tmux
+dot_pryrc, dot_gemrc, dot_rspec, dot_default-gems  # Ruby
+dot_default-npm-packages                       # Node.js
+dot_obsidian.vimrc                             # Obsidian vim keybindings
 dot_config/
 ├── sheldon/       # Zsh plugin manager (sheldon)
 ├── nvim/          # Neovim (dein.vim plugin manager)
 └── ghostty/       # Ghostty terminal
 dot_tmuxinator/    # tmuxinator project configs
-dot_claude/        # Claude Code settings
+dot_claude/
+├── CLAUDE.md      # Global Claude Code settings
 ├── commands/      # Custom slash commands
-└── skills/        # Skills (google-calendar, github)
+└── skills/        # Skills (github, gmail, google-calendar)
 ```
 
 ## Zsh Plugin Management
 
-Zsh plugins are managed with [Sheldon](https://sheldon.cli.rs/).
+Zsh plugins are managed with Sheldon. Config: `dot_config/sheldon/plugins.toml`
 
 ```bash
 sheldon lock           # Install/update plugins
 sheldon lock --update  # Force update all plugins
 ```
 
-Plugin configuration: `~/.config/sheldon/plugins.toml`
-
-### Key Plugins
-
-- **[fzf](https://github.com/junegunn/fzf)** - Fuzzy finder (`Ctrl+R`, `Ctrl+T`, `Alt+C`)
-- **[forgit](https://github.com/wfxr/forgit)** - Git with fzf (`ga`, `gcb`, `glo`, `gd`)
-- **[fzf-zsh-plugin](https://github.com/unixorn/fzf-zsh-plugin)** - tmux, kill, etc. (`tm`, `fzf-kill`)
-
-## Workflow
-
-1. Edit source files (with `dot_` prefixes)
-2. `chezmoi diff` → `chezmoi apply`
-3. Commit and push
+Key plugins:
+- **fzf** - Fuzzy finder (`Ctrl+R`, `Ctrl+T`, `Alt+C`)
+- **forgit** - Git with fzf (`ga`, `gcb`, `glo`, `gd`)
+- **fzf-zsh-plugin** - tmux, kill, etc. (`tm`, `fzf-kill`)
