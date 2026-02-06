@@ -5,8 +5,6 @@ description: Gmailのメール検索・取得を行う。
 
 # Gmail操作
 
-ユーザーがGmailの検索・取得をリクエストした場合、Rubyスクリプトを使用して処理する。
-
 ## 操作の判定
 
 | 操作 | トリガーとなる表現例 | 使用スクリプト |
@@ -96,8 +94,6 @@ JSON出力を以下のMarkdown形式に変換:
 ---
 ```
 
-### 整形ルール
-
 | 項目 | ルール |
 |------|--------|
 | 日付 | RFC2822 → `YYYY-MM-DD HH:MM` |
@@ -159,7 +155,7 @@ mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_fetcher.
 
 ## 認証エラー時
 
-### エラーメッセージの判定
+認証はブラウザでのOAuth操作が必要なため、コマンドを自動実行せずユーザーに案内する。
 
 | エラーパターン | 対処 |
 |---------------|------|
@@ -169,10 +165,10 @@ mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_fetcher.
 
 ### 再認証コマンド
 
-`invalid_grant`（トークン期限切れ）の場合、トークンファイルを削除してから再認証する:
+`invalid_grant`（トークン期限切れ）の場合、トークンファイルを削除してから再認証:
 
 ```bash
-rm ~/.credentials/gmail-readonly-token.yaml && mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenticator.rb
+rm -f ~/.credentials/gmail-readonly-token.yaml && mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenticator.rb
 ```
 
 `No credentials found`（初回認証）の場合:
