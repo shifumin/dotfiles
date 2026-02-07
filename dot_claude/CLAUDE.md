@@ -102,7 +102,7 @@ Rubyコード実装時、publicメソッドにYARDコメントを追記: `@param
 | トリガーキーワード | 使用するスキル | 禁止するMCPツール |
 |-------------------|---------------|------------------|
 | 予定、カレンダー、スケジュール | `/google-calendar` | - |
-| PR、Issue、GitHub | `/github` | - |
+| PR、Issue、GitHub、CI、Actions、通知 | `/github` | - |
 | メール、Gmail、受信、送信者 | `/gmail` | - |
 | スキル作成、skill、create skill | `/creating-skill` | - |
 
