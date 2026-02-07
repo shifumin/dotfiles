@@ -104,6 +104,7 @@ Rubyコード実装時、publicメソッドにYARDコメントを追記: `@param
 | 予定、カレンダー、スケジュール | `/google-calendar` | - |
 | PR、Issue、GitHub | `/github` | - |
 | メール、Gmail、受信、送信者 | `/gmail` | - |
+| スキル作成、skill、create skill | `/creating-skill` | - |
 
 ### Notion連携
 
