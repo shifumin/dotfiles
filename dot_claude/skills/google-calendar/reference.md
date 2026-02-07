@@ -2,6 +2,16 @@
 
 統合スキル `~/.claude/skills/google-calendar/SKILL.md` から参照される技術仕様。
 
+## 目次
+
+1. スクリプト一覧
+2. Fetcher
+3. Creator
+4. Updater
+5. Deleter
+6. Authenticator
+7. トラブルシューティング
+
 ## スクリプト一覧
 
 | スクリプト | 用途 |
@@ -97,16 +107,6 @@ JSON出力を処理する際のjqパス:
 
 ## Creator (google_calendar_creator.rb)
 
-### 引数
-
-| 引数 | 必須 | 説明 |
-|------|------|------|
-| `--summary` | 必須 | 予定タイトル |
-| `--start` | 必須 | 開始日時（ISO8601） |
-| `--end` | 任意 | 終了日時（ISO8601）。省略時は開始から30分後 |
-| `--description` | 任意 | 説明文 |
-| `--calendar` | 任意 | カレンダーID。省略時はデフォルト |
-
 ### 実行例
 
 ```bash
@@ -121,17 +121,6 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 
 ## Updater (google_calendar_updater.rb)
 
-### 引数
-
-| 引数 | 必須 | 説明 |
-|------|------|------|
-| `--event-id` | 必須 | 更新対象の予定ID |
-| `--summary` | 任意 | 新しいタイトル |
-| `--start` | 任意 | 新しい開始日時（ISO8601） |
-| `--end` | 任意 | 新しい終了日時（ISO8601） |
-| `--description` | 任意 | 新しい説明文 |
-| `--location` | 任意 | 新しい場所 |
-
 ### 実行例
 
 ```bash
@@ -144,12 +133,6 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 ---
 
 ## Deleter (google_calendar_deleter.rb)
-
-### 引数
-
-| 引数 | 必須 | 説明 |
-|------|------|------|
-| `--event-id` | 必須 | 削除対象の予定ID |
 
 ### 実行例
 
@@ -171,11 +154,7 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 
 ### 認証エラー対処
 
-トークン期限切れ時は**削除→再認証**の順で実行:
-
-```bash
-rm -f ~/.credentials/calendar-readwrite-token.yaml && mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_authenticator.rb --mode=readwrite
-```
+認証エラー時の対処法はSKILL.mdの「認証エラー時」セクションを参照。
 
 ### 認証ファイル
 
@@ -183,31 +162,6 @@ rm -f ~/.credentials/calendar-readwrite-token.yaml && mise exec --cd ~/ghq/githu
 |----------|------|
 | `~/.credentials/calendar-readonly-token.yaml` | 読み取り用トークン |
 | `~/.credentials/calendar-readwrite-token.yaml` | 読み書き用トークン |
-
----
-
-## 出力整形ルール
-
-### 並び順
-
-1. 終日予定（`start.date`あり）を先頭グループ
-   - 取得順を維持
-2. 時間指定予定（`start.date_time`あり）を次グループ
-   - 開始時刻の昇順
-
-### 複数日にまたがる予定
-
-| ケース | 表示 |
-|--------|------|
-| 前日から継続 | `00:00-HH:MM` |
-| 翌日以降に終了 | `HH:MM-23:59` |
-| 対象日を完全に含む | `00:00-23:59` |
-
-### 予定名のクリーンアップ
-
-- 末尾の記号（✔︎、！、✓など）を除去
-- 空の場合: `(タイトルなし)` として表示
-- 絵文字: そのまま表示
 
 ---
 
