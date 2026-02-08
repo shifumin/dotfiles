@@ -44,7 +44,7 @@ dot_tmuxinator/    # tmuxinator project configs
 dot_claude/
 ├── CLAUDE.md      # Global Claude Code settings
 ├── commands/      # Custom slash commands
-└── skills/        # Skills (frontend-design, github, gmail, google-calendar, managing-skills, optimize-for-ai, push)
+└── skills/        # Skills (frontend-design, github, gmail, google-calendar, managing-skills, optimizing-docs-for-ai, push)
 ```
 
 ## Zsh Plugin Management
