@@ -1,25 +1,25 @@
 ---
-description: Claude Codeのスキルを新規作成・改善する。
+description: Claude Codeのスキルの新規作成・既存スキルの改善を行う。
   「スキルを作成」「スキルを作って」「skillを作成」「create a skill」
-  「スキルを追加」「新しいスキルを作って」などのリクエストで使用。
+  「スキルを改善」「スキルを更新」「improve skill」などのリクエストで使用。
 ---
 
-# スキル作成
+# スキル管理
 
-Anthropicの公式ベストプラクティスに沿って、高品質なClaude Codeスキルを作成する。
+Anthropicの公式ベストプラクティスに沿って、Claude Codeスキルの新規作成・既存スキルの改善を行う。
 
-## 処理フロー
+## 操作の判定
 
-1. ユーザーからスキルの目的・対象を聞き取る
-2. 要件を整理（対象操作、トリガー、自由度の判定）
-3. スキルディレクトリとファイルを作成
-4. CLAUDE.mdを更新（スキル一覧・ツール選択ルール）
-5. `chezmoi diff` → `chezmoi apply` で適用
-6. 検証（別セッションでのトリガーテスト推奨）
+| 操作 | トリガーとなる表現例 | 処理フロー |
+|------|---------------------|-----------|
+| 新規作成 | 「スキルを作成」「新しいスキル」 | → 新規作成フロー |
+| 改善 | 「スキルを改善」「スキルを更新」 | → 改善フロー |
 
 ---
 
-## Step 1: 要件の聞き取り
+## 新規作成フロー
+
+### Step 1: 要件の聞き取り
 
 以下をAskUserQuestionで確認（不足時のみ）:
 
@@ -31,11 +31,9 @@ Anthropicの公式ベストプラクティスに沿って、高品質なClaude C
 | 外部ツール | 使用するCLI・MCP・スクリプト | `gh`, Ruby scripts |
 | reference.md | 技術仕様が多いか | JSON構造、コマンド詳細がある場合は必要 |
 
----
+### Step 2: 命名とディレクトリ作成
 
-## Step 2: 命名とディレクトリ作成
-
-### 命名規則
+**命名規則**:
 
 | ルール | 詳細 |
 |--------|------|
@@ -44,7 +42,7 @@ Anthropicの公式ベストプラクティスに沿って、高品質なClaude C
 | 最大長 | 64文字 |
 | 禁止 | 曖昧な名前（`utils`, `helper`）、`anthropic`・`claude`を含む名前 |
 
-### 作成先
+**作成先**:
 
 ```
 ~/.local/share/chezmoi/dot_claude/skills/{skill-name}/
@@ -54,9 +52,56 @@ Anthropicの公式ベストプラクティスに沿って、高品質なClaude C
 
 **注意**: chezmoi管理下のため `~/.claude/skills/` を直接編集しないこと。
 
+### Step 3: SKILL.md・reference.mdの作成
+
+→ 共通: SKILL.md作成ルール を参照
+
+### Step 4: CLAUDE.mdの更新
+
+→ 共通: CLAUDE.md更新ルール を参照
+
+### Step 5: 適用と検証
+
+→ 共通: 適用と検証 を参照
+
 ---
 
-## Step 3: SKILL.md の作成
+## 改善フロー
+
+### Step 1: 現状の把握
+
+1. 対象スキルのSKILL.md（とreference.md）をReadツールで読み込む
+2. 改善の目的をユーザーに確認（不明確な場合のみAskUserQuestion）
+
+### Step 2: 改善点の特定
+
+以下の観点で改善点を特定:
+
+| 観点 | チェック項目 |
+|------|-------------|
+| description | トリガーキーワードの網羅性、正確性 |
+| 処理フロー | ステップの明確さ、抜け漏れ |
+| 構造 | セクション構成、テーブル活用 |
+| reference.md | 要否の再検討、内容の過不足 |
+| 品質基準 | 500行以下、簡潔さ、用語統一 |
+
+### Step 3: 修正の適用
+
+1. Editツールで改善を適用
+2. 変更内容を観点別に報告
+
+### Step 4: CLAUDE.mdの更新（必要時）
+
+スキル名やトリガーキーワードが変わった場合のみ:
+→ 共通: CLAUDE.md更新ルール を参照
+
+### Step 5: 適用と検証
+
+→ 共通: 適用と検証 を参照
+
+---
+
+## 共通: SKILL.md作成ルール
 
 ### frontmatter
 
@@ -100,7 +145,7 @@ description: {スキルが何をするか}。
 
 ---
 
-## Step 4: reference.md の作成（任意）
+## 共通: reference.mdの作成（任意）
 
 ### 作成が必要なケース
 
@@ -121,13 +166,13 @@ description: {スキルが何をするか}。
 
 ---
 
-## Step 5: CLAUDE.md の更新
+## 共通: CLAUDE.md更新ルール
 
 ### 更新箇所1: グローバルCLAUDE.md
 
 ファイル: `~/.local/share/chezmoi/dot_claude/CLAUDE.md`
 
-「スキル優先マッピング」テーブルに行を追加:
+「スキル優先マッピング」テーブルに行を追加/更新:
 ```
 | {トリガーキーワード} | `/{skill-name}` | - |
 ```
@@ -140,7 +185,7 @@ description: {スキルが何をするか}。
 
 ---
 
-## Step 6: 適用と検証
+## 共通: 適用と検証
 
 ```bash
 chezmoi diff    # 差分確認
@@ -160,4 +205,4 @@ chezmoi apply   # 適用
 
 ## テンプレート・アンチパターン
 
-詳細は `~/.claude/skills/creating-skill/reference.md` を参照。
+詳細は `~/.claude/skills/managing-skills/reference.md` を参照。
