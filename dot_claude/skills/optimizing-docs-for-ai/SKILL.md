@@ -3,7 +3,7 @@ description: ドキュメントをAIが正確に解釈・実行できるよう�
   「AI向けに最適化」「ドキュメントを最適化」「optimize for AI」「AI最適化」などのリクエストで使用。
 ---
 
-# Optimize for AI
+# Optimizing Docs for AI
 
 ドキュメントをAIが正確に解釈・実行できるように最適化する。
 
