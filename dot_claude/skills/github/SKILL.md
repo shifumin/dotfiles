@@ -308,7 +308,7 @@ gh api notifications --jq '.[] | {subject: .subject.title, type: .subject.type, 
 | CI/Checks・Workflow確認 | **このスキル** | `gh`コマンドの基本操作 |
 | 通知確認 | **このスキル** | `gh api notifications` |
 | 深いコードレビュー | `/review-pr` | ファイル読み込み・N+1チェック等を含む |
-| レビューコメント対応 | `/review-pr-comment` | コメント分析・修正方針提案 |
+| レビューコメント対応 | `/reviewing-pr-comments` | コメント分析・修正方針提案 |
 | commit + push | `/push` | ステージング・コミット・プッシュ一連 |
 | リポジトリ作成 | `/create-github-repo` | repo作成 + ghq clone |
 

@@ -120,6 +120,7 @@ Rubyコード実装時、publicメソッドにYARDコメントを追記: `@param
 | push、コミットしてpush、変更をプッシュ | `/push` | - |
 | AI向けに最適化、ドキュメント最適化、optimize for AI | `/optimizing-docs-for-ai` | - |
 | ライブラリ更新レビュー、依存関係更新、review library update | `/reviewing-library-updates` | - |
+| レビューコメント対応、PRコメント対応、review-pr-comment | `/reviewing-pr-comments` | - |
 
 ### Notion連携
 
