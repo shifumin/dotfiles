@@ -118,6 +118,7 @@ Rubyコード実装時、publicメソッドにYARDコメントを追記: `@param
 | メール、Gmail、受信、送信者 | `/gmail` | - |
 | スキル作成・改善、skill、create/improve skill | `/managing-skills` | - |
 | push、コミットしてpush、変更をプッシュ | `/push` | - |
+| AI向けに最適化、ドキュメント最適化、optimize for AI | `/optimize-for-ai` | - |
 
 ### Notion連携
 
