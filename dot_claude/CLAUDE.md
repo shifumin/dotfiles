@@ -119,6 +119,7 @@ Rubyコード実装時、publicメソッドにYARDコメントを追記: `@param
 | スキル作成・改善、skill、create/improve skill | `/managing-skills` | - |
 | push、コミットしてpush、変更をプッシュ | `/push` | - |
 | AI向けに最適化、ドキュメント最適化、optimize for AI | `/optimizing-docs-for-ai` | - |
+| ライブラリ更新レビュー、依存関係更新、review library update | `/reviewing-library-updates` | - |
 
 ### Notion連携
 
