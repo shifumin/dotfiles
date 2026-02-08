@@ -1,55 +1,60 @@
 # review-library-update [PR URL]
 
-引数で渡されたライブラリアップデートのPRをレビューし、マージして問題ないかを確認します。
+ライブラリアップデートPRをレビューし、マージ可否を判断する。
 
 ---
 
 ## 実行フロー
 
-### STEP 1: PR URLのパースと基本情報の取得
+### STEP 1: PR基本情報の取得
 
-URL形式: `https://github.com/<owner>/<repo>/pull/<number>` からowner/repo/numberを抽出
-
-並列実行（パフォーマンス向上のため）:
+URL形式 `https://github.com/<owner>/<repo>/pull/<number>` からowner/repo/numberを抽出し、以下を並列実行:
 
 ```bash
 gh pr view <PR番号> --repo <owner>/<repo> --json title,body,state,author,createdAt,url,headRefName,baseRefName
 gh pr diff <PR番号> --repo <owner>/<repo>
 ```
 
-diffから抽出する情報:
+diffから更新ライブラリを特定:
 
-| 環境 | ファイル | 抽出内容 |
-|------|---------|---------|
+| 環境 | 対象ファイル | 抽出内容 |
+|------|------------|---------|
 | Ruby | Gemfile.lock | ライブラリ名、更新前/後バージョン |
 | Node.js | package.json, pnpm-lock.yaml | パッケージ名、更新前/後バージョン |
 
 ---
 
-### STEP 2: ライブラリの変更内容の調査
+### STEP 2: 変更内容の調査
 
-RubyGemsまたはnpmでライブラリのGitHubリポジトリを特定:
+#### GitHubリポジトリの特定
 
-```bash
-gh release list --repo <library-repo> --limit 20
-gh release view <version> --repo <library-repo>
-```
+| 環境 | コマンド | 備考 |
+|------|---------|------|
+| Ruby | `gem info <gem名>` でHomepage URLを取得 | URLがない場合はWebSearchで検索 |
+| Node.js | `npm info <package名> repository.url` | URLがない場合はWebSearchで検索 |
 
-CHANGELOG確認の優先順位:
+#### リリースノートの確認
 
-| 優先度 | 情報源 | 取得方法 | 条件 |
-|-------|--------|---------|------|
-| 1 | GitHubリリースノート | `gh release view` | - |
-| 2 | CHANGELOG.md | WebFetchツール | - |
-| 3 | 公式ドキュメント | WebFetchツール | リリースノートとCHANGELOG.mdで情報不足の場合 |
+| 優先度 | 情報源 | 取得方法 |
+|-------|--------|---------|
+| 1 | GitHubリリースノート | `gh release view <version> --repo <library-repo>` |
+| 2 | CHANGELOG.md | WebFetchツール |
+| 3 | 公式ドキュメント | WebFetchツール（上記で情報不足の場合のみ） |
 
-更新前バージョンから更新後バージョンまでの**全てのリリース**を確認（中間バージョンのBreaking Changes検出のため）
+**重要**: 更新前バージョンから更新後バージョンまでの**全リリース**を確認する（中間バージョンのBreaking Changes検出のため）
 
 ---
 
 ### STEP 3: レビュー観点のチェック
 
-Breaking Changes影響度評価:
+#### セキュリティ修正
+
+脆弱性修正はリスク軽減に直結するため最優先で確認:
+- リリースノートで「security」「vulnerability」「CVE」を検索
+- GitHubのSecurity Advisoriesを確認
+- CVE番号、深刻度（CVSS）、概要を記録
+
+#### Breaking Changes
 
 | 影響度 | 条件 | 例 |
 |-------|------|-----|
@@ -57,12 +62,7 @@ Breaking Changes影響度評価:
 | 🟡 中 | オプション設定変更、警告追加 | 新しい設定項目の推奨、非推奨警告 |
 | 🟢 低 | 後方互換性あり | バグ修正、パフォーマンス改善 |
 
-セキュリティ修正の確認（脆弱性の早期修正がリスク軽減に直結するため優先）:
-- リリースノートで「security」「vulnerability」「CVE」を検索
-- GitHubのSecurity Advisoriesを確認
-- CVE番号、深刻度（CVSS）、概要を記録
-
-互換性の確認:
+#### 互換性
 
 | 項目 | 確認内容 |
 |------|---------|
@@ -70,52 +70,47 @@ Breaking Changes影響度評価:
 | 依存関係 | 依存ライブラリのバージョン変更 |
 | Framework | Rails等のフレームワーク互換性 |
 
-新機能・改善点:
-- 有用な新機能の追加
-- パフォーマンス改善
-- バグ修正
-
 ---
 
 ### STEP 4: プロジェクトへの影響調査
 
-使用箇所の確認:
+Grepツールでライブラリの使用箇所を検索:
+- Ruby: `*.rb` ファイルでライブラリ名を検索
+- Node.js: `*.ts`, `*.tsx`, `*.js` ファイルでパッケージ名を検索
 
-```bash
-# Ruby
-grep -r "<library>" --include="*.rb" .
-
-# Node.js
-grep -r "<package>" --include="*.ts" --include="*.tsx" --include="*.js" .
-```
-
-Breaking Changes検出時は、影響を受けるファイルとコードを特定
+Breaking Changes検出時は、影響を受けるファイルとコード行を特定する。
 
 ---
 
 ### STEP 5: レビュー結果の出力
 
-以下の形式で出力:
+「出力フォーマット」セクションの形式で結果を出力する。
 
-#### PR情報
+---
+
+## 出力フォーマット
+
+### PR情報
 - **タイトル**: [PRタイトル]
 - **作成者**: [作成者名]
 - **状態**: [OPEN/MERGED/CLOSED]
 - **ブランチ**: [headブランチ] → [baseブランチ]
 
-#### ライブラリ更新内容
+### ライブラリ更新内容
 
 | ライブラリ名 | 更新前 | 更新後 | 種別 |
 |-------------|--------|--------|------|
 | [名前] | [バージョン] | [バージョン] | [patch/minor/major] |
 
-#### 変更内容の要約
+### 変更内容の要約
+
 **[ライブラリ名] ([更新前] → [更新後])**
 
 主な変更点:
 - [リリースノートから抽出]
 
-#### 🔒 セキュリティ修正
+### セキュリティ修正
+
 **検出**: ✅ あり / ❌ なし
 
 セキュリティ修正がある場合:
@@ -124,7 +119,8 @@ Breaking Changes検出時は、影響を受けるファイルとコードを特�
 |---------|--------|------|
 | [CVE-XXXX-XXXXX] | [Critical/High/Medium/Low] | [概要] |
 
-#### ⚠️ Breaking Changes
+### Breaking Changes
+
 **検出**: ✅ あり / ❌ なし
 
 Breaking Changesがある場合:
@@ -132,36 +128,30 @@ Breaking Changesがある場合:
 - **詳細**: [変更の詳細]
 - **対応方法**: [必要な対応]
 
-#### 🔄 互換性
+### 互換性
+
 - **Runtime**: ✅ 互換性あり / ⚠️ 要確認
 - **依存関係**: ✅ 問題なし / ⚠️ 要確認
 - **Framework**: ✅ 問題なし / ⚠️ 要確認
 
-#### 📦 プロジェクトへの影響
+### プロジェクトへの影響
+
 **使用箇所**: [N箇所]
 
 Breaking Changesがある場合、影響を受けるファイルをリスト:
 - `path/to/file.rb:123`
 
-#### 総評
+### 総評
 
-マージ推奨判断:
+マージ判断基準:
 
-| セキュリティ修正 | Breaking Changes | 互換性 | 判断 | 条件 |
-|---------------|-----------------|--------|------|------|
-| ✅ あり | - | - | ✅ マージ可 | 脆弱性修正を優先 |
-| ❌ なし | ❌ なし | ✅ OK | ✅ マージ可 | - |
-| ❌ なし | ✅ 高 | - | ❌ 要対応 | コード修正後にマージ |
-| ❌ なし | ✅ 中 | ✅ OK | ⚠️ 条件付き | 設定変更確認後にマージ |
-| ❌ なし | - | ❌ NG | ❌ 要対応 | 環境要件確認後にマージ |
+| セキュリティ修正 | Breaking Changes | 互換性 | 判断 |
+|---------------|-----------------|--------|------|
+| ✅ あり | - | - | ✅ マージ可（脆弱性修正を優先） |
+| ❌ なし | ❌ なし | ✅ OK | ✅ マージ可 |
+| ❌ なし | 🔴 高 | - | ❌ 要対応（コード修正後にマージ） |
+| ❌ なし | 🟡 中 | ✅ OK | ⚠️ 条件付き（設定変更確認後にマージ） |
+| ❌ なし | - | ❌ NG | ❌ 要対応（環境要件確認後にマージ） |
 
 **判断**: [✅ マージ可 / ⚠️ 条件付き / ❌ 要対応]
 **理由**: [条件付き/要対応の場合の理由]
-
----
-
-## 使用例
-
-```bash
-/review-library-update https://github.com/<owner>/<repo>/pull/<number>
-```
