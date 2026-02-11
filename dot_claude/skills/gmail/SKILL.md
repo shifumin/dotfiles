@@ -1,6 +1,6 @@
 ---
-description: Gmailのメール検索・取得を行う。
-  「メールを検索」「〜からのメール」「最近のメール」「メールを探して」などのリクエストで使用。
+description: Gmailのメール検索・取得・迷惑メール管理を行う。
+  「メールを検索」「〜からのメール」「迷惑メールを削除」「スパムを整理」などのリクエストで使用。
 ---
 
 # Gmail操作
@@ -11,6 +11,7 @@ description: Gmailのメール検索・取得を行う。
 |------|---------------------|---------------|
 | 検索 | 「メールを検索」「〜からのメール」「〜のメールを探して」 | gmail_searcher.rb |
 | 取得 | 「メールの詳細」「メールを開いて」「本文を見せて」 | gmail_fetcher.rb |
+| スパム管理 | 「迷惑メールを削除」「スパムを整理」「迷惑メール確認」 | gmail_searcher.rb + gmail_spam_trasher.rb |
 
 ---
 
@@ -74,6 +75,7 @@ mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_searcher
 | `--max-results` | 最大取得件数（デフォルト: 10、最大: 100） |
 | `--no-body` | 本文を除外（高速化） |
 | `--include-html` | HTML本文を取得 |
+| `--include-spam-trash` | スパム・ゴミ箱のメールを検索対象に含める |
 
 ### 出力の整形
 
@@ -153,6 +155,101 @@ mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_fetcher.
 
 ---
 
+## スパム管理
+
+### 処理フロー
+
+1. **スパム一覧取得**: `gmail_searcher.rb`でスパムメールを一覧表示
+2. **ユーザー確認**: 結果を整形して表示し、削除の確認を取る
+3. **スパム削除実行**: 確認後、`gmail_spam_trasher.rb`でゴミ箱に移動
+
+### Step 1: スパム一覧取得
+
+```bash
+mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_searcher.rb \
+  --query='label:spam' \
+  --include-spam-trash \
+  --no-body \
+  --max-results=50
+```
+
+| オプション | 値 | 理由 |
+|-----------|-----|------|
+| `--query` | `label:spam` | スパムラベルのメールを検索 |
+| `--include-spam-trash` | (フラグ) | **必須**。これがないとスパムが表示されない |
+| `--no-body` | (フラグ) | 一覧表示では本文不要で高速化 |
+| `--max-results` | 50 | 一覧は50件程度で十分（調整可） |
+
+### Step 2: ユーザーへの表示と確認
+
+JSON出力を以下のMarkdown形式に変換して表示:
+
+```markdown
+## 迷惑メール一覧（N件）
+
+| # | 送信者 | 件名 | 日時 |
+|---|--------|------|------|
+| 1 | spammer@example.com | You won a prize! | 2026-02-10 15:30 |
+| 2 | noreply@fake.com | Urgent action required | 2026-02-10 12:00 |
+| ... | ... | ... | ... |
+
+これらの迷惑メール（N件）をゴミ箱に移動しますか？
+```
+
+| 項目 | ルール |
+|------|--------|
+| 表示形式 | テーブル形式（#, 送信者, 件名, 日時） |
+| 件数 | 上部に総件数を表示 |
+| 日付 | RFC2822 → `YYYY-MM-DD HH:MM` |
+| 確認 | **必ずユーザーの明示的な同意を得てから削除を実行** |
+| 0件 | 「迷惑メールはありません。」と表示して終了 |
+
+### Step 3: スパム削除実行
+
+ユーザーが確認後、以下を実行:
+
+```bash
+mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_spam_trasher.rb \
+  [--max-results=N]
+```
+
+| オプション | 説明 |
+|-----------|------|
+| `--max-results` | 処理する最大件数（デフォルト: 500） |
+| `--dry-run` | プレビューのみ（実際にはゴミ箱に移動しない） |
+| `--batch-size` | バッチあたりの件数（デフォルト: 100、最大: 100） |
+
+**重要**: `gmail_spam_trasher.rb`はmodifyスコープを使用する。readonlyトークンでは動作しない。
+
+### 削除結果の表示
+
+成功時:
+
+```markdown
+## スパム削除完了
+
+- **対象件数**: N件
+- **削除成功**: N件
+- **結果**: 成功
+```
+
+一部失敗時:
+
+```markdown
+## スパム削除結果
+
+- **対象件数**: N件
+- **削除成功**: M件
+- **失敗バッチ**: K件
+- **結果**: 一部失敗
+
+| バッチ | 件数 | エラー |
+|--------|------|--------|
+| 0 | 100 | Rate limit exceeded |
+```
+
+---
+
 ## 認証エラー時
 
 認証はブラウザでのOAuth操作が必要なため、コマンドを自動実行せずユーザーに案内する。
@@ -165,7 +262,9 @@ mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_fetcher.
 
 ### 再認証コマンド
 
-`invalid_grant`（トークン期限切れ）の場合、トークンファイルを削除してから再認証:
+#### readonlyスコープ（検索・取得）
+
+`invalid_grant`（トークン期限切れ）の場合:
 
 ```bash
 rm -f ~/.credentials/gmail-readonly-token.yaml && mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenticator.rb
@@ -177,13 +276,29 @@ rm -f ~/.credentials/gmail-readonly-token.yaml && mise exec --cd ~/ghq/github.co
 mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenticator.rb
 ```
 
+#### modifyスコープ（スパム削除）
+
+`invalid_grant`（トークン期限切れ）の場合:
+
+```bash
+rm -f ~/.credentials/gmail-modify-token.yaml && mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenticator.rb --scope=modify
+```
+
+`No credentials found`（初回認証）の場合:
+
+```bash
+mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenticator.rb --scope=modify
+```
+
 ---
 
 ## 重要な制限事項
 
-1. **読み取り専用**: このスキルはメール検索・取得のみ。送信・削除は不可
-2. **添付ファイルダウンロード不可**: ファイル情報の表示のみ
-3. **HTML本文**: `body.html`は存在確認のみ。表示はplain_textを優先
+1. **送信不可**: メールの送信はできない
+2. **完全削除不可**: スパム管理はゴミ箱への移動のみ。完全削除（expunge）はできない
+3. **添付ファイルダウンロード不可**: ファイル情報の表示のみ
+4. **HTML本文**: `body.html`は存在確認のみ。表示はplain_textを優先
+5. **スコープの違い**: 検索・取得はreadonly、スパム削除はmodifyスコープが必要（トークンが別）
 
 ---
 
