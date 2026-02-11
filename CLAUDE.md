@@ -37,6 +37,7 @@ dot_pryrc, dot_gemrc, dot_rspec, dot_default-gems  # Ruby
 dot_default-npm-packages                       # Node.js
 dot_obsidian.vimrc                             # Obsidian vim keybindings
 dot_config/
+├── karabiner/     # Karabiner-Elements key remapping
 ├── sheldon/       # Zsh plugin manager (sheldon)
 ├── nvim/          # Neovim (dein.vim plugin manager)
 └── ghostty/       # Ghostty terminal
