@@ -7,11 +7,12 @@ SKILL.mdから参照される技術仕様。引数・実行方法はSKILL.mdを�
 1. Searcher JSON出力構造
 2. Fetcher
 3. Spam Trasher
-4. Authenticator
-5. ラベル名の日本語変換
-6. 日付変換ルール
-7. エラーハンドリング
-8. トラブルシューティング
+4. Batch Modifier
+5. Authenticator
+6. ラベル名の日本語変換
+7. 日付変換ルール
+8. エラーハンドリング
+9. トラブルシューティング
 
 ---
 
@@ -156,6 +157,82 @@ dry-run時:
 
 ---
 
+## Batch Modifier (gmail_batch_modifier.rb)
+
+### 引数
+
+| オプション | 必須 | デフォルト | 説明 |
+|-----------|:----:|-----------|------|
+| `--query=QUERY` | Yes | - | Gmail検索クエリ |
+| `--remove-labels=LABELS` | No | - | 削除するラベルID（カンマ区切り） |
+| `--add-labels=LABELS` | No | - | 追加するラベルID（カンマ区切り） |
+| `--max-results=N` | No | 全件 | 処理する最大メッセージ数 |
+| `--dry-run` | No | - | プレビューのみ（変更しない） |
+
+`--remove-labels`と`--add-labels`の少なくともどちらかは必須。
+
+### 認証
+
+| 項目 | 値 |
+|------|-----|
+| スコープ | `gmail.modify` |
+| トークンファイル | `~/.credentials/gmail-modify-token.yaml` |
+| 認証コマンド | `ruby gmail_authenticator.rb --scope=modify` |
+
+### JSON出力構造
+
+dry-run時:
+```json
+{
+  "dry_run": true,
+  "query": "category:social is:unread",
+  "total_count": 42,
+  "message_ids": ["18abc123def456", "18abc789ghi012"]
+}
+```
+
+実行成功時:
+```json
+{
+  "query": "category:social is:unread",
+  "total_count": 42,
+  "modified_count": 42,
+  "add_labels": [],
+  "remove_labels": ["INBOX", "UNREAD"],
+  "failed_batches": [],
+  "success": true
+}
+```
+
+該当なし:
+```json
+{
+  "total_count": 0,
+  "message": "No messages found."
+}
+```
+
+一部失敗時:
+```json
+{
+  "query": "category:social is:unread",
+  "total_count": 42,
+  "modified_count": 30,
+  "add_labels": [],
+  "remove_labels": ["INBOX", "UNREAD"],
+  "failed_batches": [
+    {
+      "batch_index": 0,
+      "size": 12,
+      "error": "Rate limit exceeded"
+    }
+  ],
+  "success": false
+}
+```
+
+---
+
 ## Authenticator (gmail_authenticator.rb)
 
 ### 引数
@@ -169,7 +246,7 @@ dry-run時:
 | スコープ | ファイル | 説明 |
 |----------|---------|------|
 | `readonly` | `~/.credentials/gmail-readonly-token.yaml` | 読み取り専用トークン（検索・取得用） |
-| `modify` | `~/.credentials/gmail-modify-token.yaml` | 変更権限トークン（スパム削除用） |
+| `modify` | `~/.credentials/gmail-modify-token.yaml` | 変更権限トークン（スパム削除・バッチ変更用） |
 
 ### 必要な環境変数
 
@@ -241,6 +318,7 @@ dry-run時:
 | 検索結果が0件 | クエリが厳しすぎる | 条件を緩和、演算子を確認 |
 | スパム検索が0件 | `--include-spam-trash`未指定 | 検索時に`--include-spam-trash`を必ず指定 |
 | スパム削除がエラー | modifyトークン未認証 | `ruby gmail_authenticator.rb --scope=modify`で認証 |
+| バッチ変更がエラー | modifyトークン未認証 | `ruby gmail_authenticator.rb --scope=modify`で認証 |
 | 本文が空 | HTMLのみのメール | `has_html: true`を確認 |
 | 文字化け | エンコーディング問題 | UTF-8強制変換済みだが、まれに発生 |
 | タイムアウト | 結果が多すぎる | `--max-results`を減らす、`--no-body`を使用 |
