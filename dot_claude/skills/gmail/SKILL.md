@@ -1,6 +1,6 @@
 ---
-description: Gmailのメール検索・取得・迷惑メール管理を行う。
-  「メールを検索」「〜からのメール」「迷惑メールを削除」「スパムを整理」などのリクエストで使用。
+description: Gmailのメール検索・取得・迷惑メール管理・バッチラベル変更を行う。
+  「メールを検索」「〜からのメール」「迷惑メールを削除」「スパムを整理」「Socialタブを整理」「ソーシャルメールをアーカイブ」などのリクエストで使用。
 ---
 
 # Gmail操作
@@ -12,6 +12,7 @@ description: Gmailのメール検索・取得・迷惑メール管理を行う�
 | 検索 | 「メールを検索」「〜からのメール」「〜のメールを探して」 | gmail_searcher.rb |
 | 取得 | 「メールの詳細」「メールを開いて」「本文を見せて」 | gmail_fetcher.rb |
 | スパム管理 | 「迷惑メールを削除」「スパムを整理」「迷惑メール確認」 | gmail_searcher.rb + gmail_spam_trasher.rb |
+| Socialアーカイブ | 「Socialタブを整理」「ソーシャルメールをアーカイブ」「SNS通知を既読に」 | gmail_searcher.rb + gmail_batch_modifier.rb |
 
 ---
 
@@ -250,6 +251,101 @@ mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_spam_tra
 
 ---
 
+## Socialタブ整理
+
+### 処理フロー
+
+1. **Social一覧取得**: `gmail_searcher.rb`でSocialタブの未読メールを一覧表示
+2. **ユーザー確認**: 結果を整形して表示し、アーカイブの確認を取る
+3. **アーカイブ実行**: 確認後、`gmail_batch_modifier.rb`で既読+アーカイブ
+
+### Step 1: Social一覧取得
+
+```bash
+mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_searcher.rb \
+  --query='category:social is:unread' \
+  --no-body \
+  --max-results=50
+```
+
+| オプション | 値 | 理由 |
+|-----------|-----|------|
+| `--query` | `category:social is:unread` | Socialタブの未読メールを検索 |
+| `--no-body` | (フラグ) | 一覧表示では本文不要で高速化 |
+| `--max-results` | 50 | 一覧は50件程度で十分（調整可） |
+
+### Step 2: ユーザーへの表示と確認
+
+JSON出力を以下のMarkdown形式に変換して表示:
+
+```markdown
+## Socialタブ未読メール一覧（N件）
+
+| # | 送信者 | 件名 | 日時 |
+|---|--------|------|------|
+| 1 | Facebook <notification@facebook.com> | You have 3 new notifications | 2026-02-14 10:30 |
+| 2 | LinkedIn <messages-noreply@linkedin.com> | Weekly digest | 2026-02-13 18:00 |
+| ... | ... | ... | ... |
+
+これらのSocialメール（N件）をアーカイブして既読にしますか？
+```
+
+| 項目 | ルール |
+|------|--------|
+| 表示形式 | テーブル形式（#, 送信者, 件名, 日時） |
+| 件数 | 上部に総件数を表示 |
+| 日付 | RFC2822 → `YYYY-MM-DD HH:MM` |
+| 確認 | **必ずユーザーの明示的な同意を得てからアーカイブを実行** |
+| 0件 | 「Socialタブに未読メールはありません。」と表示して終了 |
+
+### Step 3: アーカイブ実行
+
+ユーザーが確認後、以下を実行:
+
+```bash
+mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_batch_modifier.rb \
+  --query='category:social is:unread' \
+  --remove-labels=INBOX,UNREAD
+```
+
+| オプション | 説明 |
+|-----------|------|
+| `--query` | Gmail検索クエリ（**必須**） |
+| `--remove-labels` | 削除するラベル（INBOX=アーカイブ、UNREAD=既読化） |
+| `--max-results` | 処理する最大件数（デフォルト: 全件） |
+| `--dry-run` | プレビューのみ（実際には変更しない） |
+
+**重要**: `gmail_batch_modifier.rb`はmodifyスコープを使用する。readonlyトークンでは動作しない。
+
+### アーカイブ結果の表示
+
+成功時:
+
+```markdown
+## Socialアーカイブ完了
+
+- **対象件数**: N件
+- **アーカイブ成功**: N件
+- **結果**: 成功
+```
+
+一部失敗時:
+
+```markdown
+## Socialアーカイブ結果
+
+- **対象件数**: N件
+- **アーカイブ成功**: M件
+- **失敗バッチ**: K件
+- **結果**: 一部失敗
+
+| バッチ | 件数 | エラー |
+|--------|------|--------|
+| 0 | 100 | Rate limit exceeded |
+```
+
+---
+
 ## 認証エラー時
 
 認証はブラウザでのOAuth操作が必要なため、コマンドを自動実行せずユーザーに案内する。
@@ -276,7 +372,7 @@ rm -f ~/.credentials/gmail-readonly-token.yaml && mise exec --cd ~/ghq/github.co
 mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenticator.rb
 ```
 
-#### modifyスコープ（スパム削除）
+#### modifyスコープ（スパム削除・バッチ変更）
 
 `invalid_grant`（トークン期限切れ）の場合:
 
@@ -298,7 +394,7 @@ mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenti
 2. **完全削除不可**: スパム管理はゴミ箱への移動のみ。完全削除（expunge）はできない
 3. **添付ファイルダウンロード不可**: ファイル情報の表示のみ
 4. **HTML本文**: `body.html`は存在確認のみ。表示はplain_textを優先
-5. **スコープの違い**: 検索・取得はreadonly、スパム削除はmodifyスコープが必要（トークンが別）
+5. **スコープの違い**: 検索・取得はreadonly、スパム削除・バッチ変更はmodifyスコープが必要（トークンが別）
 
 ---
 
