@@ -123,6 +123,7 @@ Rubyコード実装時、publicメソッドにYARDコメントを追記: `@param
 | ライブラリ更新レビュー、依存関係更新、review library update | `/reviewing-library-updates` | - |
 | PRレビュー、PRを見て、review-pr | `/reviewing-pr` | - |
 | レビューコメント対応、PRコメント対応、review-pr-comment | `/reviewing-pr-comments` | - |
+| X検索、Xで検索、ポスト検索、ツイート検索、x search | `/searching-x-posts` | - |
 
 ### Notion連携
 
