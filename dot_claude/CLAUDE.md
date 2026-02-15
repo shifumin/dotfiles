@@ -124,6 +124,7 @@ Rubyコード実装時、publicメソッドにYARDコメントを追記: `@param
 | PRレビュー、PRを見て、review-pr | `/reviewing-pr` | - |
 | レビューコメント対応、PRコメント対応、review-pr-comment | `/reviewing-pr-comments` | - |
 | X検索、Xで検索、ポスト検索、ツイート検索、x search | `/searching-x-posts` | - |
+| language変更、language設定変更、ランダムlanguage | `/randomizing-language` | - |
 
 ### Notion連携
 
