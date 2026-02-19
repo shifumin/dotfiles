@@ -64,10 +64,11 @@ ReadMcpResourceTool: server=notion, uri=notion://docs/enhanced-markdown-spec
 
 `mcp__notion__notion-create-pages` でプライベートページを作成する。
 
-**重要**: `parent` パラメータは指定しない（ワークスペースレベルのプライベートページになる）。
+**重要**: `parent` パラメータに「調査メモ」ページのIDを指定し、サブページとして作成する。
 
 ```json
 {
+  "parent": {"page_id": "30c37b6398eb806c82fcc78cf00ff428"},
   "pages": [
     {
       "properties": {"title": "ページタイトル"},
@@ -99,7 +100,7 @@ ReadMcpResourceTool: server=notion, uri=notion://docs/enhanced-markdown-spec
 
 - 画像のアップロード不可（外部URL参照のみ可能）
 - ファイル添付不可（テキストコンテンツのみ）
-- 常にプライベートページとして作成（親ページ指定は非対応）
+- デフォルトの保存先は「調査メモ」ページ（サブページとして作成）
 
 ## 技術仕様
 
