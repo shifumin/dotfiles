@@ -35,7 +35,15 @@ ReadMcpResourceTool: server=notion, uri=notion://docs/enhanced-markdown-spec
 
 ### Step 3: コンテンツの構成
 
-会話内容を以下の構成でNotionページ向けに整理する:
+コンテンツの一番最初に、箇条書きで更新日時を記載する:
+
+```
+- updated_at: YYYY-MM-DD
+```
+
+日付は保存実行時の当日日付を使用する。
+
+その後、会話内容を以下の構成でNotionページ向けに整理する:
 
 | セクション | 内容 | 必須 |
 |-----------|------|------|
