@@ -17,7 +17,7 @@
 | 3 | **コミット前の必須チェック** | リンターとテストを必ず実行する | CIでの失敗 |
 | 4 | **テストの同期** | 実装を追加・変更したら、対応するテストも追加・変更 | テストカバレッジ低下 |
 | 5 | **ドキュメントの同期** | 実装を追加・変更したら、CLAUDE.md・README.mdも更新 | ドキュメント陳腐化 |
-| 6 | **スキル優先使用** | MCPツールより先にスキルを確認・使用する（詳細は「ツール選択ルール」参照） | 認証エラー、非効率な操作 |
+| 6 | **スキル優先使用** | MCPツールより先にスキルを確認・使用する | 認証エラー、非効率な操作 |
 
 ---
 
@@ -109,22 +109,6 @@ Rubyコード実装時、publicメソッドにYARDコメントを追記: `@param
 ## ツール選択ルール
 
 **処理フロー**: リクエスト受信 → スキル該当確認 → 該当すればスキル使用 → 該当しなければ他ツール
-
-### スキル優先マッピング
-
-| トリガーキーワード | 使用するスキル | 禁止するMCPツール |
-|-------------------|---------------|------------------|
-| 予定、カレンダー、スケジュール | `/google-calendar` | - |
-| PR、Issue、GitHub、CI、Actions、通知 | `/github` | - |
-| メール、Gmail、受信、送信者、迷惑メール、スパム | `/gmail` | - |
-| スキル作成・改善、skill、create/improve skill | `/managing-skills` | - |
-| push、コミットしてpush、変更をプッシュ | `/push` | - |
-| AI向けに最適化、ドキュメント最適化、optimize for AI | `/optimizing-docs-for-ai` | - |
-| ライブラリ更新レビュー、依存関係更新、review library update | `/reviewing-library-updates` | - |
-| PRレビュー、PRを見て、review-pr | `/reviewing-pr` | - |
-| レビューコメント対応、PRコメント対応、review-pr-comment | `/reviewing-pr-comments` | - |
-| X検索、Xで検索、ポスト検索、ツイート検索、x search | `/searching-x-posts` | - |
-| language変更、language設定変更、ランダムlanguage | `/randomizing-language` | - |
 
 ### Notion連携
 
