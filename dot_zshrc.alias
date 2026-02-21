@@ -90,6 +90,9 @@ alias -g V='| nvim -'
 # Cursor
 alias c.='cursor .'
 
+# Claude
+alias ccd='claude --dangerously-skip-permissions'
+
 # other
 alias cdu='cd-gitroot'
 alias cl='clear'
