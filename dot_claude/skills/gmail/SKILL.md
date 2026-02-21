@@ -363,7 +363,11 @@ mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_batch_mo
 `invalid_grant`（トークン期限切れ）の場合:
 
 ```bash
-rm -f ~/.credentials/gmail-readonly-token.yaml && mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenticator.rb
+rm -f ~/.credentials/gmail-readonly-token.yaml
+```
+
+```bash
+mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenticator.rb
 ```
 
 `No credentials found`（初回認証）の場合:
@@ -377,7 +381,11 @@ mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenti
 `invalid_grant`（トークン期限切れ）の場合:
 
 ```bash
-rm -f ~/.credentials/gmail-modify-token.yaml && mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenticator.rb --scope=modify
+rm -f ~/.credentials/gmail-modify-token.yaml
+```
+
+```bash
+mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_authenticator.rb --scope=modify
 ```
 
 `No credentials found`（初回認証）の場合:
