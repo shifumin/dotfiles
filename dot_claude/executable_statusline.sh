@@ -109,4 +109,16 @@ if [[ "$USE_PCT" != "--" ]]; then
   fi
 fi
 
-echo -e "ctx ${COLOR}${BAR}${RESET} ${USED_K}k/${TOTAL_K}k | tok ${TOK_K}k | ⏱ ${DURATION} | ${USE_COLOR}use ${USE_PCT}%${RESET} ↻ ${RESET_TIME}"
+# Usage progress bar (20 chars)
+USE_BAR_WIDTH=20
+if [[ "$USE_PCT" != "--" ]]; then
+  USE_FILLED=$(( USE_PCT * USE_BAR_WIDTH / 100 ))
+  USE_EMPTY=$(( USE_BAR_WIDTH - USE_FILLED ))
+  USE_BAR=""
+  for ((i=0; i<USE_FILLED; i++)); do USE_BAR+="█"; done
+  for ((i=0; i<USE_EMPTY; i++)); do USE_BAR+="░"; done
+else
+  USE_BAR="░░░░░░░░░░░░░░░░░░░░"
+fi
+
+echo -e "ctx ${COLOR}${BAR}${RESET} ${USED_K}k/${TOTAL_K}k | tok ${TOK_K}k | ⏱ ${DURATION} | ${USE_COLOR}${USE_BAR}${RESET} ${USE_PCT}% ↻ ${RESET_TIME}"
