@@ -109,4 +109,4 @@ if [[ "$USE_PCT" != "--" ]]; then
   fi
 fi
 
-echo -e "ctx ${COLOR}${BAR}${RESET} ${USED_K}k/${TOTAL_K}k | tok ${TOK_K}k | ⏱ ${DURATION} | ${USE_COLOR}use ${USE_PCT}%${RESET} ↻${RESET_TIME}"
+echo -e "ctx ${COLOR}${BAR}${RESET} ${USED_K}k/${TOTAL_K}k | tok ${TOK_K}k | ⏱ ${DURATION} | ${USE_COLOR}use ${USE_PCT}%${RESET} ↻ ${RESET_TIME}"
