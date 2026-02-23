@@ -12,7 +12,7 @@ xsearch CLIを使用してX (Twitter) のポストを検索する。
 
 スクリプトパス: `~/ghq/github.com/shifumin/xsearch/`
 
-実行: `mise exec --cd ~/ghq/github.com/shifumin/xsearch -- ruby xsearch.rb [options] QUERY`
+実行: `mise exec --cd ~/ghq/github.com/shifumin/xsearch -- ruby xsearch.rb [options] [QUERY]`
 
 ## 処理フロー
 
@@ -71,13 +71,15 @@ xsearch CLIを使用してX (Twitter) のポストを検索する。
 
 ### クエリ
 
-オプション以外の検索意図がクエリ文字列になる。
+オプション以外の検索意図がクエリ文字列になる。フィルタ（`--user`, `--exclude`, `--from`, `--to`）が指定されていればクエリは省略可能。
 
 | 入力例 | クエリ |
 |--------|--------|
 | 「RubyのポストをXで検索」 | `Ruby` |
 | 「shifuminのRailsに関するポスト」 | `Rails`（`--user @shifumin`と組み合わせ） |
 | 「今週のAI関連のXのポスト」 | `AI`（`--from`と組み合わせ） |
+| 「shifuminの最近のポスト」 | 省略（`--user @shifumin`のみ） |
+| 「今月のポストを見せて」 | 省略（`--from`のみ） |
 
 ## 実行コマンド
 
@@ -90,7 +92,7 @@ mise exec --cd ~/ghq/github.com/shifumin/xsearch -- ruby xsearch.rb \
   [--images] \
   [--videos] \
   [--system-prompt 'PROMPT'] \
-  'QUERY'
+  [QUERY]
 ```
 
 ## 出力の整形
@@ -123,7 +125,7 @@ xsearchの出力はテキスト形式のため、以下のMarkdown形式に変�
 | エラーパターン | 原因 | 対処 |
 |---------------|------|------|
 | `XAI_API_KEY が設定されていません` | 環境変数未設定 | `~/ghq/github.com/shifumin/xsearch/mise.local.toml`にAPIキーを設定するよう案内 |
-| `検索クエリを指定してください` | クエリ未指定 | ユーザーに検索したい内容を確認 |
+| `検索クエリを指定してください` | クエリもフィルタも未指定 | 検索キーワードまたはフィルタ（`--user`, `--from`等）を指定するようユーザーに確認 |
 | `allowed_x_handles と excluded_x_handles は同時に使用できません` | --userと--excludeの同時指定 | どちらか一方を使うようユーザーに確認 |
 | `API error (401)` | APIキーが無効 | APIキーの再確認を案内（https://console.x.ai） |
 | `API error (429)` | レートリミット | しばらく待ってからリトライ |
