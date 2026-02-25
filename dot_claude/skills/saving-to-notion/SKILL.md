@@ -72,21 +72,21 @@ ReadMcpResourceTool: server=notion, uri=notion://docs/enhanced-markdown-spec
 
 `mcp__notion__notion-create-pages` でプライベートページを作成する。
 
-**重要**: `parent` パラメータに「調査メモ」ページのIDを指定し、サブページとして作成する。
+**重要**: `parent` パラメータに「調査メモDB」のdata source IDを指定し、データベースアイテムとして作成する。
 
 ```json
 {
-  "parent": {"page_id": "30c37b6398eb806c82fcc78cf00ff428"},
+  "parent": {"data_source_id": "31237b63-98eb-8057-abd4-000b8a76b8cb"},
   "pages": [
     {
-      "properties": {"title": "ページタイトル"},
+      "properties": {"Name": "ページタイトル"},
       "content": "Notion-flavored Markdownコンテンツ"
     }
   ]
 }
 ```
 
-**注意**: ページタイトルは `properties.title` で設定し、`content` の先頭には含めない。
+**注意**: ページタイトルは `properties.Name` で設定し、`content` の先頭には含めない。
 
 ### Step 6: 結果の報告
 
@@ -108,7 +108,7 @@ ReadMcpResourceTool: server=notion, uri=notion://docs/enhanced-markdown-spec
 
 - 画像のアップロード不可（外部URL参照のみ可能）
 - ファイル添付不可（テキストコンテンツのみ）
-- デフォルトの保存先は「調査メモ」ページ（サブページとして作成）
+- デフォルトの保存先は「調査メモDB」データベース（DBアイテムとして作成）
 
 ## 技術仕様
 
