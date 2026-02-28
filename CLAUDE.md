@@ -17,13 +17,26 @@ Chezmoi uses special prefixes to control file behavior:
 
 Directories use `dot_` prefix: `dot_config/` → `~/.config/`
 
+## Workflow
+
+Edit target files directly, then sync to source with `chezmoi add`:
+
+```bash
+# Edit target → sync to source → commit
+vim ~/.zshrc                  # edit target directly
+chezmoi add ~/.zshrc          # sync to source (dot_zshrc)
+cd ~/.local/share/chezmoi && git commit
+```
+
+Exception: Template files (`.tmpl`) must be edited in source directory, then `chezmoi apply`.
+
 ## Common Commands
 
 | Command | Description |
 |---------|-------------|
-| `chezmoi diff` | Preview changes |
-| `chezmoi apply` | Apply to home directory |
-| `chezmoi add <file>` | Add file to chezmoi |
+| `chezmoi add <file>` | Sync target file to source directory |
+| `chezmoi diff` | Preview changes between source and target |
+| `chezmoi apply` | Apply source to target (for templates only) |
 
 ## Directory Structure
 

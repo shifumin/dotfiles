@@ -1,6 +1,7 @@
 # CLAUDE.md
 
-> **⚠️ chezmoi管理**: 編集は `~/.local/share/chezmoi/dot_claude/CLAUDE.md` で行い `chezmoi apply` で適用。
+> **⚠️ chezmoi管理**: このファイル自体はソース（`~/.local/share/chezmoi/dot_claude/CLAUDE.md`）を直接編集し `chezmoi apply` で適用。
+> 他のdotfilesはターゲットを直接編集 → `chezmoi add` でソースに反映。
 >
 > **優先度**: グローバル設定 < プロジェクト固有CLAUDE.md
 
@@ -84,25 +85,28 @@ Rubyコード実装時、publicメソッドにYARDコメントを追記: `@param
 
 ### chezmoi
 
-> **🔴 重要**: chezmoi管理下のファイルは**直接編集禁止**
-
-| 対象パス | ソースディレクトリ |
-|----------|-------------------|
-| `~/.claude/*` | `~/.local/share/chezmoi/dot_claude/` |
-| `~/.config/*` | `~/.local/share/chezmoi/dot_config/` |
-| `~/.zshrc` 等 | `~/.local/share/chezmoi/dot_zshrc` 等 |
+dotfilesはchezmoiで管理。ターゲットファイルを直接編集し、`chezmoi add` でソースに反映する。
 
 **編集手順**:
-1. ソースディレクトリのファイルを編集
-2. `chezmoi diff` で差分確認
-3. `chezmoi apply` で適用
+1. ターゲットファイルを直接編集（例: `~/.zshrc`, `~/.config/nvim/init.vim`）
+2. `chezmoi add <target_file>` でソースディレクトリに反映
+3. ソースディレクトリ（`~/.local/share/chezmoi`）で `git commit`
+
+**例**:
+```bash
+# ~/.zshrc を編集した場合
+chezmoi add ~/.zshrc
+# → ~/.local/share/chezmoi/dot_zshrc が自動更新される
+```
 
 | 状況 | 対応 |
 |------|------|
-| `chezmoi apply` 成功 | そのまま続行 |
-| エラー発生（競合など） | ユーザーに報告し対応を確認（`--force` 禁止） |
+| 通常のファイル | ターゲットを編集 → `chezmoi add` |
+| テンプレート（`.tmpl`） | ソース（`~/.local/share/chezmoi/`）を直接編集 → `chezmoi apply` |
+| 新規ファイル追加 | ターゲットに作成 → `chezmoi add` |
 
-**理由**: 直接編集するとソースとターゲットの不整合が発生する
+> ⚠️ テンプレートファイル（現在は `google-calendar/SKILL.md.tmpl` のみ）は `chezmoi add` すると
+> 展開済みの値がソースに書き込まれテンプレートが壊れるため、ソースを直接編集すること。
 
 ---
 
