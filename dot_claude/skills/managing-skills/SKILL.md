@@ -1,4 +1,5 @@
 ---
+name: managing-skills
 description: Claude Codeのスキルの新規作成・既存スキルの改善を行う。
   「スキルを作成」「スキルを作って」「skillを作成」「create a skill」
   「スキルを改善」「スキルを更新」「improve skill」などのリクエストで使用。
@@ -21,7 +22,13 @@ Anthropicの公式ベストプラクティスに沿って、Claude Codeスキル
 
 ### Step 1: 要件の聞き取り
 
-以下をAskUserQuestionで確認（不足時のみ）:
+会話中に既にワークフローが含まれている場合（「これをスキルにして」等）は、まず会話履歴から以下を抽出する:
+
+- 使用したツールとその順序
+- ユーザーが行った修正・補正
+- 観察されたInput/Outputフォーマット
+
+不足分のみ以下をAskUserQuestionで確認:
 
 | 項目 | 確認内容 | 例 |
 |------|---------|-----|
@@ -46,8 +53,10 @@ Anthropicの公式ベストプラクティスに沿って、Claude Codeスキル
 
 ```
 ~/.local/share/chezmoi/dot_claude/skills/{skill-name}/
-  SKILL.md           # 必須
-  reference.md       # 任意（技術仕様が多い場合）
+  SKILL.md            # 必須
+  references/         # 任意: 技術仕様ドキュメント（reference.md単体でも可）
+  scripts/            # 任意: 実行可能スクリプト
+  assets/             # 任意: テンプレート・画像等の静的リソース
 ```
 
 **注意**: chezmoi管理下のため `~/.claude/skills/` を直接編集しないこと。
@@ -89,6 +98,8 @@ Anthropicの公式ベストプラクティスに沿って、Claude Codeスキル
 | reference.md | 要否の再検討、内容の過不足 |
 | 品質基準 | 500行以下、簡潔さ、用語統一 |
 | Claudeの挙動 | ファイル読み込み順序、見落とし、過剰参照がないか |
+| トランスクリプト | Extended Thinking・ツール呼び出し履歴を確認し、非効率な動作（不要なファイル読み込み、繰り返しの試行錯誤）がないか |
+| 一般化 | 特定テストケースへの過適合がないか。効かない場合は別の説明アプローチを試す |
 
 ### Step 3: 修正の適用
 
@@ -117,6 +128,7 @@ Anthropicの公式ベストプラクティスに沿って、Claude Codeスキル
 
 ```yaml
 ---
+name: {skill-name}
 description: {スキルが何をするか}。
   「{トリガー1}」「{トリガー2}」「{トリガー3}」などのリクエストで使用。
 ---
@@ -124,10 +136,11 @@ description: {スキルが何をするか}。
 
 | 項目 | ルール |
 |------|--------|
-| フィールド | `description` のみ（Claude Codeではディレクトリ名が`name`になるため不要） |
+| `name` | 必須。ディレクトリ名と一致。小文字・数字・ハイフンのみ、64文字以下 |
+| `description` | 必須。何をするか＋いつ使うか。1024文字以内 |
 | 人称 | 三人称（「〜を行う」「〜する」） |
 | 言語 | 日本語。トリガー例も日本語で「」で囲む |
-| 最大長 | 1024文字 |
+| 発火率 | under-triggeringを防ぐため、descriptionは積極的に書く。スキルの操作名だけでなく「このスキルを使うべき状況」を明示的に列挙する（Claudeはスキルを使わない方向に偏りやすいため） |
 | 禁止 | XMLタグ、時間依存の情報 |
 
 ### 本文の構成
@@ -152,7 +165,22 @@ description: {スキルが何をするか}。
 | 簡潔さ | Claudeが既知の情報は省略 |
 | 自由度 | 壊れやすい操作→具体的な手順、創造的作業→方針のみ |
 | 用語統一 | 1つの概念に1つの用語 |
+| 理由の説明 | `ALWAYS`/`NEVER`で縛る代わりに、なぜその指示が重要かを説明する（理由を理解したモデルはルールだけ渡された場合より適切に判断できるため） |
 | フィードバックループ | 品質が重要な操作にはvalidate → fix → repeat |
+
+---
+
+## 共通: Progressive Disclosure
+
+スキルは3段階で読み込まれる。この仕組みを理解してSKILL.mdを軽量に保つ:
+
+| レベル | 内容 | タイミング | 目安 |
+|--------|------|-----------|------|
+| 1. メタデータ | name + description | 常時（全スキル） | ~100トークン |
+| 2. SKILL.md本文 | 手順・ガイドライン | スキル発火時 | 500行以下 |
+| 3. リソース | references/, scripts/, assets/ | 必要時のみ参照 | 制限なし |
+
+SKILL.mdは発火するたびに全文読み込まれるため、詳細な技術仕様はreferences/に分離し、SKILL.mdからは「いつ・何を読むか」のポインタのみ記載する。
 
 ---
 
@@ -173,7 +201,7 @@ description: {スキルが何をするか}。
 | 先頭 | `# {スキル名}技術仕様` + SKILL.mdとの関係を1行で |
 | 100行超 | 冒頭に目次を追加 |
 | 参照深度 | 1レベルまで（reference.mdから別ファイルを参照しない） |
-| SKILL.mdからの参照 | `~/.claude/skills/{name}/reference.md` |
+| SKILL.mdからの参照 | 相対パスで `reference.md` または `references/REFERENCE.md` |
 
 ---
 
@@ -235,10 +263,10 @@ chezmoi apply   # 適用
 3. SKILL.md/reference.mdを修正し再テスト
 4. 可能であれば複数モデル（Haiku/Sonnet/Opus）で確認
 
-→ 詳細は `~/.claude/skills/managing-skills/reference.md` のセクション10-13を参照。
+→ 詳細は `reference.md` のセクション10-13を参照。
 
 ---
 
 ## テンプレート・アンチパターン
 
-テンプレート・アンチパターン・評価の詳細は `~/.claude/skills/managing-skills/reference.md` を参照。
+テンプレート・アンチパターン・評価の詳細は `reference.md` を参照。
