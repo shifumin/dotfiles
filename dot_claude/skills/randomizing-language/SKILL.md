@@ -8,7 +8,7 @@ Obsidian Vaultに保存されたlanguage設定からランダムに1つ選び、
 
 ## 処理フロー
 
-以下のbashスクリプトを実行し、ランダム選択からsettings.json更新まで一括で行う:
+以下のbashスクリプトを実行し、ランダム選択からsettings.json更新・chezmoi同期まで一括で行う:
 
 ```bash
 bash <<'SCRIPT'
@@ -45,6 +45,9 @@ fi
 # settings.jsonのlanguageキーだけを更新
 jq --arg lang "${LANGUAGE_VALUE}" '.language = $lang' "${SETTINGS_FILE}" > "${SETTINGS_FILE}.tmp" \
   && mv "${SETTINGS_FILE}.tmp" "${SETTINGS_FILE}"
+
+# chezmoi管理ファイルのためソースに反映
+chezmoi add "${SETTINGS_FILE}"
 
 echo "SELECTED: ${SELECTED}"
 SCRIPT
