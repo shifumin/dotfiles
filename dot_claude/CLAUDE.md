@@ -104,6 +104,7 @@ chezmoi add ~/.zshrc
 | 通常のファイル | ターゲットを編集 → `chezmoi add` |
 | テンプレート（`.tmpl`） | ソース（`~/.local/share/chezmoi/`）を直接編集 → `chezmoi apply` |
 | 新規ファイル追加 | ターゲットに作成 → `chezmoi add` |
+| chezmoi管理ファイルを変更した場合 | 変更後に `chezmoi add <target_file>` を実行（忘れずに） |
 
 > ⚠️ テンプレートファイル（現在は `google-calendar/SKILL.md.tmpl` のみ）は `chezmoi add` すると
 > 展開済みの値がソースに書き込まれテンプレートが壊れるため、ソースを直接編集すること。
