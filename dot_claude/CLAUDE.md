@@ -115,13 +115,6 @@ chezmoi add ~/.zshrc
 
 **処理フロー**: リクエスト受信 → スキル該当確認 → 該当すればスキル使用 → 該当しなければ他ツール
 
-### スキル優先マッピング
-
-| トリガーキーワード | スキル | 備考 |
-|-------------------|--------|------|
-| コードベースリサーチ、codebase research、深く調査して | `/researching-codebase` | - |
-| 実装計画、plan作成、計画を書いて | `/planning-implementation` | - |
-
 ### Notion連携
 
 Notionリンク（`https://www.notion.so/...`）のリンク先情報が必要な場合、Notion MCPを使用する。
