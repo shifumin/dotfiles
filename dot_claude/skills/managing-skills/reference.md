@@ -20,6 +20,7 @@ SKILL.md から参照されるベストプラクティス詳細。
 12. 複数モデルでのテスト
 13. MCPツール参照の命名規則
 14. 具体例パターン（Input/Output）
+15. スキル間のAttention競合
 
 ---
 
@@ -288,14 +289,28 @@ description: {対象}を{目的}。
 
 ### 評価シナリオの構造
 
+should_trigger: true と false を混在させることで、発火精度と誤発火防止を同時にテストする。
+目安: テストクエリ10〜20個、should_trigger の true/false 比率は 60/40 程度。
+
 ```json
 {
   "skills": ["{skill-name}"],
-  "query": "ユーザーが入力しそうなリクエスト",
-  "expected_behavior": [
-    "スキルが正しく発火する",
-    "処理フローが期待通りに実行される",
-    "出力フォーマットが正しい"
+  "evals": [
+    {
+      "query": "スキルを作って",
+      "should_trigger": true,
+      "expected_behavior": ["新規作成フローが開始される"]
+    },
+    {
+      "query": "SKILL.mdのdescriptionを改善したい",
+      "should_trigger": true,
+      "expected_behavior": ["改善フローが開始される"]
+    },
+    {
+      "query": "Railsのモデルを作って",
+      "should_trigger": false,
+      "expected_behavior": ["スキルが発火しない"]
+    }
   ]
 }
 ```
@@ -396,3 +411,22 @@ Use UTC timestamps consistently across report generation
 ````
 
 **効果**: 説明文だけよりも、具体例の方がClaudeはスタイルや詳細度を正確に理解できる。
+
+---
+
+## 15. スキル間のAttention競合
+
+スキル数が増えると、description同士がシステムプロンプト上で競合する。
+
+### 注意すべき状況
+
+| 状況 | リスク | 対策 |
+|------|--------|------|
+| 類似スキルが複数ある | 誤発火・意図しないスキルが選択される | descriptionでスキル間の境界を明確化（「〜の場合はこのスキル、〜の場合は別スキル」） |
+| descriptionを長くしすぎる | 全体のシステムプロンプトが膨張 | トリガー状況の列挙は重要なものに絞る |
+| スキルAの最適化後にスキルBの発火率が低下 | Attention配分の変化 | 改善後は他スキルの発火テストも実施 |
+
+### 対策
+
+- 新規スキル作成・description変更後は、既存スキルの発火テストも併せて実施
+- 類似スキルがある場合は、descriptionに「〜の場合は{other-skill}を使用」と明記
