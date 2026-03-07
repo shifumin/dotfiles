@@ -1,132 +1,51 @@
 # CLAUDE.md
 
-> **⚠️ chezmoi管理**: このファイル自体はソース（`~/.local/share/chezmoi/dot_claude/CLAUDE.md`）を直接編集し `chezmoi apply` で適用。
-> 他のdotfilesはターゲットを直接編集 → `chezmoi add` でソースに反映。
->
-> **優先度**: グローバル設定 < プロジェクト固有CLAUDE.md
+> chezmoi managed: Edit target (`~/.claude/CLAUDE.md`) directly, then `chezmoi add ~/.claude/CLAUDE.md`.
 
 ---
 
-## 🔴 重要な原則（必須遵守）
+## Core Principles
 
-以下の6原則は**例外なく遵守**すること:
-
-| # | 原則 | 説明 | 違反時のリスク |
-|---|------|------|---------------|
-| 1 | **既存のコードスタイルを厳守** | プロジェクトの規約から逸脱しない | 一貫性の破壊、レビュー負担増 |
-| 2 | **プロジェクトのツールを使用** | 新しいツールやフレームワークを勝手に導入しない | 依存関係の肥大化 |
-| 3 | **コミット前の必須チェック** | リンターとテストを必ず実行する | CIでの失敗 |
-| 4 | **テストの同期** | 実装を追加・変更したら、対応するテストも追加・変更 | テストカバレッジ低下 |
-| 5 | **ドキュメントの同期** | 実装を追加・変更したら、CLAUDE.md・README.mdも更新 | ドキュメント陳腐化 |
-| 6 | **スキル優先使用** | MCPツールより先にスキルを確認・使用する | 認証エラー、非効率な操作 |
+| # | Principle | Description |
+|---|-----------|-------------|
+| 1 | Follow existing code style | Do not deviate from project conventions |
+| 2 | Use project tools | Do not introduce new tools or frameworks without approval |
+| 3 | Pre-commit checks | Always run linters and tests before committing |
+| 4 | Sync tests | Add/update tests when adding/updating implementation |
+| 5 | Sync docs | Update CLAUDE.md and README.md when adding/updating implementation |
+| 6 | Skills first | Check and use Skills before MCP tools |
 
 ---
 
-## 入出力ルール
+## I/O Rules
 
-| カテゴリ | ルール |
-|----------|--------|
-| 日本語出力 | 造語禁止、不自然な翻訳は英単語を使用 |
-| ドキュメント言語 | README.md・CLAUDE.mdは英語で記述 |
-| 短縮入力 | ユーザーが `y` と入力した場合「はい/YES」として扱う |
-
----
-
-## コード品質
-
-### テスト作成ルール
-
-| 観点 | ルール |
-|------|--------|
-| カバレッジ | 正常系・異常系・エッジケースを網羅 |
-| テスト対象 | publicインターフェースのみ（privateメソッドは対象外） |
-
-**理由**: 内部実装への依存を避け、リファクタリング耐性を高めるため
-
-### YARDコメント（Rubyのみ）
-
-Rubyコード実装時、publicメソッドにYARDコメントを追記: `@param`, `@return`, `@raise`
-
-**理由**: AIとIDEがコードを正確に理解するため
+| Category | Rule |
+|----------|------|
+| Japanese output | No coined words; use English terms when Japanese translation is unnatural |
+| Document language | README.md and CLAUDE.md are written in English |
+| Shortcut input | `y` input = YES |
+| Shortcut input | `z` input = Evaluate from zero-base: ignore existing content/approach, assess from ideal state, propose improvements by back-casting from the ideal |
 
 ---
 
-## Git
+## Tool Constraints
 
-### コミットメッセージ
-
-| ルール | 内容 |
-|--------|------|
-| 言語 | **英語のみ** |
-| 形式 | Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:` 等) |
-| 本文 | 必要に応じて改行後に詳細を記載（英語） |
+| Tool | Constraint | Workaround |
+|------|-----------|------------|
+| Write / Edit | Auto-strips trailing whitespace | Use `cat >| file << 'EOF'` in Bash |
 
 ---
 
-## ツールの制限事項
+## Shell Commands
 
-| ツール | 制限 | 回避策 |
-|--------|------|--------|
-| **Write / Edit** | 行末スペースを自動削除 | Bashで `cat >| file << 'EOF'` を使用 |
+### mise exec Required
 
----
+These commands must run via `mise exec --`:
 
-## シェルコマンド
-
-### mise exec 必須コマンド
-
-以下は必ず `mise exec --` 経由で実行:
-
-| カテゴリ | コマンド |
+| Category | Commands |
 |----------|----------|
 | Ruby | `bundle`, `rails`, `rspec`, `ruby` |
 | Node.js | `pnpm`, `node`, `npm` |
 
-**理由**: miseで管理されている環境変数を正しく読み込むため
-
-### chezmoi
-
-dotfilesはchezmoiで管理。ターゲットファイルを直接編集し、`chezmoi add` でソースに反映する。
-
-**編集手順**:
-1. ターゲットファイルを直接編集（例: `~/.zshrc`, `~/.config/nvim/init.vim`）
-2. `chezmoi add <target_file>` でソースディレクトリに反映
-3. ソースディレクトリ（`~/.local/share/chezmoi`）で `git commit`
-
-**例**:
-```bash
-# ~/.zshrc を編集した場合
-chezmoi add ~/.zshrc
-# → ~/.local/share/chezmoi/dot_zshrc が自動更新される
-```
-
-| 状況 | 対応 |
-|------|------|
-| 通常のファイル | ターゲットを編集 → `chezmoi add` |
-| テンプレート（`.tmpl`） | ソース（`~/.local/share/chezmoi/`）を直接編集 → `chezmoi apply` |
-| 新規ファイル追加 | ターゲットに作成 → `chezmoi add` |
-| chezmoi管理ファイルを変更した場合 | 変更後に `chezmoi add <target_file>` を実行（忘れずに） |
-
-> ⚠️ テンプレートファイル（現在は `google-calendar/SKILL.md.tmpl` のみ）は `chezmoi add` すると
-> 展開済みの値がソースに書き込まれテンプレートが壊れるため、ソースを直接編集すること。
-
----
-
-## ツール選択ルール
-
-**処理フロー**: リクエスト受信 → スキル該当確認 → 該当すればスキル使用 → 該当しなければ他ツール
-
-### Notion連携
-
-Notionリンク（`https://www.notion.so/...`）のリンク先情報が必要な場合、Notion MCPを使用する。
-
-| 操作 | ツール | 用途 |
-|------|--------|------|
-| ページ取得 | `mcp__notion__API-retrieve-a-page` | プロパティ取得 |
-| 内容取得 | `mcp__notion__API-get-block-children` | ページ本文取得 |
-| 検索 | `mcp__notion__API-post-search` | タイトルで検索 |
-
-**ページIDの抽出**: URLの末尾32文字（ハイフンなし）をUUID形式に変換
-- 例: `https://www.notion.so/WF-1000XM4-6199211160cd4d0d9211311a3229c58b`
-  → ページID: `61992111-60cd-4d0d-9211-311a3229c58b`
+Reason: Ensures correct environment variables managed by mise.
 
