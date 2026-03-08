@@ -85,21 +85,6 @@
 | 終日 | `"2025-01-15"` | `null` |
 | 時間指定 | `null` | `"2025-01-15T10:00:00+09:00"` |
 
-### jqアクセスパス
-
-JSON出力を処理する際のjqパス:
-
-| 目的 | jqパス |
-|------|--------|
-| 全予定 | `.calendars[].events[]` |
-| タイトルのみ | `.calendars[].events[].summary` |
-| 特定カレンダーの予定 | `.calendars[] \| select(.id == "calendar_id") \| .events[]` |
-| キーワード検索（大文字小文字無視） | `.calendars[].events[] \| select(.summary \| test("キーワード"; "i"))` |
-| 終日予定のみ | `.calendars[].events[] \| select(.start.date != null)` |
-| 時間指定予定のみ | `.calendars[].events[] \| select(.start.date_time != null)` |
-
-**注意**: jqコマンドはシングルクォートで囲むこと（シェルの特殊文字解釈を防ぐため）
-
 ### 制限事項
 
 - fetcherは**単一日付のみ対応**（2引数目は無視される）
@@ -198,9 +183,12 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 ```bash
 mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_updater.rb \
   --event-id='abc123xyz' \
+  --calendar='calendar_id@example.com' \
   --start='2025-01-15T15:00:00' \
   --end='2025-01-15T16:00:00'
 ```
+
+`--calendar`を省略した場合は環境変数`GOOGLE_CALENDAR_ID`のカレンダーが使われる。event IDはカレンダーごとにスコープされるため、fetcherの出力から`calendars[].id`を取得して指定する。
 
 ---
 
