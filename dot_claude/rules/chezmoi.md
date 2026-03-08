@@ -19,9 +19,5 @@ chezmoi add ~/.zshrc
 
 | Situation | Action |
 |-----------|--------|
-| Normal files | Edit target → `chezmoi add` |
-| Templates (`.tmpl`) | Edit source (`~/.local/share/chezmoi/`) directly → `chezmoi apply` |
+| Existing files | Edit target → `chezmoi add` |
 | New files | Create at target → `chezmoi add` |
-| After modifying chezmoi-managed files | Always run `chezmoi add <target_file>` |
-
-Template files (currently only `google-calendar/SKILL.md.tmpl`): Do NOT use `chezmoi add` — it writes expanded values and breaks the template. Edit source directly.
