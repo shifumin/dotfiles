@@ -18,8 +18,6 @@ chezmoi add ~/.zshrc          # sync to source (dot_zshrc)
 cd ~/.local/share/chezmoi && git commit
 ```
 
-Exception: Template files (`.tmpl`) must be edited in source directory, then `chezmoi apply`.
-
 Verify changes: `chezmoi diff` shows pending differences between source and target.
 
 ## Key Directories
