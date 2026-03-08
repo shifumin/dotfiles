@@ -4,19 +4,21 @@
 
 ## 目次
 
-1. スクリプト一覧
-2. Fetcher
-3. Creator
-4. Updater
-5. Deleter
-6. Authenticator
-7. トラブルシューティング
+- スクリプト一覧
+- Fetcher
+- Searcher
+- Creator
+- Updater
+- Deleter
+- Authenticator
+- トラブルシューティング
 
 ## スクリプト一覧
 
 | スクリプト | 用途 |
 |-----------|------|
 | google_calendar_fetcher.rb | 予定取得 |
+| google_calendar_searcher.rb | 予定検索（期間指定・キーワード） |
 | google_calendar_creator.rb | 予定作成 |
 | google_calendar_updater.rb | 予定更新 |
 | google_calendar_deleter.rb | 予定削除 |
@@ -101,7 +103,77 @@ JSON出力を処理する際のjqパス:
 ### 制限事項
 
 - fetcherは**単一日付のみ対応**（2引数目は無視される）
-- 日付範囲検索は、forループで各日を個別に取得して結合する
+- 日付範囲検索にはsearcherを使用する
+
+---
+
+## Searcher (google_calendar_searcher.rb)
+
+### 引数
+
+| 引数 | 説明 | 必須 |
+|------|------|------|
+| `--from=DATE` | 開始日（YYYY-MM-DD, today, tomorrow, yesterday等） | `--last`/`--next`未使用時は必須 |
+| `--to=DATE` | 終了日（同上） | `--last`/`--next`未使用時は必須 |
+| `--last=PERIOD` | 過去N期間（例: `3months`, `2weeks`, `30days`） | `--from`/`--to`の代替 |
+| `--next=PERIOD` | 未来N期間（同上） | `--from`/`--to`の代替 |
+| `--query=TEXT` | テキスト検索（summary, description, location, attendeesを横断） | 任意 |
+
+`--from`/`--to` と `--last`/`--next` は排他。
+
+### JSON出力構造
+
+```json
+{
+  "search": {
+    "from": "2026-01-01",
+    "to": "2026-03-31",
+    "query": "meeting",
+    "total_events": 15
+  },
+  "events": [
+    {
+      "id": "event_id_12345",
+      "summary": "Team Meeting",
+      "description": "Weekly sync",
+      "location": "Room A",
+      "start": {
+        "date_time": "2026-01-05T10:00:00+09:00",
+        "date": null
+      },
+      "end": {
+        "date_time": "2026-01-05T11:00:00+09:00",
+        "date": null
+      },
+      "event_type": "default",
+      "calendar_id": "user@gmail.com",
+      "calendar_name": "Calendar Name"
+    }
+  ]
+}
+```
+
+特徴:
+- **フラットリスト**: カレンダー別グループではなく時系列順
+- **`calendar_id`/`calendar_name`**: 各イベントにカレンダー情報を付与
+- **`location`**: イベントの場所情報
+- **`search`メタデータ**: 検索条件と結果件数
+
+### 実行例
+
+```bash
+# 期間指定
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_searcher.rb \
+  --from=2026-01-01 --to=2026-03-31
+
+# 直近3ヶ月 + キーワード検索
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_searcher.rb \
+  --last=3months --query='会議'
+
+# 今後2週間
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_searcher.rb \
+  --next=2weeks
+```
 
 ---
 

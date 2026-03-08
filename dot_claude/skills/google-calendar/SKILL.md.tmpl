@@ -1,7 +1,10 @@
 ---
 description: Googleカレンダーの予定を取得・作成・更新・削除する。
+  ユーザーがカレンダーの予定に関する操作を求めたら必ずこのスキルを使用すること。
   「今日の予定」「明日のスケジュール」「予定を教えて」「予定を作成」
   「カレンダーに追加」「予定を変更」「予定を削除」などのリクエストで使用。
+  「スケジュール確認」「次のミーティングいつ？」「空いてる時間」「予定ある？」
+  「〜を何時に入れて」「会議をずらして」「予定をキャンセル」などでも使用。
 ---
 
 # Googleカレンダー操作
@@ -98,28 +101,64 @@ mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby goog
 
 ---
 
-## 予定検索（キーワード）
+## 予定検索
 
 ### トリガー
 
-「〜の予定はある？」「〜を検索」「未来の〜」などの表現
+「〜の予定はある？」「〜を検索」「未来の〜」「過去3ヶ月の〜」などの表現
 
 ### 処理フロー
 
-1. キーワードと検索期間を解釈（期間指定なし→今日から3ヶ月後まで）
-2. 期間内の各日についてfetcherを実行し、結果を結合
-3. jqでキーワードフィルタ
-4. 結果を整形して表示（0件なら「該当なし」）
+1. キーワードと検索期間を解釈（期間指定なし→今日から3ヶ月後まで: `--next=3months`）
+2. searcherを1回実行（1 API呼び出し/カレンダーで全期間を取得）
+3. 結果を整形して表示（0件なら「該当なし」）
 
-**注意**: fetcherは単一日付のみ対応。複数日検索はforループで各日を個別取得する。JSON構造・jqパス・実行例は `reference.md` を参照。
+### 実行コマンド
 
-**注意**: zsh環境ではforループを`bash -c '...'`で囲む必要がある（zshのevalがfor文を正しく解釈しないため）
+```bash
+# キーワード検索（期間指定）
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_searcher.rb \
+  --from='YYYY-MM-DD' --to='YYYY-MM-DD' --query='キーワード'
+
+# 直近N期間の検索
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_searcher.rb \
+  --last=3months --query='キーワード'
+
+# 今後N期間の検索
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_searcher.rb \
+  --next=3months --query='キーワード'
+
+# キーワードなし（期間内の全予定）
+mise exec --cd ~/ghq/github.com/shifumin/google-calendar-tools-ruby -- ruby google_calendar_searcher.rb \
+  --from=today --to=2026-03-31
+```
+
+### 引数
+
+| 引数 | 説明 | 必須 |
+|------|------|------|
+| `--from=DATE` | 開始日（YYYY-MM-DD, today, tomorrow等） | `--last`/`--next`未使用時は必須 |
+| `--to=DATE` | 終了日（同上） | `--last`/`--next`未使用時は必須 |
+| `--last=PERIOD` | 過去N期間（例: `3months`, `2weeks`, `30days`） | `--from`/`--to`の代替 |
+| `--next=PERIOD` | 未来N期間（同上） | `--from`/`--to`の代替 |
+| `--query=TEXT` | テキスト検索（summary, description, location等を横断） | 任意 |
+
+**注意**: `--from`/`--to` と `--last`/`--next` は排他。`--query` はGoogle Calendar APIの`q`パラメータを使用し、summary・description・location・attendeesを横断検索する。
+
+### 出力の整形
+
+searcherの出力はフラットなイベントリスト（時系列順）。整形ルール:
+
+1. **除外**: `event_type`が`workingLocation`の予定
+2. **時刻フォーマット**: 取得と同じルール
+3. **カレンダー名**: 各イベントの`calendar_name`フィールドから取得し【】で付与
+4. **並び順**: 出力済み（時系列順）
 
 ### 出力形式
 
 該当あり:
 ```markdown
-## 検索結果: 「キーワード」
+## 検索結果: 「キーワード」（YYYY-MM-DD 〜 YYYY-MM-DD、N件）
 
 - YYYY-MM-DD HH:MM-HH:MM 予定名【カレンダー名】
 ```
