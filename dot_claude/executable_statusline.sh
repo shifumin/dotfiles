@@ -1,6 +1,14 @@
 #!/bin/bash
 input=$(cat)
 
+# Extract current directory
+CWD=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // empty')
+if [[ -n "$CWD" ]]; then
+  CWD_DISPLAY="${CWD/#$HOME/~}"
+else
+  CWD_DISPLAY="--"
+fi
+
 # Extract values from JSON
 PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
 CTX_SIZE=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
@@ -106,4 +114,5 @@ else
   USE_BAR="░░░░░░░░░░░░░░░░░░░░"
 fi
 
+echo -e "📁 ${CWD_DISPLAY}"
 echo -e "ctx ${COLOR}${BAR}${RESET} ${USED_K}k/${TOTAL_K}k | quota ${USE_COLOR}${USE_BAR}${RESET} ${USE_PCT}% ↻ ${RESET_TIME}"
