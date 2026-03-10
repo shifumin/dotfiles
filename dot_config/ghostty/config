@@ -31,7 +31,7 @@ scrollback-limit = 10000000
 shell-integration = detect
 
 # 動作
-confirm-close-surface = false
+confirm-close-surface = always
 
 # macOS
 macos-titlebar-style = tabs
