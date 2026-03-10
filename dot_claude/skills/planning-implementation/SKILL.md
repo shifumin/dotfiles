@@ -30,7 +30,7 @@ research MDを元に詳細な実装計画をObsidian Vault（my-vault）の `065
 | 実装する機能・要件 | 必須（新規時） | 「通知システムのリファクタ」 |
 | プロジェクト名 | 必須（cwdから推定可） | `hanica` |
 | research MDのパス | 任意 | `065_dev/2026-03-05_hanica_research_通知システム.md` |
-| 既存plan MDのパス | 任意（更新時） | `065_dev/2026-03-06_hanica_plan_xxx.md` |
+| 既存plan MDのパス | 任意（更新時） | `065_dev/plan_hanica_xxx_2026-03-06.md` |
 
 **モード判定**: 「注釈を反映して」「計画を更新して」など既存plan MDの更新を求められた場合は **Step 6（注釈の反映）** に進む。新規作成の場合は Step 2 に進む。
 
@@ -59,7 +59,7 @@ research MDは「何が存在して、なぜそうなっているか」を提供
 
 現在日時を `date "+%Y-%m-%dT%H:%M"` で取得し、Writeツールで以下のテンプレートに従って生成する。
 
-**ファイルパス**: `{my-vault}/065_dev/{プロジェクト名}_plan_{機能名}_{YYYY-MM-DD}.md`
+**ファイルパス**: `{my-vault}/065_dev/plan_{プロジェクト名}_{機能名}_{YYYY-MM-DD}.md`
 
 plan MDテンプレートの詳細は `reference.md` を参照。
 
