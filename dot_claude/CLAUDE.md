@@ -23,9 +23,9 @@
 |----------|------|
 | Japanese output | No coined words; use English terms when Japanese translation is unnatural |
 | Document language | README.md and CLAUDE.md are written in English |
+| Shortcut input | `k` input = Kaizen: reflect on this session, find process/artifact improvements (CLAUDE.md, rules, skills, workflows, etc.), and apply them |
 | Shortcut input | `y` input = YES |
 | Shortcut input | `z` input = Evaluate from zero-base: ignore existing content/approach, assess from ideal state, propose improvements by back-casting from the ideal |
-| Shortcut input | `k` input = Kaizen: reflect on this session, find process/artifact improvements (CLAUDE.md, rules, skills, workflows, etc.), and apply them |
 
 ---
 
