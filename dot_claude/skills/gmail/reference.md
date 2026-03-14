@@ -4,256 +4,197 @@ SKILL.mdから参照される技術仕様。引数・実行方法はSKILL.mdを�
 
 ## 目次
 
-1. Searcher JSON出力構造
-2. Fetcher
-3. Spam Trasher
-4. Batch Modifier
-5. Authenticator
-6. ラベル名の日本語変換
-7. 日付変換ルール
-8. エラーハンドリング
-9. トラブルシューティング
+1. +triage JSON出力構造
+2. messages get（Gmail API生レスポンス）
+3. messages list
+4. messages batchModify
+5. messages trash
+6. 認証
+7. ラベル名の日本語変換
+8. 日付変換ルール
+9. エラーハンドリング
+10. トラブルシューティング
 
 ---
 
-## Searcher JSON出力構造
+## +triage JSON出力構造
 
-デフォルト:
 ```json
 {
-  "query": "from:amazon.co.jp",
-  "result_count": 3,
   "messages": [
     {
-      "id": "18abc123def456",
-      "thread_id": "18abc123def000",
-      "date": "Fri, 17 Jan 2025 10:30:00 +0900",
-      "from": "Amazon.co.jp <auto-confirm@amazon.co.jp>",
-      "to": "user@example.com",
-      "subject": "ご注文の確認",
-      "snippet": "ご注文ありがとうございます。お届け予定日...",
-      "labels": ["INBOX", "UNREAD", "CATEGORY_UPDATES"],
-      "body": {
-        "plain_text": "本文テキスト...",
-        "has_html": true
-      }
+      "date": "Sat, 14 Mar 2026 12:32:57 +0000",
+      "from": "connpass <no-reply@connpass.com>",
+      "id": "18f0a1b2c3d4e5f6",
+      "subject": "イベント名 に資料が追加されました。"
     }
-  ]
+  ],
+  "query": "is:unread",
+  "resultSizeEstimate": 5
 }
 ```
 
-`--include-html`使用時:
+### オプション
+
+| オプション | 説明 |
+|-----------|------|
+| `--query` | Gmail検索クエリ（デフォルト: `is:unread`） |
+| `--max` | 最大件数（デフォルト: 20） |
+| `--format` | 出力形式: json / table / yaml / csv |
+| `--labels` | ラベル名を出力に含める |
+
+特徴:
+- **概要情報のみ**: id, from, subject, dateを返す（本文なし）
+- **クエリ対応**: `--query` で任意のGmail検索クエリを受け付ける
+- **スパム非対応**: `includeSpamTrash` オプションなし。スパム検索は `messages list` を使う
+
+---
+
+## messages get（Gmail API生レスポンス）
+
 ```json
 {
+  "id": "18f0a1b2c3d4e5f7",
+  "threadId": "18f0a1b2c3d4e5f7",
+  "labelIds": ["CATEGORY_PROMOTIONS", "UNREAD", "IMPORTANT"],
+  "payload": {
+    "headers": [
+      {"name": "Date", "value": "Sat, 14 Mar 2026 09:36:15 +0000"},
+      {"name": "From", "value": "\"Amazon.co.jp\" <store-news@amazon.co.jp>"},
+      {"name": "To", "value": "shifumin4230@gmail.com"},
+      {"name": "Subject", "value": "件名"}
+    ],
+    "mimeType": "multipart/alternative",
+    "parts": [
+      {
+        "mimeType": "text/plain",
+        "body": {
+          "size": 1234,
+          "data": "Base64エンコードされた本文..."
+        }
+      },
+      {
+        "mimeType": "text/html",
+        "body": {
+          "size": 5678,
+          "data": "Base64エンコードされたHTML..."
+        }
+      }
+    ]
+  }
+}
+```
+
+### ヘッダーからの情報抽出
+
+| 表示項目 | ヘッダー名 |
+|---------|-----------|
+| 件名 | `Subject` |
+| From | `From` |
+| To | `To` |
+| 日付 | `Date` |
+
+### 本文の取得方法
+
+1. `payload.parts` から `mimeType: "text/plain"` のパートを探す
+2. `body.data` をBase64デコード（URL-safe Base64）
+3. plain_textが空の場合は `mimeType: "text/html"` を使用
+
+### 添付ファイルの確認
+
+`payload.parts` 内で `filename` が空でないパートが添付ファイル:
+
+```json
+{
+  "mimeType": "application/pdf",
+  "filename": "document.pdf",
   "body": {
-    "plain_text": "本文テキスト...",
-    "html": "<html>...</html>"
+    "size": 123456,
+    "attachmentId": "..."
   }
 }
 ```
 
 ---
 
-## Fetcher
+## messages list
 
-### formatオプション
-
-| 値 | 説明 |
-|----|------|
-| `full` | 全情報（ヘッダー、本文、添付ファイル） |
-| `minimal` | ID、スレッドID、ラベルのみ |
-| `metadata` | ヘッダーのみ（本文なし） |
-| `raw` | RFC2822形式の生データ |
-
-### JSON出力構造（format=full）
+```bash
+gws gmail users messages list --params '{"userId":"me","q":"<検索クエリ>","maxResults":50}' --format json
+```
 
 ```json
 {
-  "id": "18abc123def456",
-  "thread_id": "18abc123def000",
-  "date": "Fri, 17 Jan 2025 10:30:00 +0900",
-  "from": "sender@example.com",
-  "to": "recipient@example.com",
-  "subject": "件名",
-  "labels": ["INBOX", "UNREAD"],
-  "body": {
-    "plain_text": "本文テキスト...",
-    "html": "<html>...</html>"
-  },
-  "attachments": [
+  "messages": [
     {
-      "filename": "document.pdf",
-      "mime_type": "application/pdf",
-      "size": 123456
-    }
-  ]
-}
-```
-
----
-
-## Spam Trasher (gmail_spam_trasher.rb)
-
-### 引数
-
-| オプション | 必須 | デフォルト | 説明 |
-|-----------|:----:|-----------|------|
-| `--max-results=N` | No | 500 | 処理する最大スパムメッセージ数 |
-| `--dry-run` | No | - | プレビューのみ（ゴミ箱に移動しない） |
-| `--batch-size=N` | No | 100 | バッチあたりのメッセージ数（最大: 100） |
-
-### 認証
-
-| 項目 | 値 |
-|------|-----|
-| スコープ | `gmail.modify` |
-| トークンファイル | `~/.credentials/gmail-modify-token.yaml` |
-| 認証コマンド | `ruby gmail_authenticator.rb --scope=modify` |
-
-### JSON出力構造
-
-dry-run時:
-```json
-{
-  "dry_run": true,
-  "spam_count": 42,
-  "message_ids": ["18abc123def456", "18abc789ghi012"]
-}
-```
-
-実行成功時:
-```json
-{
-  "spam_count": 42,
-  "trashed_count": 42,
-  "failed_batches": [],
-  "success": true
-}
-```
-
-スパムなし:
-```json
-{
-  "spam_count": 0,
-  "message": "No spam messages found."
-}
-```
-
-一部失敗時:
-```json
-{
-  "spam_count": 42,
-  "trashed_count": 30,
-  "failed_batches": [
-    {
-      "batch_index": 0,
-      "size": 12,
-      "error": "Rate limit exceeded"
+      "id": "18f0a1b2c3d4e5f7",
+      "threadId": "18f0a1b2c3d4e5f7"
     }
   ],
-  "success": false
+  "nextPageToken": "...",
+  "resultSizeEstimate": 201
 }
 ```
+
+- ID + threadID のみ返す。詳細は `messages get` で取得
+- `--page-all` で自動ページング可能
+- `includeSpamTrash:true` でスパム・ゴミ箱のメールも対象
 
 ---
 
-## Batch Modifier (gmail_batch_modifier.rb)
+## messages batchModify
 
-### 引数
+### リクエスト
 
-| オプション | 必須 | デフォルト | 説明 |
-|-----------|:----:|-----------|------|
-| `--query=QUERY` | Yes | - | Gmail検索クエリ |
-| `--remove-labels=LABELS` | No | - | 削除するラベルID（カンマ区切り） |
-| `--add-labels=LABELS` | No | - | 追加するラベルID（カンマ区切り） |
-| `--max-results=N` | No | 全件 | 処理する最大メッセージ数 |
-| `--dry-run` | No | - | プレビューのみ（変更しない） |
-
-`--remove-labels`と`--add-labels`の少なくともどちらかは必須。
-
-### 認証
-
-| 項目 | 値 |
-|------|-----|
-| スコープ | `gmail.modify` |
-| トークンファイル | `~/.credentials/gmail-modify-token.yaml` |
-| 認証コマンド | `ruby gmail_authenticator.rb --scope=modify` |
-
-### JSON出力構造
-
-dry-run時:
-```json
-{
-  "dry_run": true,
-  "query": "category:social is:unread",
-  "total_count": 42,
-  "message_ids": ["18abc123def456", "18abc789ghi012"]
-}
+```bash
+gws gmail users messages batchModify --json '{"ids":["id1","id2","id3"],"removeLabelIds":["INBOX","UNREAD"]}'
 ```
 
-実行成功時:
-```json
-{
-  "query": "category:social is:unread",
-  "total_count": 42,
-  "modified_count": 42,
-  "add_labels": [],
-  "remove_labels": ["INBOX", "UNREAD"],
-  "failed_batches": [],
-  "success": true
-}
-```
+### パラメータ
 
-該当なし:
-```json
-{
-  "total_count": 0,
-  "message": "No messages found."
-}
-```
+| フィールド | 必須 | 説明 |
+|-----------|------|------|
+| `ids` | Yes | メッセージIDの配列 |
+| `addLabelIds` | No | 追加するラベルID |
+| `removeLabelIds` | No | 削除するラベルID |
 
-一部失敗時:
-```json
-{
-  "query": "category:social is:unread",
-  "total_count": 42,
-  "modified_count": 30,
-  "add_labels": [],
-  "remove_labels": ["INBOX", "UNREAD"],
-  "failed_batches": [
-    {
-      "batch_index": 0,
-      "size": 12,
-      "error": "Rate limit exceeded"
-    }
-  ],
-  "success": false
-}
-```
+`addLabelIds` と `removeLabelIds` の少なくとも一方は必須。
+
+### レスポンス
+
+成功時は空レスポンス（204 No Content相当）。
 
 ---
 
-## Authenticator (gmail_authenticator.rb)
+## messages trash
 
-### 引数
+### リクエスト
 
-| オプション | 必須 | デフォルト | 説明 |
-|-----------|:----:|-----------|------|
-| `--scope` | No | `readonly` | OAuthスコープ: `readonly` または `modify` |
+```bash
+gws gmail users messages trash --params '{"userId":"me","id":"<message_id>"}'
+```
 
-### 認証ファイル
+### レスポンス
 
-| スコープ | ファイル | 説明 |
-|----------|---------|------|
-| `readonly` | `~/.credentials/gmail-readonly-token.yaml` | 読み取り専用トークン（検索・取得用） |
-| `modify` | `~/.credentials/gmail-modify-token.yaml` | 変更権限トークン（スパム削除・バッチ変更用） |
+ゴミ箱に移動されたメッセージオブジェクトが返る。
 
-### 必要な環境変数
+---
 
-| 環境変数 | 説明 |
-|----------|------|
-| `GOOGLE_CLIENT_ID` | OAuth 2.0クライアントID |
-| `GOOGLE_CLIENT_SECRET` | OAuth 2.0クライアントシークレット |
+## 認証
+
+### ログイン
+
+```bash
+gws auth login -s gmail
+```
+
+### 状態確認
+
+```bash
+gws auth status
+```
+
+`token_valid: true` であれば認証済み。scopesに `gmail.modify` が含まれていれば変更操作も可能。
 
 ---
 
@@ -281,33 +222,21 @@ dry-run時:
 
 ### RFC2822 → YYYY-MM-DD HH:MM変換
 
-入力例: `Fri, 17 Jan 2025 10:30:00 +0900`
-出力: `2025-01-17 10:30`
+入力例: `Sat, 14 Mar 2026 09:36:15 +0000`
+出力: `2026-03-14 18:36`（UTC→JST変換）
 
 ---
 
 ## エラーハンドリング
 
-### エラーJSON構造
-
-```json
-{
-  "error": "エラーメッセージ"
-}
-```
-
 ### エラー種別と対処
 
 | エラーメッセージ | 原因 | 対処 |
 |-----------------|------|------|
-| `No credentials found` | 初回認証未実施 | authenticator実行 |
-| `No credentials found...--scope=modify` | modifyスコープ未認証 | `ruby gmail_authenticator.rb --scope=modify`を実行 |
-| `invalid_grant` | トークン期限切れ | トークン削除後、authenticator再実行 |
-| `GOOGLE_CLIENT_ID is not set` | 環境変数未設定 | mise.local.toml確認 |
-| `Error: --query is required` | 必須引数不足 | クエリを指定 |
-| `Invalid format` | 不正なformat値 | full/minimal/metadata/rawから選択 |
-
-再認証コマンドはSKILL.mdの「認証エラー時」セクションを参照。
+| 認証関連エラー | トークン期限切れ | `gws auth login -s gmail` で再認証 |
+| `400 Bad Request` | パラメータ不正 | `--params` のJSON構文を確認 |
+| `404 Not Found` | メッセージID不正 | IDを再確認 |
+| `429 Too Many Requests` | レートリミット | しばらく待ってリトライ |
 
 ---
 
@@ -316,9 +245,7 @@ dry-run時:
 | 問題 | 原因 | 対処 |
 |------|------|------|
 | 検索結果が0件 | クエリが厳しすぎる | 条件を緩和、演算子を確認 |
-| スパム検索が0件 | `--include-spam-trash`未指定 | 検索時に`--include-spam-trash`を必ず指定 |
-| スパム削除がエラー | modifyトークン未認証 | `ruby gmail_authenticator.rb --scope=modify`で認証 |
-| バッチ変更がエラー | modifyトークン未認証 | `ruby gmail_authenticator.rb --scope=modify`で認証 |
-| 本文が空 | HTMLのみのメール | `has_html: true`を確認 |
-| 文字化け | エンコーディング問題 | UTF-8強制変換済みだが、まれに発生 |
-| タイムアウト | 結果が多すぎる | `--max-results`を減らす、`--no-body`を使用 |
+| スパム検索が0件 | `+triage`を使用している | `messages list` with `includeSpamTrash:true` を使う |
+| 本文が空 | Base64デコードしていない | `payload.parts[].body.data` をBase64デコード |
+| 文字化け | エンコーディング問題 | Base64デコード後にUTF-8として解釈 |
+| batchModifyが失敗 | IDが多すぎる | IDを分割して複数回実行（1回あたり100件まで推奨） |
