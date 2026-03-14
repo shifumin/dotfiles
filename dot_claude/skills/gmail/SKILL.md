@@ -77,7 +77,7 @@ mise exec --cd ~/ghq/github.com/shifumin/gmail-tools-ruby -- ruby gmail_searcher
 | オプション | 説明 |
 |-----------|------|
 | `--query` | **必須** Gmail検索クエリ |
-| `--max-results` | 最大取得件数（デフォルト: 10、最大: 100） |
+| `--max-results` | 最大取得件数（デフォルト: 10） |
 | `--no-body` | 本文を除外（高速化） |
 | `--include-html` | HTML本文を取得 |
 | `--include-spam-trash` | スパム・ゴミ箱のメールを検索対象に含める |
