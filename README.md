@@ -25,6 +25,8 @@ cd dotfiles
 - `.zshrc`, `.zshrc.alias`, `.zshrc.custom` - Zsh configuration
 - `.zprofile` - Zsh environment
 - `.config/sheldon/` - Zsh plugin manager ([Sheldon](https://sheldon.cli.rs/))
+  - `sheldon lock` — Install/update plugins
+  - `sheldon lock --update` — Force update all plugins
   - [fzf](https://github.com/junegunn/fzf) - Fuzzy finder
   - [forgit](https://github.com/wfxr/forgit) - Git with fzf
   - [fzf-zsh-plugin](https://github.com/unixorn/fzf-zsh-plugin) - fzf integrations
@@ -53,10 +55,34 @@ cd dotfiles
 - `.rspec` - RSpec defaults
 - `.default-gems` - Default gems for rbenv
 
+### Claude Code
+
+- `.claude/CLAUDE.md` - Global settings (symlinked to `~/.claude/CLAUDE.md`, applied to all projects)
+- `.claude/rules/` - Context-specific rules (coding, git, dotfiles, notion)
+- `.claude/commands/` - Custom slash commands
+- `.claude/skills/` - Custom skills
+- `.claude/settings.json` - Permissions and hooks configuration
+
+> `.claude/CLAUDE.md` serves a dual role: it is a file in this repo AND the user's global Claude Code settings. Changes here affect behavior across all projects.
+
 ### Other
 
 - `.default-npm-packages` - Default npm packages
-- `.claude/` - Claude Code settings, custom commands, and skills
+
+## Directory Structure
+
+```
+.config/
+├── karabiner/   # Karabiner-Elements key remapping
+├── sheldon/     # Zsh plugin manager
+├── nvim/        # Neovim (dein.vim)
+└── ghostty/     # Ghostty terminal
+.claude/
+├── CLAUDE.md    # Global Claude Code settings (→ ~/.claude/CLAUDE.md)
+├── commands/    # Custom slash commands
+├── rules/       # Context-specific rules
+└── skills/      # Custom skills
+```
 
 ## Workflow
 

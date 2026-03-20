@@ -1,6 +1,8 @@
 # CLAUDE.md
 
-> Symlinked from `~/ghq/github.com/shifumin/dotfiles/.claude/CLAUDE.md`. Edit this file directly, then commit in the dotfiles repo.
+> **Scope**: Global — applies to ALL projects via symlink `~/.claude/CLAUDE.md`
+> **Source**: `~/ghq/github.com/shifumin/dotfiles/.claude/CLAUDE.md` — edit here, commit in dotfiles repo
+> **Mechanism**: `setup.sh` creates symlink; do not copy this file manually
 
 ---
 
@@ -12,7 +14,7 @@
 | 2 | Use project tools | Do not introduce new tools or frameworks without approval |
 | 3 | Pre-commit checks | Always run linters and tests before committing |
 | 4 | Sync tests | Add/update tests when adding/updating implementation |
-| 5 | Sync docs | Update CLAUDE.md and README.md when adding/updating implementation |
+| 5 | Sync docs | Update project-level CLAUDE.md and README.md when adding/updating implementation |
 | 6 | Skills first | Check and use Skills before MCP tools |
 
 ---
