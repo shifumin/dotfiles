@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> chezmoi managed: Edit target (`~/.claude/CLAUDE.md`) directly, then `chezmoi add ~/.claude/CLAUDE.md`.
+> Symlinked from `~/ghq/github.com/shifumin/dotfiles/.claude/CLAUDE.md`. Edit this file directly, then commit in the dotfiles repo.
 
 ---
 
