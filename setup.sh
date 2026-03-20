@@ -37,7 +37,7 @@ file_links=(
 claude_links=(
   ".claude/CLAUDE.md"
   ".claude/settings.json"
-  ".claude/statusline.sh"
+  ".claude/statusline.py"
   ".claude/commands"
   ".claude/rules"
   ".claude/skills"
