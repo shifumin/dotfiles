@@ -1,22 +1,21 @@
 # dotfiles
 
-Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
+Personal dotfiles managed with symlinks.
 
 ## Quick Start
 
-Install chezmoi and apply dotfiles in one command:
-
 ```bash
-sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply shifumin
+ghq get shifumin/dotfiles
+cd ~/ghq/github.com/shifumin/dotfiles
+./setup.sh
 ```
 
-Or step by step:
+Or manually:
 
 ```bash
-brew install chezmoi
-chezmoi init https://github.com/shifumin/dotfiles.git
-chezmoi diff    # Preview changes
-chezmoi apply   # Apply dotfiles
+git clone https://github.com/shifumin/dotfiles.git
+cd dotfiles
+./setup.sh
 ```
 
 ## Contents
@@ -61,36 +60,19 @@ chezmoi apply   # Apply dotfiles
 
 ## Workflow
 
-Edit dotfiles:
+Edit dotfiles directly — symlinks keep the repo and home directory in sync:
 
 ```bash
-chezmoi edit ~/.zshrc
-chezmoi diff
-chezmoi apply
-```
-
-Commit and push:
-
-```bash
-chezmoi cd
-git add .
+vim ~/.zshrc          # edit via symlink (repo file is updated)
+cd ~/ghq/github.com/shifumin/dotfiles
+git add .zshrc
 git commit -m "update zshrc"
 git push
 ```
 
-Pull latest changes:
+Add new dotfiles:
 
-```bash
-chezmoi update
-```
-
-## Common Commands
-
-| Command | Description |
-|---------|-------------|
-| `chezmoi add <file>` | Add a file to chezmoi |
-| `chezmoi edit <file>` | Edit source file |
-| `chezmoi diff` | Show pending changes |
-| `chezmoi apply` | Apply changes to home |
-| `chezmoi update` | Pull and apply from remote |
-| `chezmoi cd` | Go to source directory |
+1. Create the file in the repo at the correct relative path
+2. Add the path to `setup.sh`
+3. Run `./setup.sh`
+4. Commit

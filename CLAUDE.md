@@ -2,41 +2,49 @@
 
 ## Repository Overview
 
-Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/).
-
-This is the chezmoi **source directory** (`~/.local/share/chezmoi/`). Files here are NOT the actual dotfiles — chezmoi transforms and deploys them to the home directory (target). Editing source files directly does not update the target until `chezmoi apply` is run.
-
-Chezmoi uses naming prefixes (`dot_`, `private_`, `executable_`, `empty_`) to control target file names and permissions.
+Personal dotfiles managed with symlinks. The repository (`~/ghq/github.com/shifumin/dotfiles/`) is the single source of truth — files here are symlinked to the home directory.
 
 ## Workflow
 
-Edit target files directly, then sync to source:
+Dotfiles are managed with symlinks. Editing files in the repo directly updates the target (home directory).
 
 ```bash
-vim ~/.zshrc                  # edit target directly
-chezmoi add ~/.zshrc          # sync to source (dot_zshrc)
-cd ~/.local/share/chezmoi && git commit
+vim ~/.zshrc                  # edit via symlink (repo file is updated)
+cd ~/ghq/github.com/shifumin/dotfiles && git commit
 ```
 
-Verify changes: `chezmoi diff` shows pending differences between source and target.
+New machine setup:
+
+```bash
+ghq get shifumin/dotfiles
+cd ~/ghq/github.com/shifumin/dotfiles
+./setup.sh
+```
+
+Adding new dotfiles:
+
+1. Create the file in the repo at the correct relative path
+2. Add the path to `setup.sh` (in the appropriate array: `dir_links`, `file_links`, or `claude_links`)
+3. Run `./setup.sh` to create the symlink
+4. Commit both the new file and the updated `setup.sh`
 
 ## Key Directories
 
 ```
-dot_config/
-├── private_karabiner/  # Karabiner-Elements key remapping
-├── sheldon/            # Zsh plugin manager
-├── nvim/               # Neovim (dein.vim)
-└── ghostty/            # Ghostty terminal
-dot_claude/
-├── CLAUDE.md           # Global Claude Code settings
-├── commands/           # Custom slash commands
-└── skills/             # Skills (planning-implementation, researching-codebase, ...)
+.config/
+├── karabiner/   # Karabiner-Elements key remapping
+├── sheldon/     # Zsh plugin manager
+├── nvim/        # Neovim (dein.vim)
+└── ghostty/     # Ghostty terminal
+.claude/
+├── CLAUDE.md    # Global Claude Code settings
+├── commands/    # Custom slash commands
+└── skills/      # Skills (planning-implementation, researching-codebase, ...)
 ```
 
 ## Zsh Plugin Management
 
-Zsh plugins are managed with [Sheldon](https://sheldon.cli.rs/). Config: `dot_config/sheldon/plugins.toml`
+Zsh plugins are managed with [Sheldon](https://sheldon.cli.rs/). Config: `.config/sheldon/plugins.toml`
 
 ```bash
 sheldon lock           # Install/update plugins
