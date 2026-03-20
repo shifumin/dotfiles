@@ -29,7 +29,6 @@ Temporary Items
 # https://github.com/github/gitignore/blob/main/Ruby.gitignore
 *.gem
 *.rbc
-/.config
 /coverage/
 /InstalledFiles
 /pkg/
