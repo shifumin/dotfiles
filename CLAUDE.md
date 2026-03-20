@@ -1,57 +1,32 @@
 # CLAUDE.md
 
-## Repository Overview
+> **Scope**: Project-level (this dotfiles repo only)
+> **Global settings**: `.claude/CLAUDE.md` (symlinked to `~/.claude/CLAUDE.md`, applies to all projects)
 
-Personal dotfiles managed with symlinks. The repository (`~/ghq/github.com/shifumin/dotfiles/`) is the single source of truth — files here are symlinked to the home directory.
+## Adding Dotfiles
 
-## Workflow
-
-Dotfiles are managed with symlinks. Editing files in the repo directly updates the target (home directory).
-
-```bash
-vim ~/.zshrc                  # edit via symlink (repo file is updated)
-cd ~/ghq/github.com/shifumin/dotfiles && git commit
-```
-
-New machine setup:
-
-```bash
-ghq get shifumin/dotfiles
-cd ~/ghq/github.com/shifumin/dotfiles
-./setup.sh
-```
-
-Adding new dotfiles:
-
-1. Create the file in the repo at the correct relative path
-2. Add the path to `setup.sh` (in the appropriate array: `dir_links`, `file_links`, or `claude_links`)
+1. Create the file at the correct relative path in this repo
+2. Add the path to `setup.sh` (`dir_links`, `file_links`, or `claude_links` array)
 3. Run `./setup.sh` to create the symlink
 4. Commit both the new file and the updated `setup.sh`
 
-## Key Directories
+## Symlink Management
 
-```
-.config/
-├── karabiner/   # Karabiner-Elements key remapping
-├── sheldon/     # Zsh plugin manager
-├── nvim/        # Neovim (dein.vim)
-└── ghostty/     # Ghostty terminal
-.claude/
-├── CLAUDE.md    # Global Claude Code settings
-├── commands/    # Custom slash commands
-└── skills/      # Skills (planning-implementation, researching-codebase, ...)
-```
+Source of truth: `setup.sh` — defines all symlink targets.
+Do NOT manually create symlinks; always update `setup.sh`.
 
-## Zsh Plugin Management
+## Prohibitions
 
-Zsh plugins are managed with [Sheldon](https://sheldon.cli.rs/). Config: `.config/sheldon/plugins.toml`
+| Rule | Reason |
+|------|--------|
+| Do not add runtime/cache files to `.claude/` | Only managed files are in `claude_links` array; runtime data must remain local |
+| Do not duplicate workflow docs across files | Single source: `README.md` for humans, `.claude/rules/dotfiles.md` for Claude Code |
 
-```bash
-sheldon lock           # Install/update plugins
-sheldon lock --update  # Force update all plugins
-```
+## References
 
-Key plugins:
-- **fzf** - Fuzzy finder (`Ctrl+R`, `Ctrl+T`, `Alt+C`)
-- **forgit** - Git with fzf (`ga`, `gcb`, `glo`, `gd`)
-- **fzf-zsh-plugin** - tmux, kill, etc. (`tm`, `fzf-kill`)
+| Topic | Location |
+|-------|----------|
+| Repository description & contents | `README.md` |
+| Dotfiles editing workflow | `.claude/rules/dotfiles.md` |
+| Sheldon plugin management | `.config/sheldon/plugins.toml` |
+| Symlink definitions | `setup.sh` |
