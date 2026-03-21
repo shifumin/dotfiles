@@ -58,10 +58,7 @@ home = os.environ.get("HOME", "")
 cwd = data.get("workspace", {}).get("current_dir") or data.get("cwd", "")
 cwd_display = cwd.replace(home, "~", 1) if cwd else "--"
 
-# Model
-model = data.get("model", {}).get("display_name", "Claude")
-
-parts = [f"📁 {cwd_display}", model]
+parts = [f"📁 {cwd_display}"]
 
 # Context window
 ctx = data.get("context_window", {}).get("used_percentage")
