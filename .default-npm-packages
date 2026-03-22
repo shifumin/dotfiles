@@ -1,6 +1,9 @@
-yarn
-typescript
+@google/gemini-cli
+@googleworkspace/cli
+@playwright/cli
+difit
+npm-check-updates
 ts-node
 typesync
-npm-check-updates
-@google/gemini-cli
+typescript
+yarn
