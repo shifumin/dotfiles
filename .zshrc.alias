@@ -92,6 +92,7 @@ alias c.='cursor .'
 
 # Claude
 alias ccd='claude --dangerously-skip-permissions'
+alias ccdcd='claude --dangerously-skip-permissions --channels plugin:discord@claude-plugins-official'
 
 # other
 alias cdu='cd-gitroot'
