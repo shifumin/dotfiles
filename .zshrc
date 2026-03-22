@@ -9,3 +9,10 @@ fi
 # Source additional configuration
 [ -f $HOME/.zshrc.custom ] && source $HOME/.zshrc.custom
 [ -f $HOME/.zshrc.alias ] && source $HOME/.zshrc.alias
+
+# bun completions
+[ -s "/Users/shifumin/.bun/_bun" ] && source "/Users/shifumin/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
