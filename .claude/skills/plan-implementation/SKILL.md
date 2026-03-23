@@ -1,5 +1,5 @@
 ---
-name: planning-implementation
+name: plan-implementation
 description: research MDを元に詳細な実装計画（plan MD）をObsidian Vault（my-vault）に生成する。
   「実装計画」「plan作成」「計画を書いて」「plan MD作成」「実装プラン」
   「計画を立てて」「プランを作って」などのリクエストで使用。
