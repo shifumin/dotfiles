@@ -1,5 +1,5 @@
 ---
-name: researching-codebase
+name: research-codebase
 description: コードベースを深く調査し、research MDをObsidian Vault（my-vault）に生成する。
   「コードベースリサーチ」「codebase research」「深く調査して」「research MD作成」
   「コードを調査してresearchにまとめて」「リサーチして」などのリクエストで使用。
