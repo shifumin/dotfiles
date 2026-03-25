@@ -184,7 +184,7 @@ gws はGmail API の生レスポンスを返す。以下のフィールドを `p
 
 | 操作 | 検索コマンド | 実行コマンド |
 |------|------------|-------------|
-| スパム管理 | `messages list`（`includeSpamTrash:true`必須） | 各IDに `messages trash` |
+| スパム管理 | `messages list`（`includeSpamTrash:true`必須）+ 各IDに `messages get`（metadata） | 各IDに `messages trash` |
 | Socialタブ整理 | `+triage --query 'category:social is:unread'` | `messages batchModify` (removeLabelIds: INBOX,UNREAD) |
 | Promotionsタブ整理 | `+triage --query 'category:promotions is:unread'` | `messages batchModify` (removeLabelIds: INBOX,UNREAD) |
 | 汎用ラベル操作 | `+triage --query '<任意クエリ>'` | `messages batchModify` |
@@ -200,11 +200,20 @@ gws gmail +triage --query '<検索クエリ>' --max 50 --format json
 ```
 
 **スパム管理**（`+triage`はスパムフォルダ非対応のため`messages list`を使用）:
+
+Step 1-1: メッセージID一覧を取得
 ```bash
 gws gmail users messages list --params '{"userId":"me","q":"label:spam","maxResults":50,"includeSpamTrash":true}' --format json
 ```
 
-スパムの場合は `messages list` がID+threadIDのみ返すため、件名・送信者の確認には各IDに `messages get` を実行するか、一括処理する旨をユーザーに伝える。
+Step 1-2: 各IDのメタデータを取得（件名・送信者・日時の表示用）
+```bash
+# 各メッセージIDに対して並列実行
+gws gmail users messages get --params '{"userId":"me","id":"<message_id>","format":"metadata","metadataHeaders":["Subject","From","Date"]}' --format json
+```
+
+`format: metadata` + `metadataHeaders` で必要なヘッダーのみ取得し、本文ダウンロードを回避する。
+レスポンスの `payload.headers` から Subject / From / Date を抽出してテーブル表示に使用する。
 
 ### Step 2: ユーザーへの表示と確認
 
@@ -241,7 +250,7 @@ Step 3-1: +triageの出力から全メッセージIDを収集
 
 Step 3-2: batchModifyでラベル変更
 ```bash
-gws gmail users messages batchModify --json '{"ids":["id1","id2",...],"removeLabelIds":["INBOX","UNREAD"]}'
+gws gmail users messages batchModify --params '{"userId":"me"}' --json '{"ids":["id1","id2",...],"removeLabelIds":["INBOX","UNREAD"]}'
 ```
 
 **注意**: batchModifyの `ids` にはメッセージIDの配列を渡す。+triageの出力からIDを収集する。`addLabelIds` が必要な場合は JSON に追加。
