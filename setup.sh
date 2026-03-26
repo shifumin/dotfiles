@@ -70,6 +70,19 @@ for item in "${dir_links[@]}" "${file_links[@]}" "${claude_links[@]}"; do
   link_item "$item"
 done
 
+# ── Cursor エディタのシンボリックリンク ──
+# Cursor設定は ~/Library/Application Support/ にあるため
+# 標準のlink_itemパターンに合わないので個別にリンク
+cursor_source="$DOTFILES_DIR/Cursor"
+cursor_target="$HOME/Library/Application Support/Cursor/User"
+if [[ -d "$cursor_source" ]]; then
+  mkdir -p "$cursor_target"
+  for f in "$cursor_source"/*; do
+    ln -sfn "$f" "$cursor_target/$(basename "$f")"
+    echo "LINK: $cursor_target/$(basename "$f") -> $f"
+  done
+fi
+
 # ── 権限設定 ──
 chmod 600 "$DOTFILES_DIR/.config/karabiner/karabiner.json"
 echo ""
