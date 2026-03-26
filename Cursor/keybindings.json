@@ -1,0 +1,10 @@
+[
+  {
+    "key": "cmd+shift+b",
+    "command": "workbench.action.toggleActivityBarVisibility"
+  },
+  {
+    "key": "cmd+b",
+    "command": "-markdown.extension.editing.toggleBold"
+  }
+]
