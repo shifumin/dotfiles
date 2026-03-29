@@ -27,7 +27,7 @@
 | Document language | README.md and CLAUDE.md are written in English |
 | Voice input | User input is often voice-transcribed (Japanese via SuperWhisper). Silently infer intended meaning from context when encountering: homophones (同音異義語), misrecognized technical terms (e.g., "cloud.md" → CLAUDE.md), or slightly unnatural phrasing. Do not ask for clarification on obvious transcription errors |
 | Shortcut input | `ba` input = Before/After: show proposed changes in before/after format |
-| Shortcut input | `k` input = Kaizen: reflect on this session, find process/artifact improvements (CLAUDE.md, rules, skills, workflows, etc.), and apply them |
+| Shortcut input | `k` input = Kaizen: reflect on this session, find process/artifact improvements (CLAUDE.md, rules, skills, workflows, etc.), and apply them. Use skill-creator skill when improving skills |
 | Shortcut input | `y` input = YES |
 | Shortcut input | `z` input = Evaluate from zero-base: ignore existing content/approach, assess from ideal state, propose improvements by back-casting from the ideal |
 
