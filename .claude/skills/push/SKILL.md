@@ -66,12 +66,14 @@ description: 変更内容をcommitしてリモートにpushする。Conventional
 
 ### 5. Push
 
-1. リモート追跡の確認
+1. リモート同期・Push
 
 | 状況 | コマンド |
 |------|---------|
-| 追跡ブランチあり | `git push` |
+| 追跡ブランチあり | `git pull --rebase`でリモートの最新を取得してから`git push` |
 | 追跡ブランチなし | `git push -u origin {branch}` |
+
+`git pull --rebase`でコンフリクトが発生した場合はユーザーに報告し、解消後に再pushする。
 
 2. 結果の報告
 
