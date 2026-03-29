@@ -38,12 +38,15 @@ def braille_bar(pct, width=8):
     return bar
 
 
-def fmt_reset_time(iso_str):
+def fmt_reset_time(value):
     try:
-        dt = datetime.fromisoformat(iso_str.replace("Z", "+00:00"))
+        if isinstance(value, (int, float)):
+            dt = datetime.fromtimestamp(value, tz=timezone.utc)
+        else:
+            dt = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
         local_dt = dt.astimezone()
         return local_dt.strftime("%H:%M")
-    except (ValueError, AttributeError):
+    except (ValueError, AttributeError, OSError, TypeError):
         return ""
 
 
