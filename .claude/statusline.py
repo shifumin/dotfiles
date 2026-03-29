@@ -75,10 +75,4 @@ if five_pct is not None:
     reset = fmt_reset_time(five_hour.get("resets_at", ""))
     parts.append(fmt("5h", five_pct, reset))
 
-# 7-day rate limit
-seven_day = data.get("rate_limits", {}).get("seven_day", {})
-seven_pct = seven_day.get("used_percentage")
-if seven_pct is not None:
-    parts.append(fmt("7d", seven_pct))
-
 print(f" {DIM}│{R} ".join(parts), end="")
