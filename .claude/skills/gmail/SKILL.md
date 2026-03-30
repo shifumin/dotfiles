@@ -184,7 +184,7 @@ gws はGmail API の生レスポンスを返す。以下のフィールドを `p
 
 | 操作 | 検索コマンド | 実行コマンド |
 |------|------------|-------------|
-| スパム管理 | `messages list`（`includeSpamTrash:true`必須）+ 各IDに `messages get`（metadata） | 各IDに `messages trash` |
+| スパム管理 | `+triage --query 'in:spam'`（優先）/ `messages list`（フォールバック） | 各IDに `messages trash` |
 | Socialタブ整理 | `+triage --query 'category:social is:unread'` | `messages batchModify` (removeLabelIds: INBOX,UNREAD) |
 | Promotionsタブ整理 | `+triage --query 'category:promotions is:unread'` | `messages batchModify` (removeLabelIds: INBOX,UNREAD) |
 | 汎用ラベル操作 | `+triage --query '<任意クエリ>'` | `messages batchModify` |
@@ -199,16 +199,19 @@ gws はGmail API の生レスポンスを返す。以下のフィールドを `p
 gws gmail +triage --query '<検索クエリ>' --max 50 --format json
 ```
 
-**スパム管理**（`+triage`はスパムフォルダ非対応のため`messages list`を使用）:
+**スパム管理**:
 
-Step 1-1: メッセージID一覧を取得
+優先: `+triage --query 'in:spam'`（件名・送信者・日時を一括取得できる）
 ```bash
-gws gmail users messages list --params '{"userId":"me","q":"label:spam","maxResults":50,"includeSpamTrash":true}' --format json
+gws gmail +triage --query 'in:spam' --max 50 --format json
 ```
 
-Step 1-2: 各IDのメタデータを取得（件名・送信者・日時の表示用）
+フォールバック（`+triage`で取得できない場合）: `messages list` + `messages get`
 ```bash
-# 各メッセージIDに対して並列実行
+# Step 1-1: メッセージID一覧を取得
+gws gmail users messages list --params '{"userId":"me","q":"label:spam","maxResults":50,"includeSpamTrash":true}' --format json
+
+# Step 1-2: 各IDのメタデータを取得（件名・送信者・日時の表示用）
 gws gmail users messages get --params '{"userId":"me","id":"<message_id>","format":"metadata","metadataHeaders":["Subject","From","Date"]}' --format json
 ```
 
@@ -283,13 +286,25 @@ gws gmail users messages batchModify --params '{"userId":"me"}' --json '{"ids":[
 
 ## 認証エラー時
 
-認証トークンエラーが発生した場合:
+認証トークンエラー（403 insufficientPermissions）が発生した場合:
+
+### Step 1: 再認証
 
 ```bash
 gws auth login -s gmail
 ```
 
 ブラウザが開くので、ユーザーにOAuth認証を完了してもらう。
+
+### Step 2: トークンキャッシュクリア（再認証後も403が続く場合）
+
+`gws auth status`でスコープが正しいのに403が出る場合、トークンキャッシュが古い可能性がある:
+
+```bash
+rm -f ~/.config/gws/token_cache.json
+```
+
+キャッシュ削除後にコマンドを再実行すると、新しいトークンが自動生成される。
 
 認証状態の確認:
 ```bash
