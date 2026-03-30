@@ -40,7 +40,6 @@ claude_links=(
   ".claude/statusline.py"
   ".claude/commands"
   ".claude/rules"
-  ".claude/skills"
 )
 
 link_item() {
@@ -68,6 +67,21 @@ echo "=== dotfiles setup ==="
 
 for item in "${dir_links[@]}" "${file_links[@]}" "${claude_links[@]}"; do
   link_item "$item"
+done
+
+# ── .claude/skills/ の自作スキル個別リンク ──
+# skills/を丸ごとリンクすると npx skills add の相対シンボリックリンクが壊れるため
+# 自作スキル（実ディレクトリ）のみ個別にリンクする
+mkdir -p "$HOME/.claude/skills"
+for skill_dir in "$DOTFILES_DIR/.claude/skills"/*/; do
+  skill_name="$(basename "$skill_dir")"
+  # シンボリックリンク（サードパーティスキル）はスキップ
+  if [[ -L "${skill_dir%/}" ]]; then
+    echo "SKIP (third-party skill): $skill_name"
+    continue
+  fi
+  ln -sfn "$skill_dir" "$HOME/.claude/skills/$skill_name"
+  echo "LINK: $HOME/.claude/skills/$skill_name -> $skill_dir"
 done
 
 # ── Cursor エディタのシンボリックリンク ──
