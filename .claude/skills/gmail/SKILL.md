@@ -243,9 +243,14 @@ JSON出力をテーブル形式に変換して表示:
 
 **スパム管理** — 各メッセージをゴミ箱に移動:
 
+Claude CodeのBashツールはzshの`eval`で実行されるため、`for...do...done`ループはパースエラーになる。`bash`ヒアドキュメントでラップすること:
+
 ```bash
-# 各メッセージIDに対して実行
-gws gmail users messages trash --params '{"userId":"me","id":"<message_id>"}'
+bash <<'SCRIPT'
+for id in <id1> <id2> <id3>; do
+  gws gmail users messages trash --params "{\"userId\":\"me\",\"id\":\"$id\"}" 2>/dev/null
+done
+SCRIPT
 ```
 
 **カテゴリタブ整理** — ラベル一括変更:
