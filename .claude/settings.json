@@ -1,5 +1,8 @@
 {
   "cleanupPeriodDays": 30,
+  "env": {
+    "CLAUDE_CODE_NO_FLICKER": "1"
+  },
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
