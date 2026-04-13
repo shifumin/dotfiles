@@ -3,6 +3,7 @@
 @playwright/cli
 difit
 npm-check-updates
+pnpm
 ts-node
 typesync
 typescript
