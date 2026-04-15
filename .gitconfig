@@ -23,6 +23,7 @@
   navigate = true
   dark = true
   line-numbers = true
+  syntax-theme = "Solarized (dark)"
 
 [init]
   defaultBranch = main
