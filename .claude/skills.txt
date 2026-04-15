@@ -1,0 +1,6 @@
+# Third-party Claude Code skills
+# Installed globally via: npx skills add <source> --skill <name> -g -a claude-code -y
+# Format: <source> <skill-name>
+yoshiko-pg/difit difit
+yoshiko-pg/difit difit-review
+vercel-labs/skills find-skills

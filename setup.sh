@@ -84,6 +84,32 @@ for skill_dir in "$DOTFILES_DIR/.claude/skills"/*/; do
   echo "LINK: $HOME/.claude/skills/$skill_name -> $skill_dir"
 done
 
+# ── サードパーティスキルのインストール ──
+# .claude/skills.txt に定義されたスキルを npx skills add でインストール
+# ~/.agents/skills/<name> が存在すればスキップ（冪等）
+skills_file="$DOTFILES_DIR/.claude/skills.txt"
+if [[ -f "$skills_file" ]]; then
+  if command -v npx &>/dev/null; then
+    while IFS= read -r line || [[ -n "$line" ]]; do
+      line="${line%%#*}"
+      line="$(echo "$line" | xargs)"
+      [[ -z "$line" ]] && continue
+
+      source_repo="${line%% *}"
+      skill_name="${line##* }"
+
+      if [[ -d "$HOME/.agents/skills/$skill_name" ]]; then
+        echo "SKIP (already installed): $skill_name"
+      else
+        echo "INSTALL: $skill_name from $source_repo"
+        npx skills add "$source_repo" --skill "$skill_name" -g -a claude-code -y
+      fi
+    done < "$skills_file"
+  else
+    echo "WARN: npx not found, skipping third-party skill installation"
+  fi
+fi
+
 # ── Cursor エディタのシンボリックリンク ──
 # Cursor設定は ~/Library/Application Support/ にあるため
 # 標準のlink_itemパターンに合わないので個別にリンク

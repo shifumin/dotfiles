@@ -61,6 +61,7 @@ cd dotfiles
 - `.claude/rules/` - Context-specific rules (coding, git, dotfiles, notion)
 - `.claude/commands/` - Custom slash commands
 - `.claude/skills/` - Custom skills
+- `.claude/skills.txt` - Third-party skill manifest (auto-installed on setup)
 - `.claude/settings.json` - Permissions and hooks configuration
 
 > `.claude/CLAUDE.md` serves a dual role: it is a file in this repo AND the user's global Claude Code settings. Changes here affect behavior across all projects.
@@ -81,7 +82,8 @@ cd dotfiles
 ├── CLAUDE.md    # Global Claude Code settings (→ ~/.claude/CLAUDE.md)
 ├── commands/    # Custom slash commands
 ├── rules/       # Context-specific rules
-└── skills/      # Custom skills
+├── skills/      # Custom skills
+└── skills.txt   # Third-party skill manifest
 ```
 
 ## Workflow
