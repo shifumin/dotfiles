@@ -8,6 +8,7 @@
     "allow": [
       "Bash(bundle:*)",
       "Bash(cat:*)",
+      "Bash(date:*)",
       "Bash(find:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
