@@ -1,5 +1,6 @@
 @google/gemini-cli
 @googleworkspace/cli
+@openai/codex
 @playwright/cli
 difit
 npm-check-updates
