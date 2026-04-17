@@ -40,6 +40,7 @@ claude_links=(
   ".claude/statusline.py"
   ".claude/commands"
   ".claude/rules"
+  ".claude/output-styles"
 )
 
 link_item() {
