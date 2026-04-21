@@ -22,7 +22,6 @@ alias bo='brew outdated'
 alias be='bundle exec'
 
 # Docker
-alias do='docker'
 alias doi='docker images'
 alias dormi='docker rmi'
 alias dorminone="docker images | awk '/<none/{print $3}' | xargs docker rmi"
