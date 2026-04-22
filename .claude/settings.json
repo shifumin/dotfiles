@@ -28,7 +28,6 @@
       "Bash(yarn:*)",
       "Edit(!.git/**)",
       "Edit(!node_modules/**)",
-      "Edit(./**)",
       "Edit(**)",
       "Glob(**)",
       "Grep(**)",
