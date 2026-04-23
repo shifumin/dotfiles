@@ -38,7 +38,6 @@
 
 | Tool | Constraint | Workaround |
 |------|-----------|------------|
-| Write / Edit | Auto-strips trailing whitespace | Use `cat >| file << 'EOF'` in Bash |
 | WebFetch | Blocked by bot protection (403) | Use playwright-cli (`--headed --persistent`) |
 | WebFetch | Summarizes content instead of returning full text | Use playwright-cli (`eval` to extract innerText) |
 
