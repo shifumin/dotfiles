@@ -380,6 +380,8 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 
 # mise
 export PATH="$HOME/.local/share/mise/shims:$PATH"
+# Ensure ~/.local/bin (real claude, etc.) takes precedence over orphan mise shims
+export PATH="$HOME/.local/bin:$PATH"
 eval "$(mise activate zsh)"
 
 # ghq + fzf
