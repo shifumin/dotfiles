@@ -6,15 +6,21 @@
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
+      "Bash(awk:*)",
+      "Bash(bash:*)",
       "Bash(bundle:*)",
       "Bash(cat:*)",
+      "Bash(chmod +x:*)",
       "Bash(date:*)",
       "Bash(find:*)",
       "Bash(git add:*)",
+      "Bash(git checkout:*)",
       "Bash(git commit:*)",
+      "Bash(git pull:*)",
       "Bash(git push:*)",
       "Bash(git remote:*)",
       "Bash(git restore:*)",
+      "Bash(git stash:*)",
       "Bash(go:*)",
       "Bash(grep:*)",
       "Bash(ls:*)",
@@ -23,8 +29,13 @@
       "Bash(node:*)",
       "Bash(npm:*)",
       "Bash(pip:*)",
+      "Bash(playwright-cli:*)",
       "Bash(pnpm:*)",
       "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(ruby:*)",
+      "Bash(sed:*)",
+      "Bash(xargs:*)",
       "Bash(yarn:*)",
       "Edit(!.git/**)",
       "Edit(!node_modules/**)",
@@ -33,10 +44,14 @@
       "Grep(**)",
       "LS(**)",
       "Read(**)",
+      "Skill(asking-ais)",
+      "Skill(playwright-cli)",
+      "Skill(update-config)",
       "WebFetch(domain:*)",
       "WebSearch",
       "Write(!.git/**)",
-      "Write(./**)"
+      "Write(./**)",
+      "mcp__plugin_discord_discord__reply"
     ],
     "deny": [
       "Bash(chmod 777 /*)",
@@ -91,8 +106,10 @@
       }
     }
   },
-  "language": "日本語",
   "outputStyle": "emma",
+  "language": "日本語",
   "effortLevel": "high",
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "preferredNotifChannel": "terminal_bell",
+  "remoteControlAtStartup": true
 }
