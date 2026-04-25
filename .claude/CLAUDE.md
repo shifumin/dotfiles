@@ -29,6 +29,7 @@
 | Shortcut input | `ba` input = Before/After: show proposed changes in before/after format |
 | Shortcut input | `k` input = Kaizen: reflect on this session, find process/artifact improvements (CLAUDE.md, rules, skills, workflows, etc.), and apply them. Use skill-creator skill when improving skills |
 | Shortcut input | `q` input = Question: ask clarifying questions using AskUserQuestion repeatedly until all ambiguities are resolved, then wait for explicit instruction to proceed |
+| Shortcut input | `r` input = Recommended — proceed with the recommended option from the most recent proposal |
 | Shortcut input | `y` input = YES / Done — interpret from context and proceed |
 | Shortcut input | `z` input = Evaluate from zero-base: ignore existing content/approach, assess from ideal state, propose improvements by back-casting from the ideal |
 
@@ -38,7 +39,7 @@ When the user asks to add a "shortcut", choose the destination by intent:
 
 | Intent | Destination |
 |--------|-------------|
-| Single-character input alias for Claude Code session (`ba`, `k`, `q`, `y`, `z`, etc.) | `.claude/CLAUDE.md` → `I/O Rules` table (Shortcut input row) |
+| Single-character input alias for Claude Code session (`ba`, `k`, `q`, `r`, `y`, `z`, etc.) | `.claude/CLAUDE.md` → `I/O Rules` table (Shortcut input row) |
 | Shell alias / function (e.g. `gst`, `glog`) | `.zshrc.custom` |
 | Frequently-typed CLI command sequence as documentation reference | Project-level `CLAUDE.md` (not global) |
 | Claude Code slash command | `.claude/commands/` or skill |
