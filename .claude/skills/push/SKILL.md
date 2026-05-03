@@ -24,6 +24,8 @@ description: 変更内容をcommitしてリモートにpushする。Conventional
 | `git log --oneline -5` | 直近のコミットメッセージ（スタイル参考） |
 | `git log origin/{branch}..HEAD` | push未のコミット確認 |
 
+`git log origin/{branch}..HEAD` は **追跡ブランチが無いと失敗する**。失敗自体を「追跡ブランチなし」のシグナルとしてステップ 5 で扱う（事前判定不要）。
+
 #### 判断
 
 | 状況 | 対応 |
@@ -34,7 +36,11 @@ description: 変更内容をcommitしてリモートにpushする。Conventional
 
 ### 2. コミット前チェック
 
-プロジェクトにリンター・テストがある場合は実行する。
+プロジェクトにリンター・テストがある場合は実行する。検出は次の優先順:
+
+1. プロジェクトの `CLAUDE.md` / `README.md` にコマンド指定があればそれを使う
+2. 一般的な設定ファイル（`package.json` の scripts、`Gemfile` の rake/rspec、`pyproject.toml`、`Makefile` の lint/test ターゲット 等）から推定
+3. どちらも見つからなければスキップ
 
 | 結果 | 対応 |
 |------|------|
@@ -48,10 +54,18 @@ description: 変更内容をcommitしてリモートにpushする。Conventional
 
 変更の種類でコミットを分割する。git bisect や revert の粒度を保つため、異なる種類の変更は別コミットにする。
 
+細かい type 判定（コメント追加・命名修正など曖昧なケース）と、**同 type で scope 違いの分割可否** は `git log --oneline` の直近スタイルに倣う。明示的な指針が無ければ次の既定値を採用:
+
+- コメント追加・既存挙動の明示化 → `fix` か `chore`（影響度が大きい方）
+- 同 type で scope 違い → **1 コミットに統合**（過剰分割を避ける）
+
 | 状況 | 対応 |
 |------|------|
 | 単一種類の変更 | 1コミットにまとめる |
-| 複数種類が混在 | 種類ごとに別コミット |
+| 複数種類が混在（別ファイル） | 種類ごとに別ファイルを `git add` して別コミット |
+| 複数種類が混在（同一ファイル内、別ハンク） | 全 diff を `git diff <file> > /tmp/p.patch` で書き出し、`Edit` ツール / heredoc / `sed` 等で該当ハンク以外を **手動削除** → `git apply --cached /tmp/p.patch` でステージ。残りハンクは次コミットで普通に `git add <file>` |
+| 複数種類が混在（同一ハンク内、別行） | 上記「別ハンク」と同じ手順。git の hunk 単位ではなく **論理的な行範囲** で patch を切り分ける（例: 1 ハンク内 5 行のうち 1 行目が fix、3-5 行目が feat なら、それぞれ別 patch を作って 2 コミットに分ける） |
+| 複数種類が混在（同一行内） | 分離せず 1 コミットに統合してよい。type は影響度が大きい方を採用（例: `fix` と `feat` の混在 → `feat`。`chore` と `fix` → `fix`） |
 
 例: `docs`の変更と`feat`の変更 → `docs`を先にコミット → `feat`をコミット
 
@@ -70,8 +84,8 @@ description: 変更内容をcommitしてリモートにpushする。Conventional
 
 | 状況 | コマンド |
 |------|---------|
-| 追跡ブランチあり | `git pull --rebase`でリモートの最新を取得してから`git push` |
-| 追跡ブランチなし | `git push -u origin {branch}` |
+| 追跡ブランチあり | まず `git push` を試み、rejected ならステップ 5 - エラー処理「リモートが先行」に従う。すでに `git fetch` 済みでリモート先行が分かっている場合は先に `git pull --rebase` |
+| 追跡ブランチなし | `git push -u origin {branch}`（`pull --rebase` は不要） |
 
 `git pull --rebase`でコンフリクトが発生した場合はユーザーに報告し、解消後に再pushする。
 
