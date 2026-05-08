@@ -3,6 +3,12 @@ set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# ── mise shims を PATH に追加（npx 等の検出のため） ──
+# .zshrc.custom と同じパスを参照（新規シェルセッション前でも npx を見つけられる）
+if [[ -d "$HOME/.local/share/mise/shims" ]]; then
+  export PATH="$HOME/.local/share/mise/shims:$PATH"
+fi
+
 # ── ディレクトリ単位のシンボリックリンク ──
 # 内容が全てdotfiles管理のディレクトリ
 dir_links=(
@@ -43,25 +49,39 @@ claude_links=(
   ".claude/output-styles"
 )
 
-link_item() {
-  local item="$1"
-  local target="$HOME/$item"
-  local source="$DOTFILES_DIR/$item"
+link_path() {
+  local source="${1%/}"
+  local target="$2"
 
   if [[ ! -e "$source" ]]; then
     echo "SKIP (source not found): $source"
     return
   fi
 
-  # 既存の実ファイル/ディレクトリをバックアップ
+  # 既に正しいシンボリックリンクならスキップ
+  if [[ -L "$target" && "$(readlink "$target")" == "$source" ]]; then
+    echo "OK:   $target"
+    return
+  fi
+
+  # 既存の実ファイル/ディレクトリをバックアップ（既存 .bak はタイムスタンプで退避）
   if [[ -e "$target" && ! -L "$target" ]]; then
-    mv "$target" "$target.bak"
-    echo "BACKUP: $target -> $target.bak"
+    local backup="$target.bak"
+    if [[ -e "$backup" ]]; then
+      backup="$target.bak.$(date +%Y%m%d-%H%M%S)"
+    fi
+    mv "$target" "$backup"
+    echo "BACKUP: $target -> $backup"
   fi
 
   mkdir -p "$(dirname "$target")"
   ln -sfn "$source" "$target"
   echo "LINK: $target -> $source"
+}
+
+link_item() {
+  local item="$1"
+  link_path "$DOTFILES_DIR/$item" "$HOME/$item"
 }
 
 echo "=== dotfiles setup ==="
@@ -81,13 +101,12 @@ for skill_dir in "$DOTFILES_DIR/.claude/skills"/*/; do
     echo "SKIP (third-party skill): $skill_name"
     continue
   fi
-  ln -sfn "$skill_dir" "$HOME/.claude/skills/$skill_name"
-  echo "LINK: $HOME/.claude/skills/$skill_name -> $skill_dir"
+  link_path "$skill_dir" "$HOME/.claude/skills/$skill_name"
 done
 
 # ── サードパーティスキルのインストール ──
 # .claude/skills.txt に定義されたスキルを npx skills add でインストール
-# ~/.agents/skills/<name> が存在すればスキップ（冪等）
+# ~/.claude/skills/<name>/SKILL.md が存在すればスキップ（冪等）
 skills_file="$DOTFILES_DIR/.claude/skills.txt"
 if [[ -f "$skills_file" ]]; then
   if command -v npx &>/dev/null; then
@@ -99,7 +118,7 @@ if [[ -f "$skills_file" ]]; then
       source_repo="${line%% *}"
       skill_name="${line##* }"
 
-      if [[ -d "$HOME/.agents/skills/$skill_name" ]]; then
+      if [[ -e "$HOME/.claude/skills/$skill_name/SKILL.md" ]]; then
         echo "SKIP (already installed): $skill_name"
       else
         echo "INSTALL: $skill_name from $source_repo"
@@ -119,12 +138,14 @@ cursor_target="$HOME/Library/Application Support/Cursor/User"
 if [[ -d "$cursor_source" ]]; then
   mkdir -p "$cursor_target"
   for f in "$cursor_source"/*; do
-    ln -sfn "$f" "$cursor_target/$(basename "$f")"
-    echo "LINK: $cursor_target/$(basename "$f") -> $f"
+    link_path "$f" "$cursor_target/$(basename "$f")"
   done
 fi
 
 # ── 権限設定 ──
-chmod 600 "$DOTFILES_DIR/.config/karabiner/karabiner.json"
+karabiner_json="$DOTFILES_DIR/.config/karabiner/karabiner.json"
+if [[ -f "$karabiner_json" ]]; then
+  chmod 600 "$karabiner_json"
+fi
 echo ""
 echo "=== done ==="
