@@ -347,6 +347,9 @@ export PATH=$PATH:$HOME/.local/bin:$HOME/bin:$GOPATH/bin
 
 # AWS settings
 export AWS_DEFAULT_REGION=ap-northeast-1
+
+# Security: disable npm lifecycle scripts to prevent supply chain attacks
+export NPM_CONFIG_IGNORE_SCRIPTS=true
 ####################
 
 ####################
