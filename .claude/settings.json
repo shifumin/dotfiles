@@ -70,7 +70,8 @@
       "Edit(~/.ssh/id_*)",
       "Write(~/.ssh/*_rsa)",
       "Write(~/.ssh/id_*)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "statusLine": {
     "type": "command",
@@ -111,5 +112,6 @@
   "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true,
   "preferredNotifChannel": "terminal_bell",
-  "remoteControlAtStartup": true
+  "remoteControlAtStartup": true,
+  "skipAutoPermissionPrompt": true
 }
