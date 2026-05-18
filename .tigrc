@@ -32,7 +32,6 @@ bind branch n !git checkout -b %(prompt) %(branch)
 # git checkout commit_id
 bind main C !git checkout %(commit)
 
-## tigで見ているコミットをgithubで開く - Qiita
-## http://qiita.com/yaotti/items/62947b0c981ae38fae82
-bind main H !@hub browse -- commit/%(commit)
-bind diff H !@hub browse -- commit/%(commit)
+## tigで見ているコミットをgithubで開く
+bind main H !@gh browse %(commit)
+bind diff H !@gh browse %(commit)
