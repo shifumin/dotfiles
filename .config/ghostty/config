@@ -2,14 +2,21 @@
 theme = "Solarized Dark Higher Contrast"
 
 # フォント
+# 通常: 英字=JetBrains Mono / 日本語=BIZ UDGothic (Regular)
+# 太字: 英字=JetBrains Mono Bold / 日本語=BIZ UDGothic Bold
+# italic は通常を元にslant合成 / bold-italic は太字を明示指定
 font-family = "JetBrains Mono"
-font-family = "BIZ UDGothic Bold"
+font-family = "BIZ UDGothic"
+font-family-bold = "JetBrains Mono"
+font-family-bold = "BIZ UDGothic Bold"
+font-family-bold-italic = "JetBrains Mono"
+font-family-bold-italic = "BIZ UDGothic Bold"
 font-size = 18
 font-thicken = true
 
 # 外観
 background-opacity = 0.85
-background-blur-radius = 20
+background-blur = 20
 cursor-opacity = 0.8
 cursor-color = ffffff
 unfocused-split-opacity = 0.7
@@ -27,6 +34,7 @@ clipboard-paste-protection = true
 # 入力・操作
 focus-follows-mouse = true
 mouse-scroll-multiplier = 2
+# 行数ではなくバイト単位。10000000 ≒ 10MB/サーフェス（ghosttyのデフォルト値と同じ）
 scrollback-limit = 10000000
 shell-integration = detect
 
