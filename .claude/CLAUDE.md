@@ -29,19 +29,6 @@
 | Shortcut input | `y` input = YES / Done — interpret from context and proceed |
 | Shortcut input | `z` input = Evaluate from zero-base: ignore existing content/approach, assess from ideal state, propose improvements by back-casting from the ideal |
 
-### Where to register a "shortcut"
-
-When the user asks to add a "shortcut", choose the destination by intent:
-
-| Intent | Destination |
-|--------|-------------|
-| Single-character input alias for Claude Code session (`ba`, `k`, `q`, `r`, `y`, `z`, etc.) | `.claude/CLAUDE.md` → `I/O Rules` table (Shortcut input row) |
-| Shell alias / function (e.g. `gst`, `glog`) | `.zshrc.custom` |
-| Frequently-typed CLI command sequence as documentation reference | Project-level `CLAUDE.md` (not global) |
-| Claude Code slash command | `.claude/commands/` or skill |
-
-Default to asking which intent is meant only when truly ambiguous.
-
 ---
 
 ## Tool Constraints
