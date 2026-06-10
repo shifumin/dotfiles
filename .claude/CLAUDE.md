@@ -10,13 +10,8 @@
 
 | # | Principle | Description |
 |---|-----------|-------------|
-| 1 | Follow existing code style | Do not deviate from project conventions |
-| 2 | Use project tools | Do not introduce new tools or frameworks without approval |
-| 3 | Pre-commit checks | Always run linters and tests before committing |
-| 4 | Sync tests | Add/update tests when adding/updating implementation |
-| 5 | Sync docs | Update project-level CLAUDE.md and README.md only when changes affect public API, external behavior, documented workflows, or commands users invoke. Skip for purely internal refactors |
-| 6 | Skills first | Check and use Skills before MCP tools. Use `find-skills` skill when unsure whether a relevant skill exists |
-| 7 | Fetch before update | When updating external documents (GitHub PR/issue descriptions, Jira tickets, Notion/Confluence pages, etc.), fetch the latest remote state first and base the update on it. Concurrent human edits must not be overwritten |
+| 1 | Skills first | Check and use Skills before MCP tools. Use `find-skills` skill when unsure whether a relevant skill exists |
+| 2 | Fetch before update | When updating external documents (GitHub PR/issue descriptions, Jira tickets, Notion/Confluence pages, etc.), fetch the latest remote state first and base the update on it. Concurrent human edits must not be overwritten |
 
 ---
 
