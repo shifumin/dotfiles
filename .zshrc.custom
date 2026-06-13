@@ -421,6 +421,10 @@ complete -C '/opt/homebrew/bin/aws_completer' aws
 # https://github.com/ajeetdsouza/zoxide
 eval "$(zoxide init zsh)"
 
+# git-wt - Git worktree helper with auto cd
+# https://github.com/k1LoW/git-wt
+eval "$(git wt --init zsh)"
+
 ####################
 # fzf - Fuzzy Finder
 # https://github.com/junegunn/fzf
