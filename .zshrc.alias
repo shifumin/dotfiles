@@ -90,8 +90,8 @@ alias -g V='| nvim -'
 alias c.='cursor .'
 
 # Claude
-alias cca='claude --permission-mode auto'
-alias ccad='claude --permission-mode auto --channels plugin:discord@claude-plugins-official'
+alias cc='claude --permission-mode auto'
+alias ccd='claude --permission-mode auto --channels plugin:discord@claude-plugins-official'
 
 # other
 alias cdu='cd-gitroot'
