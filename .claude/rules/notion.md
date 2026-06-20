@@ -6,12 +6,14 @@ When Notion link content (`https://www.notion.so/...`) is needed, use Notion MCP
 
 | Operation | Tool | Notes |
 |-----------|------|-------|
-| Fetch page / database / data source | `mcp__notion__notion-fetch` | Returns properties + body. Accepts URL or UUID directly |
-| Search workspace | `mcp__notion__notion-search` | Semantic search across pages and connected sources |
-| Create page(s) | `mcp__notion__notion-create-pages` | Use when adding new pages |
-| Update page | `mcp__notion__notion-update-page` | Use to modify properties or content |
+| Fetch page / database / data source | `mcp__claude_ai_Notion__notion-fetch` | Returns properties + body. Accepts URL or UUID directly |
+| Search workspace | `mcp__claude_ai_Notion__notion-search` | Semantic search across pages and connected sources |
+| Create page(s) | `mcp__claude_ai_Notion__notion-create-pages` | Use when adding new pages |
+| Update page | `mcp__claude_ai_Notion__notion-update-page` | Use to modify properties or content |
 
-If the listed tool name is not available at runtime, prefer the closest `mcp__notion__*` tool whose description matches the operation. Tool names may evolve; treat this table as a reference, not a fixed contract.
+High-level page/database operations use the `mcp__claude_ai_Notion__notion-*` namespace.
+Low-level block operations (get/append/update block children, etc.) use the separate `mcp__notion__API-*` namespace.
+If a listed tool is unavailable at runtime, prefer the closest tool in the same namespace whose description matches; tool names may evolve, so treat this table as a reference, not a fixed contract.
 
 ## Page ID Extraction
 
