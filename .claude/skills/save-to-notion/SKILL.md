@@ -73,7 +73,7 @@ ReadMcpResourceTool: server=notion, uri=notion://docs/enhanced-markdown-spec
 | コードブロック | 同じ（内部のエスケープ不要） |
 
 **使用禁止の書式**:
-- callout（`::: callout` 構文）: `mcp__notion__notion-create-pages` でプレーンテキストとして表示される不具合あり（`notion://docs/enhanced-markdown-spec` に `<callout>` XML の記述があっても使用しないこと。スキルの指示が優先）
+- callout（`::: callout` 構文）: `mcp__claude_ai_Notion__notion-create-pages` でプレーンテキストとして表示される不具合あり（`notion://docs/enhanced-markdown-spec` に `<callout>` XML の記述があっても使用しないこと。スキルの指示が優先）
 
 **callout の代替方法**（優先順位順）:
 1. `**太字**` + 見出し（`##`, `###`）— 最初にこれを試みる
@@ -81,7 +81,7 @@ ReadMcpResourceTool: server=notion, uri=notion://docs/enhanced-markdown-spec
 
 ### Step 5: ページ作成
 
-`mcp__notion__notion-create-pages` でプライベートページを作成する。
+`mcp__claude_ai_Notion__notion-create-pages` でプライベートページを作成する。
 
 **重要**: `parent` パラメータに「調査メモDB」のdata source IDを指定し、データベースアイテムとして作成する。
 
@@ -107,7 +107,7 @@ ReadMcpResourceTool: server=notion, uri=notion://docs/enhanced-markdown-spec
 ページ作成後、以下の情報をユーザーに報告する:
 
 - ページタイトル
-- ページURL（`mcp__notion__notion-create-pages` のレスポンスから取得）
+- ページURL（`mcp__claude_ai_Notion__notion-create-pages` のレスポンスから取得）
 - 保存した内容の概要
 
 ## エラー処理
