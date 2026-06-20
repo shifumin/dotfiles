@@ -133,7 +133,7 @@ end
 
 | 書式 | 理由 |
 |------|------|
-| callout（`::: callout`） | `mcp__notion__notion-create-pages` でプレーンテキストとして表示される不具合あり |
+| callout（`::: callout`） | `mcp__claude_ai_Notion__notion-create-pages` でプレーンテキストとして表示される不具合あり |
 
 代替手段:
 - 強調したい内容 → `**太字**` + 見出し（`##`, `###`）で対応
