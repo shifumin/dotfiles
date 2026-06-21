@@ -1,9 +1,11 @@
 {
-  "cleanupPeriodDays": 30,
   "env": {
     "CLAUDE_CODE_NO_FLICKER": "1"
   },
-  "includeCoAuthoredBy": false,
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "permissions": {
     "allow": [
       "Bash(awk:*)",
@@ -40,8 +42,6 @@
       "Bash(sed:*)",
       "Bash(xargs:*)",
       "Bash(yarn:*)",
-      "Edit(!.git/**)",
-      "Edit(!node_modules/**)",
       "Edit(**)",
       "Glob(**)",
       "Grep(**)",
@@ -52,8 +52,7 @@
       "Skill(update-config)",
       "WebFetch(domain:*)",
       "WebSearch",
-      "Write(!.git/**)",
-      "Write(./**)",
+      "Write(**)",
       "mcp__plugin_discord_discord__reply"
     ],
     "deny": [
@@ -116,5 +115,6 @@
   "skipDangerousModePermissionPrompt": true,
   "preferredNotifChannel": "terminal_bell",
   "remoteControlAtStartup": true,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "model": "claude-opus-4-7[1m]"
 }
