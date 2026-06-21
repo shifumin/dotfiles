@@ -1,7 +1,5 @@
 {
-  "env": {
-    "CLAUDE_CODE_NO_FLICKER": "1"
-  },
+  "tui": "fullscreen",
   "attribution": {
     "commit": "",
     "pr": ""
@@ -110,11 +108,9 @@
     }
   },
   "outputStyle": "emma",
-  "language": "日本語",
+  "language": "japanese",
   "effortLevel": "high",
-  "skipDangerousModePermissionPrompt": true,
   "preferredNotifChannel": "terminal_bell",
   "remoteControlAtStartup": true,
-  "skipAutoPermissionPrompt": true,
   "model": "claude-opus-4-7[1m]"
 }
