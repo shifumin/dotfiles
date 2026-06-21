@@ -1,9 +1,42 @@
 {
-  "tui": "fullscreen",
   "attribution": {
     "commit": "",
     "pr": ""
   },
+  "effortLevel": "high",
+  "enabledPlugins": {
+    "atlassian@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "codex@openai-codex": true,
+    "context7@claude-plugins-official": true,
+    "discord@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "figma@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "ruby-lsp@claude-plugins-official": true,
+    "sentry@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "slack@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "anthropic-agent-skills": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/skills"
+      }
+    },
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
+      }
+    }
+  },
+  "language": "japanese",
+  "model": "claude-opus-4-7[1m]",
+  "outputStyle": "emma",
   "permissions": {
     "allow": [
       "Bash(chmod +x:*)",
@@ -45,44 +78,11 @@
     ],
     "defaultMode": "auto"
   },
+  "preferredNotifChannel": "terminal_bell",
+  "remoteControlAtStartup": true,
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.py"
   },
-  "enabledPlugins": {
-    "atlassian@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true,
-    "code-review@claude-plugins-official": true,
-    "context7@claude-plugins-official": true,
-    "discord@claude-plugins-official": true,
-    "feature-dev@claude-plugins-official": true,
-    "figma@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true,
-    "ruby-lsp@claude-plugins-official": true,
-    "sentry@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true,
-    "slack@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true,
-    "codex@openai-codex": true
-  },
-  "extraKnownMarketplaces": {
-    "anthropic-agent-skills": {
-      "source": {
-        "source": "github",
-        "repo": "anthropics/skills"
-      }
-    },
-    "openai-codex": {
-      "source": {
-        "source": "github",
-        "repo": "openai/codex-plugin-cc"
-      }
-    }
-  },
-  "outputStyle": "emma",
-  "language": "japanese",
-  "effortLevel": "high",
-  "preferredNotifChannel": "terminal_bell",
-  "remoteControlAtStartup": true,
-  "model": "claude-opus-4-7[1m]"
+  "tui": "fullscreen"
 }
