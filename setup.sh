@@ -46,6 +46,7 @@ claude_links=(
   ".claude/settings.json"
   ".claude/statusline.py"
   ".claude/commands"
+  ".claude/hooks"
   ".claude/rules"
   ".claude/output-styles"
 )

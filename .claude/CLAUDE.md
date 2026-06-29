@@ -43,17 +43,12 @@
 
 ### mise exec Required
 
-These commands must run via `mise exec --`:
+These commands must run via `mise exec --` (Ruby: `bundle`, `rails`, `rspec`, `ruby` / Node.js: `pnpm`, `node`, `npm`). Reason: ensures correct environment variables managed by mise.
 
-| Category | Commands |
-|----------|----------|
-| Ruby | `bundle`, `rails`, `rspec`, `ruby` |
-| Node.js | `pnpm`, `node`, `npm` |
+Enforced by `~/.claude/hooks/mise-exec-guard.sh` (PreToolUse on Bash). Bare invocations are blocked deterministically; the rule does not rely on the model remembering it.
 
-Reason: Ensures correct environment variables managed by mise.
-
-Compound commands: prefix only the outermost listed binary. Examples:
-- `mise exec -- bundle exec rspec` (not `mise exec -- bundle exec mise exec -- rspec`)
+Examples:
+- `mise exec -- bundle exec rspec`
 - `mise exec -- pnpm run lint`
-- `mise exec -- bundle install && mise exec -- bundle exec rails db:migrate` (chain each subcommand separately)
+- Compound commands: prefix each subcommand separately, e.g. `mise exec -- bundle install && mise exec -- bundle exec rails db:migrate`
 
