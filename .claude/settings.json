@@ -20,6 +20,20 @@
     "slack@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true
   },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/mise-exec-guard.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
       "source": {
