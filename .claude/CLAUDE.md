@@ -21,13 +21,20 @@
 |----------|------|
 | Japanese output | No coined words; use English terms when Japanese translation is unnatural |
 | Document language | README.md and CLAUDE.md are written in English |
-| Voice input | User input is often voice-transcribed (Japanese via SuperWhisper). Silently infer intended meaning from context when encountering: homophones (同音異義語), misrecognized technical terms (e.g., "cloud.md" → CLAUDE.md), or slightly unnatural phrasing. Do not ask for clarification on obvious transcription errors |
-| Shortcut input | `ba` input = Before/After: show proposed changes in before/after format |
-| Shortcut input | `k` input = Kaizen: reflect on this session, find process/artifact improvements (CLAUDE.md, rules, skills, workflows, etc.), and apply them. Use skill-creator skill when improving skills |
-| Shortcut input | `q` input = Question: ask clarifying questions using AskUserQuestion repeatedly until all ambiguities are resolved, then wait for explicit instruction to proceed |
-| Shortcut input | `r` input = Recommended — proceed with the recommended option from the most recent proposal |
-| Shortcut input | `y` input = YES / Done — interpret from context and proceed |
-| Shortcut input | `z` input = Evaluate from zero-base: ignore existing content/approach, assess from ideal state, propose improvements by back-casting from the ideal |
+| Voice input | User input is often voice-transcribed (Japanese via SuperWhisper). Silently infer intended meaning for homophones, misrecognized technical terms (e.g. "cloud.md" → CLAUDE.md), and slightly unnatural phrasing; do not ask about obvious transcription errors |
+
+---
+
+## Shortcuts
+
+| Input | Meaning |
+|-------|---------|
+| `ba` | Before/After: show proposed changes in before/after format |
+| `k` | Kaizen: reflect on this session, find process/artifact improvements (CLAUDE.md, rules, skills, workflows, etc.), and apply them. Use skill-creator skill when improving skills |
+| `q` | Question: ask clarifying questions using AskUserQuestion repeatedly until all ambiguities are resolved, then wait for explicit instruction to proceed |
+| `r` | Recommended — proceed with the recommended option from the most recent proposal |
+| `y` | YES / Done — interpret from context and proceed |
+| `z` | Zero-base: ignore existing content/approach, assess from ideal state, propose improvements by back-casting from the ideal |
 
 ---
 
@@ -41,14 +48,7 @@
 
 ## Shell Commands
 
-### mise exec Required
+Ruby (`bundle`, `rails`, `rspec`, `ruby`) and Node.js (`pnpm`, `node`, `npm`) commands run via `mise exec --`, e.g. `mise exec -- bundle exec rspec`. In compound commands, prefix each subcommand separately. Reason: ensures correct environment variables managed by mise.
 
-These commands must run via `mise exec --` (Ruby: `bundle`, `rails`, `rspec`, `ruby` / Node.js: `pnpm`, `node`, `npm`). Reason: ensures correct environment variables managed by mise.
-
-Enforced by `~/.claude/hooks/mise-exec-guard.sh` (PreToolUse on Bash). Bare invocations are blocked deterministically; the rule does not rely on the model remembering it.
-
-Examples:
-- `mise exec -- bundle exec rspec`
-- `mise exec -- pnpm run lint`
-- Compound commands: prefix each subcommand separately, e.g. `mise exec -- bundle install && mise exec -- bundle exec rails db:migrate`
+Enforced deterministically by `~/.claude/hooks/mise-exec-guard.sh` (PreToolUse on Bash).
 
