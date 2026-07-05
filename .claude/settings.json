@@ -97,6 +97,7 @@
   "language": "japanese",
   "effortLevel": "high",
   "tui": "fullscreen",
+  "skipWorkflowUsageWarning": true,
   "preferredNotifChannel": "terminal_bell",
   "remoteControlAtStartup": true
 }
