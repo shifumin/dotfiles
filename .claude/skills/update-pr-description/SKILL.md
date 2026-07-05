@@ -186,6 +186,6 @@ EOF
 | 既存PR descriptionの更新 | **このスキル** |
 | PR descriptionの新規作成 | PR作成ワークフロー（プロジェクト固有） |
 | PRの全体レビュー | `/reviewing-pr` |
-| PRレビューコメントへの対応 | `/reviewing-pr-comments` |
+| PRレビューコメントへの対応 | `/review-pr-comments` |
 | PR/Issue情報取得・作成 | `/github` |
 | commit + push | `/push` |
