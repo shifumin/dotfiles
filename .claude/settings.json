@@ -45,6 +45,7 @@
     "defaultMode": "auto"
   },
   "model": "sonnet",
+  "fallbackModel": ["claude-opus-4-7", "claude-sonnet-5"],
   "hooks": {
     "PreToolUse": [
       {
