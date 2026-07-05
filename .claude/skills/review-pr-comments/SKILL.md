@@ -1,6 +1,6 @@
 ---
 description: PRレビューコメントを分析し、修正方針を提案する。
-  「レビューコメント対応」「PRコメント対応」「review-pr-comment」「コメントに対応」などのリクエストで使用。
+  「レビューコメント対応」「PRコメント対応」「review-pr-comments」「コメントに対応」などのリクエストで使用。
 ---
 
 # Reviewing PR Comments
