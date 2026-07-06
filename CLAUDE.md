@@ -3,13 +3,6 @@
 > **Scope**: Project-level (this dotfiles repo only)
 > **Global settings**: `.claude/CLAUDE.md` (symlinked to `~/.claude/CLAUDE.md`, applies to all projects)
 
-## Adding Dotfiles
-
-1. Create the file at the correct relative path in this repo
-2. Add the path to `setup.sh` (`dir_links`, `file_links`, or `claude_links` array)
-3. Run `./setup.sh` to create the symlink
-4. Commit both the new file and the updated `setup.sh`
-
 ## Symlink Management
 
 Source of truth: `setup.sh` — defines all symlink targets.
