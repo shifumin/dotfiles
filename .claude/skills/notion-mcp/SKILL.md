@@ -3,8 +3,7 @@ description: Notion MCPツールを使ってNotionのページ・データベー
   「Notionに保存」「Notionから取得」「Notionページを更新」「notion-mcp」
   「Notion検索」「Notionページを作成」などのリクエストで使用。
   Notionリンク（`https://www.notion.so/...`）が会話に現れた時にも必ず使う。
-  ページ高レベル操作は `mcp__claude_ai_Notion__notion-*` 名前空間、
-  ブロック低レベルAPIは `mcp__notion__API-*` 名前空間に分かれている点に注意。
+  使うのは `mcp__claude_ai_Notion__notion-*` 名前空間のみ。
 ---
 
 # Notion MCP
@@ -21,7 +20,7 @@ NotionのページやデータベースをMCPツール経由で操作する。
 | ページ更新 | `mcp__claude_ai_Notion__notion-update-page` | プロパティや本文の修正 |
 
 ページ・DBの高レベル操作は `mcp__claude_ai_Notion__notion-*` 名前空間。
-ブロック単位の低レベルAPI（block childrenのget/append/update等）は `mcp__notion__API-*` 名前空間を使う。
+ブロック単位の低レベルAPI（`mcp__notion__API-*`）のMCPサーバーは2026-07-05時点で未設定 — ブロック単位操作が必要になったらユーザーにサーバー設定を相談する。
 実行時に該当ツールが無ければ、同じ名前空間内で説明が一致するものを優先する（ツール名は変わり得るので、この表は契約ではなく参考）。
 
 ## Page IDの抽出
