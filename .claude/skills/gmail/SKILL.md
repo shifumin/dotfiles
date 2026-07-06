@@ -344,27 +344,27 @@ gws gmail users messages batchModify --params '{"userId":"me"}' --json '{"ids":[
 
 ## 認証エラー時
 
-認証トークンエラー（403 insufficientPermissions）が発生した場合:
+認証トークンエラー（401 `Failed to get token` や 403 `insufficientPermissions`）が発生した場合、**`gws auth login -s gmail` のような部分スコープでの再ログインは行わない**。以下の1手順で完結させる。
 
-### Step 1: 再認証
-
-```bash
-gws auth login -s gmail
-```
-
-ブラウザが開くので、ユーザーにOAuth認証を完了してもらう。
-
-### Step 2: トークンキャッシュクリア（再認証後も403が続く場合）
-
-`gws auth status`でスコープが正しいのに403が出る場合、トークンキャッシュが古い可能性がある:
+### 再認証手順（これ一発で完結させる）
 
 ```bash
-rm -f ~/.config/gws/token_cache.json
+gws auth logout
+gws auth login --scopes https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/calendar,https://www.googleapis.com/auth/drive
 ```
 
-キャッシュ削除後にコマンドを再実行すると、新しいトークンが自動生成される。
+- `gws auth logout` が `credentials.enc` と `token_cache.json` の両方を削除し、認証状態を完全にリセットする
+- 続く `gws auth login --scopes ...` でブラウザ認証URLが出力されるので、ユーザーに開いて認証を完了してもらう
+- 認証はブラウザ操作を伴うため `!` プレフィックス（非対話シェル）では完結しない。通常のBashツール呼び出しでURLを提示し、ユーザーの完了報告を待つ
 
-認証状態の確認:
+### なぜ「logout → フルスコープでlogin」を毎回セットで行うか
+
+- `gws auth login -s gmail` は指定サービスのみでスコープを再構成するため、既存の他サービス（calendar/drive/spreadsheets等）のスコープが失われ、以後それらの操作が403になる
+- `gws auth logout` を挟まずに `--scopes` 指定で再ログインしても、ブラウザ同意が完了し `gws auth status` がスコープ正常・トークン有効（`token_valid: true`）と表示するにもかかわらず、実際のAPI呼び出しは403 insufficientPermissionsのままになるケースがある（stale tokenの可能性）。**`auth status` の表示だけでは正常性を判断できない**
+- この2パターンはどちらも中途半端な再ログインでは解消しないため、`logout` で完全リセットしてからフルスコープで入れ直すのが最も確実で手数が少ない
+
+### 認証状態の確認（参考。これだけで403解消の判断はしない）
+
 ```bash
 gws auth status
 ```
@@ -377,7 +377,7 @@ gws auth status
 2. **完全削除不可**: スパム管理はゴミ箱への移動のみ。完全削除（expunge）はできない
 3. **添付ファイルダウンロード不可**: ファイル情報の表示のみ
 4. **本文取得は2ステップ**: `+triage` は概要のみ。本文が必要な場合は `messages get` で個別取得
-5. **スコープ一元管理**: readonly/modifyの区別なし。`gws auth login -s gmail` で全操作対応
+5. **スコープ一元管理**: readonly/modifyの区別なし。認証エラー時は上記「認証エラー時」節（logout→フルスコープでlogin）の手順で全操作対応
 
 ---
 

@@ -171,7 +171,7 @@ gws gmail users messages batchModify --params '{"userId":"me"}' --json '{"ids":[
 
 ## 認証エラー時
 
-`gws` で 403 insufficientPermissions が出たら、`gmail` スキルの「認証エラー時」セクションに従って `gws auth login -s gmail` で再認証する。それでも解決しない場合は `~/.config/gws/token_cache.json` を削除する。
+`gws` で認証エラー（401 `Failed to get token` や 403 insufficientPermissions）が出たら、`gmail` スキルの「認証エラー時」セクションの手順（`gws auth logout` → フルスコープで `gws auth login`）に従う。
 
 ## なぜこの設計か
 
