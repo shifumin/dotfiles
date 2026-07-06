@@ -20,7 +20,7 @@
 | Category | Rule |
 |----------|------|
 | Japanese output | No coined words; use English terms when Japanese translation is unnatural |
-| Document language | README.md and CLAUDE.md are written in English |
+| Document language | README.md, CLAUDE.md, AGENTS.md, and `.claude/rules/*.md` are written in English |
 | Voice input | User input is often voice-transcribed (Japanese via SuperWhisper). Silently infer intended meaning for homophones, misrecognized technical terms (e.g. "cloud.md" → CLAUDE.md), and slightly unnatural phrasing; do not ask about obvious transcription errors |
 
 ---
@@ -42,7 +42,7 @@
 
 | Tool | Constraint | Workaround |
 |------|-----------|------------|
-| WebFetch | Blocked by bot protection (403) | Use playwright-cli (`--headed --persistent`) |
+| WebFetch | May be blocked by bot protection (403) | Fall back to playwright-cli; config depends on site: AI services → `attach --cdp=chrome`, Cloudflare-protected SaaS → plain Chromium persistent (never `--browser=chrome`), general auth sites → `--persistent --headed` |
 
 ---
 
