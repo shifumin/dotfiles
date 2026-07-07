@@ -36,6 +36,7 @@ file_links=(
   ".obsidian.vimrc"
   ".tmux.conf"
   ".tigrc"
+  ".config/herdr/config.toml"
 )
 
 # ── .claude/ 内の個別シンボリックリンク ──
