@@ -431,3 +431,9 @@ eval "$(git wt --init zsh)"
 # Key bindings and completion are loaded via sheldon (fzf-zsh-plugin)
 ####################
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+
+# ファイル検索ウィジェットをCtrl-TからCtrl-Fに変更（herdrのprefixキー(Ctrl-T)と被るため）
+bindkey -M emacs '^F' fzf-file-widget
+bindkey -M vicmd '^F' fzf-file-widget
+bindkey -M viins '^F' fzf-file-widget
+bindkey -r '^T'
