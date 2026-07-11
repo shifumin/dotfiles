@@ -1,5 +1,9 @@
 # Third-party Claude Code skills
-# Installed globally via: npx skills add <source> --skill <name> -g -a claude-code -y
+# Installed at user scope via gh skill (GitHub CLI >= 2.90.0), into both
+# ~/.claude/skills (claude-code) and ~/.agents/skills (universal):
+#   gh skill install <source> <skill-name> --agent claude-code --scope user
+#   gh skill install <source> <skill-name> --agent universal --scope user
+# Update: gh skill update (scans both locations; --dry-run to preview)
 # Format: <source> <skill-name>
 yoshiko-pg/difit difit
 yoshiko-pg/difit difit-review
