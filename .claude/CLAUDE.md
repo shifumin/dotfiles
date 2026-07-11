@@ -42,7 +42,7 @@
 
 | Tool | Constraint | Workaround |
 |------|-----------|------------|
-| WebFetch | May be blocked by bot protection (403) | Fall back to playwright-cli; config depends on site: AI services → `attach --cdp=chrome`, Cloudflare-protected SaaS → plain Chromium persistent (never `--browser=chrome`), general auth sites → `--persistent --headed` |
+| WebFetch | May be blocked by bot protection (403) | Fall back to `ax` first (local fetch from residential IP; often passes where WebFetch is blocked, e.g. Amazon). If ax hits a JS challenge page (queue-it/Cloudflare), an SPA warning, or login-only content, fall back to playwright-cli; config depends on site: AI services → `attach --cdp=chrome`, Cloudflare-protected SaaS → plain Chromium persistent (never `--browser=chrome`), general auth sites → `--persistent --headed` |
 
 ---
 
