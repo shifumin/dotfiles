@@ -121,14 +121,18 @@ if [[ -f "$skills_file" ]]; then
       [[ -z "$line" ]] && continue
 
       source_repo="${line%% *}"
-      skill_name="${line##* }"
+      skill_ref="${line##* }"
+      # skill_ref は名前 / リポジトリ内パス(…/SKILL.md) / @タグ・SHA付き のいずれにも対応
+      skill_base="${skill_ref%@*}"
+      skill_base="${skill_base%/SKILL.md}"
+      skill_name="$(basename "$skill_base")"
 
       if [[ -e "$HOME/.claude/skills/$skill_name/SKILL.md" && -e "$HOME/.agents/skills/$skill_name/SKILL.md" ]]; then
         echo "SKIP (already installed): $skill_name"
       else
         echo "INSTALL: $skill_name from $source_repo"
-        gh skill install "$source_repo" "$skill_name" --agent claude-code --scope user --force
-        gh skill install "$source_repo" "$skill_name" --agent universal --scope user --force
+        gh skill install "$source_repo" "$skill_ref" --agent claude-code --scope user --force
+        gh skill install "$source_repo" "$skill_ref" --agent universal --scope user --force
       fi
     done < "$skills_file"
   else
