@@ -14,7 +14,7 @@ cd ~/ghq/github.com/shifumin/dotfiles && git commit
 ## Adding New Files
 
 1. Create the file in the repo at the correct relative path
-2. Add the path to `setup.sh` (`dir_links` = directories, `file_links` = single files in `$HOME`, `claude_links` = anything under `.claude/`)
+2. Add the path to `setup.sh` (`dir_links` = directories, `file_links` = single files linked at the same path relative to `$HOME`, `claude_links` = anything under `.claude/`)
 3. Run `./setup.sh` to create the symlink
 4. Commit both the new file and the updated `setup.sh`
 
