@@ -94,7 +94,7 @@ for item in "${dir_links[@]}" "${file_links[@]}" "${claude_links[@]}"; do
 done
 
 # ── .claude/skills/ の自作スキル個別リンク ──
-# skills/を丸ごとリンクすると npx skills add の相対シンボリックリンクが壊れるため
+# skills/を丸ごとリンクすると gh skill install が置くサードパーティ実体と共存できないため
 # 自作スキル（実ディレクトリ）のみ個別にリンクする
 mkdir -p "$HOME/.claude/skills"
 for skill_dir in "$DOTFILES_DIR/.claude/skills"/*/; do
@@ -108,11 +108,13 @@ for skill_dir in "$DOTFILES_DIR/.claude/skills"/*/; do
 done
 
 # ── サードパーティスキルのインストール ──
-# .claude/skills.txt に定義されたスキルを npx skills add でインストール
-# ~/.claude/skills/<name>/SKILL.md が存在すればスキップ（冪等）
+# .claude/skills.txt に定義されたスキルを gh skill install でインストール
+# claude-code（~/.claude/skills）と universal（~/.agents/skills）の両方に実体を配置し、
+# 更新は gh skill update が両配置をまとめて扱う
+# 両配置先に SKILL.md が存在すればスキップ（冪等）
 skills_file="$DOTFILES_DIR/.claude/skills.txt"
 if [[ -f "$skills_file" ]]; then
-  if command -v npx &>/dev/null; then
+  if command -v gh &>/dev/null && gh skill --help &>/dev/null; then
     while IFS= read -r line || [[ -n "$line" ]]; do
       line="${line%%#*}"
       line="$(echo "$line" | xargs)"
@@ -121,15 +123,16 @@ if [[ -f "$skills_file" ]]; then
       source_repo="${line%% *}"
       skill_name="${line##* }"
 
-      if [[ -e "$HOME/.claude/skills/$skill_name/SKILL.md" ]]; then
+      if [[ -e "$HOME/.claude/skills/$skill_name/SKILL.md" && -e "$HOME/.agents/skills/$skill_name/SKILL.md" ]]; then
         echo "SKIP (already installed): $skill_name"
       else
         echo "INSTALL: $skill_name from $source_repo"
-        npx skills add "$source_repo" --skill "$skill_name" -g -a claude-code -y
+        gh skill install "$source_repo" "$skill_name" --agent claude-code --scope user --force
+        gh skill install "$source_repo" "$skill_name" --agent universal --scope user --force
       fi
     done < "$skills_file"
   else
-    echo "WARN: npx not found, skipping third-party skill installation"
+    echo "WARN: gh skill not available (requires GitHub CLI >= 2.90.0), skipping third-party skill installation"
   fi
 fi
 
