@@ -40,6 +40,7 @@ cd dotfiles
 
 - `.config/nvim/` - Neovim configuration
 - `.obsidian.vimrc` - Obsidian vim mode
+- `Cursor/` - Cursor editor settings (linked into `~/Library/Application Support/Cursor/User`)
 
 ### Terminal
 
@@ -53,16 +54,19 @@ cd dotfiles
 - `.pryrc` - Pry console configuration
 - `.gemrc` - RubyGems configuration
 - `.rspec` - RSpec defaults
-- `.default-gems` - Default gems for rbenv
+- `.default-gems` - Default gems for mise
 
 ### Claude Code
 
 - `.claude/CLAUDE.md` - Global settings (symlinked to `~/.claude/CLAUDE.md`, applied to all projects)
-- `.claude/rules/` - Context-specific rules (coding, git, dotfiles, notion)
+- `.claude/rules/` - Context-specific rules (coding, dotfiles, git, shell, skills)
 - `.claude/commands/` - Custom slash commands
 - `.claude/skills/` - Custom skills
 - `.claude/skills.txt` - Third-party skill manifest (auto-installed on setup)
 - `.claude/settings.json` - Permissions and hooks configuration
+- `.claude/hooks/` - PreToolUse hooks (`mise-exec-guard.sh`)
+- `.claude/output-styles/` - Output styles
+- `.claude/statusline.py` - Status line script
 
 > `.claude/CLAUDE.md` serves a dual role: it is a file in this repo AND the user's global Claude Code settings. Changes here affect behavior across all projects.
 
@@ -77,13 +81,20 @@ cd dotfiles
 ├── karabiner/   # Karabiner-Elements key remapping
 ├── sheldon/     # Zsh plugin manager
 ├── nvim/        # Neovim (dein.vim)
-└── ghostty/     # Ghostty terminal
+├── ghostty/     # Ghostty terminal
+├── cmux/        # cmux (coding agent multiplexer)
+└── herdr/       # Herdr (terminal multiplexer for coding agents)
 .claude/
-├── CLAUDE.md    # Global Claude Code settings (→ ~/.claude/CLAUDE.md)
-├── commands/    # Custom slash commands
-├── rules/       # Context-specific rules
-├── skills/      # Custom skills
-└── skills.txt   # Third-party skill manifest
+├── CLAUDE.md       # Global Claude Code settings (→ ~/.claude/CLAUDE.md)
+├── commands/       # Custom slash commands
+├── hooks/          # PreToolUse hooks
+├── output-styles/  # Output styles
+├── rules/          # Context-specific rules
+├── skills/         # Custom skills
+├── skills.txt      # Third-party skill manifest
+├── settings.json   # Permissions and hooks configuration
+└── statusline.py   # Status line script
+Cursor/             # Cursor editor settings (→ ~/Library/Application Support/Cursor/User)
 ```
 
 ## Workflow
