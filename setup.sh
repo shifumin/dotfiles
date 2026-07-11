@@ -135,6 +135,20 @@ if [[ -f "$skills_file" ]]; then
         gh skill install "$source_repo" "$skill_ref" --agent universal --scope user --force
       fi
     done < "$skills_file"
+
+    # herdr はリポジトリ直下に SKILL.md がありリモートインストール非対応のため、
+    # ghq 配下の clone から --from-local でインストールする（更新は git pull → gh skill update）
+    herdr_repo="$HOME/ghq/github.com/ogulcancelik/herdr"
+    if [[ -e "$HOME/.claude/skills/herdr/SKILL.md" && -e "$HOME/.agents/skills/herdr/SKILL.md" ]]; then
+      echo "SKIP (already installed): herdr"
+    else
+      if [[ ! -d "$herdr_repo" ]]; then
+        git clone https://github.com/ogulcancelik/herdr "$herdr_repo"
+      fi
+      echo "INSTALL: herdr from $herdr_repo (from-local)"
+      gh skill install "$herdr_repo" herdr --from-local --agent claude-code --scope user --force
+      gh skill install "$herdr_repo" herdr --from-local --agent universal --scope user --force
+    fi
   else
     echo "WARN: gh skill not available (requires GitHub CLI >= 2.90.0), skipping third-party skill installation"
   fi
