@@ -42,6 +42,7 @@
 
 | Tool | Constraint | Workaround |
 |------|-----------|------------|
+| Web fetch (general) | Reflexively reaching for WebFetch or curl wastes tokens | Prefer `ax` for API calls, static-page extraction, and page exploration (see ax skill). Use WebFetch when AI distillation of a long page is the goal. JS-rendered / login / bot-challenged pages → playwright-cli from the start |
 | WebFetch | May be blocked by bot protection (403) | Fall back to `ax` first (local fetch from residential IP; often passes where WebFetch is blocked, e.g. Amazon). If ax hits a JS challenge page (queue-it/Cloudflare), an SPA warning, or login-only content, fall back to playwright-cli; config depends on site: AI services → `attach --cdp=chrome`, Cloudflare-protected SaaS → plain Chromium persistent (never `--browser=chrome`), general auth sites → `--persistent --headed` |
 
 ---
