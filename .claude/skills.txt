@@ -9,7 +9,6 @@
 # herdr is repo-root SKILL.md (gh skill cannot install it remotely); vendored in .claude/skills/herdr from ogulcancelik/herdr@4617456 (update = manual diff vs master)
 yoshiko-pg/difit difit
 yoshiko-pg/difit difit-review
-vercel-labs/skills find-skills
 mizchi/skills meta/empirical-prompt-tuning/SKILL.md@5aaf2d126a04a8b079fd5184eb1860f232afffd3
 yusukebe/ax ax
 mattpocock/skills productivity/grilling
