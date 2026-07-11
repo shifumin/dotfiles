@@ -6,7 +6,7 @@
 # Update: gh skill update (scans both locations; --dry-run to preview)
 # Format: <source> <skill-name | repo-path/SKILL.md[@tag-or-sha]>
 # Pin (@sha) is used when the repo's latest GitHub Release lags behind main (e.g. mizchi/skills)
-# herdr is repo-root SKILL.md (not remote-installable); installed via --from-local in setup.sh
+# herdr is repo-root SKILL.md (gh skill cannot install it remotely); vendored in .claude/skills/herdr from ogulcancelik/herdr@4617456 (update = manual diff vs master)
 yoshiko-pg/difit difit
 yoshiko-pg/difit difit-review
 vercel-labs/skills find-skills
