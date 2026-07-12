@@ -37,6 +37,7 @@ file_links=(
   ".tmux.conf"
   ".tigrc"
   ".config/herdr/config.toml"
+  ".codex/AGENTS.md"
 )
 
 # ── .claude/ 内の個別シンボリックリンク ──
