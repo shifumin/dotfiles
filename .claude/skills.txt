@@ -19,6 +19,7 @@ manaflow-ai/cmux cmux-workspace
 mattpocock/skills productivity/grill-me
 mattpocock/skills productivity/grilling
 mizchi/skills meta/empirical-prompt-tuning/SKILL.md@5aaf2d126a04a8b079fd5184eb1860f232afffd3
+vercel-labs/skills find-skills
 yoshiko-pg/difit difit
 yoshiko-pg/difit difit-review
 yusukebe/ax ax
