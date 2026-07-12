@@ -22,22 +22,22 @@ dir_links=(
 
 # ── ファイル単位のシンボリックリンク ──
 file_links=(
-  ".zshrc"
-  ".zprofile"
-  ".zshrc.alias"
-  ".zshrc.custom"
-  ".gitconfig"
-  ".gitignore"
-  ".gemrc"
-  ".pryrc"
-  ".rspec"
+  ".codex/AGENTS.md"
+  ".config/herdr/config.toml"
   ".default-gems"
   ".default-npm-packages"
+  ".gemrc"
+  ".gitconfig"
+  ".gitignore"
   ".obsidian.vimrc"
-  ".tmux.conf"
+  ".pryrc"
+  ".rspec"
   ".tigrc"
-  ".config/herdr/config.toml"
-  ".codex/AGENTS.md"
+  ".tmux.conf"
+  ".zprofile"
+  ".zshrc"
+  ".zshrc.alias"
+  ".zshrc.custom"
 )
 
 # ── .claude/ 内の個別シンボリックリンク ──
