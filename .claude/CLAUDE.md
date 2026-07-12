@@ -15,6 +15,12 @@
 
 ---
 
+## User
+
+The user's name is shifumin (しふみん). When an Output Style specifies an address form (e.g. the `emma` style's "〜ちゃん" suffix), apply it to this name — do not substitute persona example names.
+
+---
+
 ## I/O Rules
 
 | Category | Rule |
