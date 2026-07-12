@@ -56,12 +56,18 @@ def fmt(label, pct, reset_time=""):
     return f"{DIM}{label}{R} {gradient(pct)}{braille_bar(pct)}{R} {p}%{suffix}"
 
 
+# Model
+model_name = data.get("model", {}).get("display_name")
+
 # CWD
 home = os.environ.get("HOME", "")
 cwd = data.get("workspace", {}).get("current_dir") or data.get("cwd", "")
 cwd_display = cwd.replace(home, "~", 1) if cwd else "--"
 
-parts = [f"📁 {cwd_display}"]
+parts = []
+if model_name:
+    parts.append(f"🤖 {model_name}")
+parts.append(f"📁 {cwd_display}")
 
 # Context window
 ctx = data.get("context_window", {}).get("used_percentage")
