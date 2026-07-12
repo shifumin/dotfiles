@@ -7,6 +7,7 @@
 # Format: <source> <skill-name | repo-path/SKILL.md[@tag-or-sha]>
 # Pin (@sha) is used when the repo's latest GitHub Release lags behind main (e.g. mizchi/skills)
 # herdr is repo-root SKILL.md (gh skill cannot install it remotely); vendored in .claude/skills/herdr from ogulcancelik/herdr@4617456 (update = manual diff vs master)
+# japanese-tech-writing is a single-file gist SKILL.md (gh skill cannot install gists); vendored in .claude/skills/japanese-tech-writing from https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d (update = manual diff vs gist)
 manaflow-ai/cmux cmux
 manaflow-ai/cmux cmux-browser
 manaflow-ai/cmux cmux-custom-sidebar
