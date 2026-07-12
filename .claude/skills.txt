@@ -7,9 +7,17 @@
 # Format: <source> <skill-name | repo-path/SKILL.md[@tag-or-sha]>
 # Pin (@sha) is used when the repo's latest GitHub Release lags behind main (e.g. mizchi/skills)
 # herdr is repo-root SKILL.md (gh skill cannot install it remotely); vendored in .claude/skills/herdr from ogulcancelik/herdr@4617456 (update = manual diff vs master)
+manaflow-ai/cmux cmux
+manaflow-ai/cmux cmux-browser
+manaflow-ai/cmux cmux-custom-sidebar
+manaflow-ai/cmux cmux-customization
+manaflow-ai/cmux cmux-diagnostics
+manaflow-ai/cmux cmux-markdown
+manaflow-ai/cmux cmux-settings
+manaflow-ai/cmux cmux-workspace
+mattpocock/skills productivity/grill-me
+mattpocock/skills productivity/grilling
+mizchi/skills meta/empirical-prompt-tuning/SKILL.md@5aaf2d126a04a8b079fd5184eb1860f232afffd3
 yoshiko-pg/difit difit
 yoshiko-pg/difit difit-review
-mizchi/skills meta/empirical-prompt-tuning/SKILL.md@5aaf2d126a04a8b079fd5184eb1860f232afffd3
 yusukebe/ax ax
-mattpocock/skills productivity/grilling
-mattpocock/skills productivity/grill-me
