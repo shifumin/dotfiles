@@ -81,4 +81,9 @@ if five_pct is not None:
     reset = fmt_reset_time(five_hour.get("resets_at", ""))
     parts.append(fmt("5h", five_pct, reset))
 
+# Session cost
+cost_usd = data.get("cost", {}).get("total_cost_usd")
+if cost_usd is not None:
+    parts.append(f"💰 ${cost_usd:.2f}")
+
 print(f" {DIM}│{R} ".join(parts), end="")
