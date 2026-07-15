@@ -23,7 +23,6 @@
       "Edit(**)",
       "WebFetch(domain:*)",
       "WebSearch",
-      "Write(**)",
       "mcp__plugin_discord_discord__reply"
     ],
     "deny": [
@@ -38,9 +37,7 @@
       "Bash(sudo rm:*)",
       "Bash(sudo su*)",
       "Edit(~/.ssh/*_rsa)",
-      "Edit(~/.ssh/id_*)",
-      "Write(~/.ssh/*_rsa)",
-      "Write(~/.ssh/id_*)"
+      "Edit(~/.ssh/id_*)"
     ],
     "defaultMode": "auto"
   },
