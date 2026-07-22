@@ -1,3 +1,7 @@
 onboarding = false
+
+[terminal]
+new_cwd = "follow"
+
 [keys]
 prefix = "ctrl+t"
