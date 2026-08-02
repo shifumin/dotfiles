@@ -28,7 +28,7 @@ while IFS= read -r seg; do
   [ -z "$seg_trim" ] && continue
 
   while printf '%s' "$seg_trim" | grep -qE '^[A-Za-z_][A-Za-z0-9_]*='; do
-    seg_trim=$(printf '%s' "$seg_trim" | sed -E 's/^[A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*[[:space:]]+//')
+    seg_trim=$(printf '%s' "$seg_trim" | sed -E 's/^[A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*[[:space:]]*//')
   done
 
   first=$(printf '%s' "$seg_trim" | awk '{print $1}')
