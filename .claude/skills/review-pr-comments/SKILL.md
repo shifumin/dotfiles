@@ -157,6 +157,5 @@ Breaking Changesや影響範囲の確認にはGrepツールで使用箇所を検
 | 操作 | 使用先 |
 |------|--------|
 | レビューコメントへの対応分析 | **このスキル** |
-| PR/Issue情報取得・作成 | `/github` |
 | 深いコードレビュー | `/reviewing-pr` |
 | commit + push | `/push` |

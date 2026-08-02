@@ -170,5 +170,4 @@ gh pr diff <number> --repo <owner>/<repo>
 |------|--------|
 | PRの全体レビュー | **このスキル** |
 | レビューコメントへの対応 | `/review-pr-comments` |
-| PR/Issue情報取得・作成 | `/github` |
 | commit + push | `/push` |
