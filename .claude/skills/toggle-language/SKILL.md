@@ -29,14 +29,19 @@ if [[ ! -f "${SETTINGS_FILE}" ]]; then
   exit 1
 fi
 
+# シンボリックリンクを解決し、リンク先の実ファイルを書き換え対象にする。
+# ${SETTINGS_FILE} に mv で直接被せるとリンクが実ファイルに置き換わり、
+# dotfiles 管理のシンボリックリンクが切れる（実際に発生した）。
+REAL_SETTINGS="$(readlink -f "${SETTINGS_FILE}")"
+
 # outputStyle キーの値を取得（存在しなければ null）
-CURRENT=$(jq -r '.outputStyle // empty' "${SETTINGS_FILE}")
+CURRENT=$(jq -r '.outputStyle // empty' "${REAL_SETTINGS}")
 
 if [[ -n "${CURRENT}" ]]; then
   # ON -> OFF: バックアップしてからキーを削除
   printf '%s' "${CURRENT}" > "${BACKUP_FILE}"
-  jq 'del(.outputStyle)' "${SETTINGS_FILE}" > "${SETTINGS_FILE}.tmp" \
-    && mv "${SETTINGS_FILE}.tmp" "${SETTINGS_FILE}"
+  jq 'del(.outputStyle)' "${REAL_SETTINGS}" > "${REAL_SETTINGS}.tmp" \
+    && mv "${REAL_SETTINGS}.tmp" "${REAL_SETTINGS}"
   echo "TOGGLED: OFF (backup: ${CURRENT})"
 else
   # OFF -> ON: バックアップから復元
@@ -45,8 +50,8 @@ else
     exit 1
   fi
   RESTORED=$(cat "${BACKUP_FILE}")
-  jq --arg style "${RESTORED}" '.outputStyle = $style' "${SETTINGS_FILE}" > "${SETTINGS_FILE}.tmp" \
-    && mv "${SETTINGS_FILE}.tmp" "${SETTINGS_FILE}"
+  jq --arg style "${RESTORED}" '.outputStyle = $style' "${REAL_SETTINGS}" > "${REAL_SETTINGS}.tmp" \
+    && mv "${REAL_SETTINGS}.tmp" "${REAL_SETTINGS}"
   echo "TOGGLED: ON (restored: ${RESTORED})"
 fi
 SCRIPT
@@ -90,3 +95,5 @@ NO_BACKUP の場合 → 以下を順に説明する:
 - `language`キーはこのスキルの対象外。応答言語のみを切り替えたい場合は`settings.json`を直接編集する
 - バックアップは`~/.claude/.outputstyle_backup`に保存される（プレーンテキスト1行）
 - 反映タイミング: 次のClaude Codeセッションから（現在のセッションには影響しない）
+- シンボリックリンク保持: `~/.claude/settings.json`がdotfilesへのシンボリックリンクの場合、`readlink -f`で実ファイルを解決してから書き換える。リンクパスに`mv`で被せるとリンクが実ファイルに置き換わり、以降dotfiles側と設定が分岐する（このスキルが原因でリンクが切れた実績がある）
+- `jq`が失敗した場合、リンク先ディレクトリに`settings.json.tmp`が残る。dotfiles配下なら`git status`にuntrackedとして現れるので削除してよい
