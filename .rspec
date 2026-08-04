@@ -2,4 +2,3 @@
 --format documentation
 --require spec_helper
 --profile
---warnings
