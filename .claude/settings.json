@@ -1,4 +1,7 @@
 {
+  "env": {
+    "ANTHROPIC_CUSTOM_MODEL_OPTION": "claude-opus-4-7"
+  },
   "attribution": {
     "commit": "",
     "pr": ""
@@ -41,7 +44,9 @@
     ],
     "defaultMode": "auto"
   },
-  "fallbackModel": ["sonnet"],
+  "fallbackModel": [
+    "sonnet"
+  ],
   "hooks": {
     "PreToolUse": [
       {
