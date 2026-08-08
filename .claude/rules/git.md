@@ -7,6 +7,8 @@ Format: Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `c
 Project-level instructions (AGENTS.md / project CLAUDE.md) that specify a different commit format take precedence over this rule.
 Body: Add details after a blank line when needed (in English).
 
+Do not append a `Claude-Session:` trailer. The URL does not resolve for local CLI sessions, so it adds no value to shared history; the commit body carries the reasoning instead. This is not controlled by the `attribution` setting in `settings.json` (which only suppresses the `Co-Authored-By` / `Generated with Claude Code` footer), so it must be stated here.
+
 ## Batch Operation Pitfalls
 
 These produce "looked successful, actually not applied":
