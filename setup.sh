@@ -38,6 +38,7 @@ file_links=(
   ".zshrc"
   ".zshrc.alias"
   ".zshrc.custom"
+  "Library/LaunchAgents/com.shifumin.herdr.plist"
 )
 
 # ── .claude/ 内の個別シンボリックリンク ──

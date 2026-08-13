@@ -95,7 +95,23 @@ cd dotfiles
 ├── settings.json   # Permissions and hooks configuration
 └── statusline.py   # Status line script
 Cursor/             # Cursor editor settings (→ ~/Library/Application Support/Cursor/User)
+Library/
+└── LaunchAgents/   # launchd jobs (→ ~/Library/LaunchAgents)
 ```
+
+`Library/LaunchAgents/com.shifumin.herdr.plist` starts the headless Herdr server
+at login, so a session exists without anyone opening a terminal first. It is
+symlinked rather than generated, which is why it names no home path.
+
+`setup.sh` only writes the symlink. Load it with:
+
+```bash
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.shifumin.herdr.plist
+```
+
+Do that only when no Herdr server is running. Bootstrapping while one already
+holds `~/.config/herdr/herdr.sock` fails and retries every 10 seconds, and
+stopping the running server kills every pane under it.
 
 ## Workflow
 

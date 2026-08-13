@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.shifumin.herdr</string>
+
+  <!-- The headless server, not the TUI. `herdr` on a terminal is only a client
+       that attaches to this; herdr-web talks to it over ~/.config/herdr/herdr.sock
+       and needs nothing else. Without this job the socket only exists after
+       someone opens a terminal and runs herdr by hand, which is a step easy to
+       forget and only noticed from away from the Mac. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>/opt/homebrew/bin/herdr</string>
+    <string>server</string>
+  </array>
+
+  <!-- No HOME: a LaunchAgent already runs in the user's context.
+       No WorkingDirectory: new panes use new_cwd = "follow" (herdr's default),
+       so they inherit the source pane rather than this process's directory.
+       No Standard{Out,Error}Path: herdr writes ~/.config/herdr/herdr-server.log
+       itself. Keeping all three out means this file names no home path, so it
+       can be symlinked from dotfiles as-is. -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <!-- Without this a crash loop would restart as fast as the kernel allows.
+       It also throttles the retry when a server is already holding the socket. -->
+  <key>ThrottleInterval</key>
+  <integer>10</integer>
+
+  <!-- Not Background: that class gets throttled CPU and I/O, which every pane
+       under this server would feel as lag. -->
+  <key>ProcessType</key>
+  <string>Interactive</string>
+</dict>
+</plist>
