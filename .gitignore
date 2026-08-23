@@ -1,4 +1,4 @@
-# Global gitignore — scope deliberately limited to OS junk + personal tool config.
+# Global gitignore — scope deliberately limited to OS junk + personal agent-tool files and artifacts.
 # Language- and framework-specific patterns belong in each project's own .gitignore.
 # Reference: https://github.com/github/gitignore/blob/main/Global/macOS.gitignore
 
@@ -28,3 +28,6 @@ Temporary Items
 
 # Claude Code personal settings
 .claude/settings.local.json
+
+# Agent tool artifacts (session logs/dumps, appear in any repo)
+.playwright-cli/
