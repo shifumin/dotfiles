@@ -11,6 +11,14 @@ vim ~/.zshrc          # edit directly (symlinked to repo)
 cd ~/ghq/github.com/shifumin/dotfiles && git commit
 ```
 
+**Agents: the Write/Edit tools refuse symlinks.** The sentence above holds for a human at a shell, not for agent file tools — writing through `~/.claude/settings.json` fails with `Refusing to write through symlink`. Read succeeds through the symlink, so a successful Read is no guarantee the Edit will land. Target the repo path instead:
+
+```
+~/.claude/settings.json  ->  ~/ghq/github.com/shifumin/dotfiles/.claude/settings.json
+```
+
+Check with `ls -l` before editing anything under `~/.claude/`, `~/.zshrc`, or another linked path.
+
 ## Adding New Files
 
 1. Create the file in the repo at the correct relative path

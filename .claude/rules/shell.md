@@ -18,6 +18,10 @@ Distilled from real failures on this machine. Applies to all projects.
 
 `obsidian`, `ssh`, `ffmpeg`, `docker run`, etc. consume the `while read` input stream, ending the loop after one iteration. Append `</dev/null` to such commands inside loops.
 
+## Deletion
+
+Plain `rm` is aliased to `-i` on this machine, so it prompts. The Bash tool is non-interactive: the prompt reads EOF as "no", the file survives, and the command still **exits 0** — a deletion that reports success without happening (hit for real: `rm <symlink> && echo deleted` printed "deleted" with the symlink still in place). Delete with `/bin/rm -f` (or `command rm -f`), then verify each path individually with `[ -e ]` / `[ -L ]`.
+
 ## Verification discipline
 
 - Verify file existence/content with ONE deterministic command: `test -f` alone, or a single read. Bundling checks with `&&`/`echo` interleaves output and has caused "file exists" misreads.
