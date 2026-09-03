@@ -5,7 +5,7 @@
 #   gh skill install <source> <skill-name> --agent universal --scope user
 # Update: gh skill update (scans both locations; --dry-run to preview)
 # Format: <source> <skill-name | repo-path/SKILL.md[@tag-or-sha]>
-# Pin (@sha) is used when the repo's latest GitHub Release lags behind main (e.g. mizchi/skills)
+# Pin (@sha) is used when the repo's latest GitHub Release lags behind main (e.g. mizchi/skills, mattpocock/skills)
 # herdr is repo-root SKILL.md (gh skill cannot install it remotely); vendored in .claude/skills/herdr from ogulcancelik/herdr@4617456 (update = manual diff vs master)
 # japanese-tech-writing is a single-file gist SKILL.md (gh skill cannot install gists); vendored in .claude/skills/japanese-tech-writing from https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d (update = manual diff vs gist)
 manaflow-ai/cmux cmux
@@ -16,8 +16,8 @@ manaflow-ai/cmux cmux-diagnostics
 manaflow-ai/cmux cmux-markdown
 manaflow-ai/cmux cmux-settings
 manaflow-ai/cmux cmux-workspace
-mattpocock/skills productivity/grill-me
-mattpocock/skills productivity/grilling
+mattpocock/skills productivity/grill-me@6654f6b60cd9d5be8b54c6fafe44346dabeb3b76
+mattpocock/skills productivity/grilling@6654f6b60cd9d5be8b54c6fafe44346dabeb3b76
 mizchi/skills meta/empirical-prompt-tuning/SKILL.md@5aaf2d126a04a8b079fd5184eb1860f232afffd3
 yoshiko-pg/difit difit
 yoshiko-pg/difit difit-review
