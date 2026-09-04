@@ -211,6 +211,13 @@ git checkout "$BACKUP" -- .
 git status --porcelain -uno 2>/dev/null   # 出力があれば取りこぼし。追加コミットするか見直す
 ```
 
+サンドボックス下では、読めないファイル（`.pem` / `.key` など）に対して
+`error: unable to create file ...: File exists` が並ぶ。それらは変更対象ではないので
+無視してよく、判定は上の `git status` と次のステップの tree 比較で行う。
+
+なお `cp` は `rm` と同じく `-i` にエイリアスされていることがあり、上書き確認のプロンプトで
+無言のまま固まる。ファイルを書き戻すときは `/bin/cp -f` を使う。
+
 ### コミットメッセージ
 
 元のコミットメッセージは**意図を拾うヒントとしてだけ**使い、まとめた後の diff を読んで
@@ -254,26 +261,32 @@ git log --stat --oneline "$BASE..HEAD"
 そのうえで「この内容で force push していい?」と確認する。**承認なしに push しない。**
 承認が得られなければ `git reset --hard "$BACKUP"` で元に戻せることも伝える。
 
-## 10. force push
+## 10. force push は user に実行してもらう
 
-```bash
-git fetch origin "$BRANCH"                  # lease を最新化しないと --force-with-lease が効かない
-git push --force-with-lease origin "$BRANCH"
+**force push は Claude Code の権限ゲートに阻まれる。** 自分で実行しようとしても
+`Permission to use Bash ... has been denied` で止まる。これは履歴を壊す操作に対する
+妥当な防御なので、回避しようとせず、コマンドを提示して user に実行してもらう。
+
+承認が得られたら、次の形をそのまま提示する。`!` 接頭辞を付けるとセッション内で実行され、
+出力が自分にも見えるので、そのまま検証まで続けられる。
+
+```
+! git fetch origin <branch> && git push --force-with-lease origin <branch>
 ```
 
-素の `--force` は使わない。他の人が同じブランチに push していた場合、それを黙って消してしまう。
-`--force-with-lease` は「自分が最後に見た状態から動いていない」ことを条件にするので、
-そのケースで失敗してくれる。失敗したら中断し、リモートに他の変更が入っていることを伝える。
+`fetch` を挟むのは、lease を最新化しないと `--force-with-lease` が判定に使う ref が
+古いままになるため。素の `--force` は提示しない。他の人が同じブランチに push していた場合、
+それを黙って消してしまう。`--force-with-lease` は「自分が最後に見た状態から動いていない」
+ことを条件にするので、そのケースでは失敗してくれる。
 
-push の成否は終了コードで判定する（`git push | tail` のようにパイプすると、
-パイプ後段の終了コードが返って失敗を見落とす）。
+push が終わったら一致を確認して完了報告する。
 
 ```bash
 git rev-parse HEAD
 git rev-parse '@{u}'   # zsh ではクォート必須
 ```
 
-2 つが一致していることを確認して完了報告する。
+失敗していた場合は、リモートに他の変更が入っている可能性を伝え、勝手に押し切らない。
 
 ---
 
@@ -299,5 +312,5 @@ force push 後に元へ戻したい場合も同じで、戻したうえで再度
 - [ ] 機械的差分を独立させて末尾に置いた
 - [ ] `git diff --stat "$BACKUP" HEAD` が空だった
 - [ ] `git log --stat` を見せて push の承認を得た
-- [ ] `--force-with-lease` で push し、HEAD と upstream の一致を確認した
+- [ ] `--force-with-lease` の push コマンドを `!` 付きで提示し、実行後に HEAD と upstream の一致を確認した
 - [ ] backup ブランチ名を伝えた
