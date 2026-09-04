@@ -113,10 +113,19 @@ done
 # .claude/skills.txt に定義されたスキルを gh skill install でインストール
 # claude-code（~/.claude/skills）と universal（~/.agents/skills）の両方に実体を配置し、
 # 更新は gh skill update が両配置をまとめて扱う
-# 両配置先に SKILL.md が存在すればスキップ（冪等）
+# スキップ条件（冪等）:
+#   - ピン無しエントリ: 両配置先に SKILL.md が存在すればスキップ
+#   - ピン付きエントリ(@タグ/SHA): 加えて導入済み ref がピンと一致すればスキップ
+# 存在だけで判定すると skills.txt のピンを更新しても再インストールされず、
+# 手元が古いまま取り残されるため、ピン付きは ref まで突き合わせる
 skills_file="$DOTFILES_DIR/.claude/skills.txt"
 if [[ -f "$skills_file" ]]; then
   if command -v gh &>/dev/null && gh skill --help &>/dev/null; then
+    # 導入済みスキルの ref を一度だけ取得（"<install path>\t<version>" の行）
+    # 取得できなかった場合、ピン付きは ref 不一致とみなして再インストールされる
+    # （毎回 INSTALL 行が出るので気付ける。黙って古いまま残るより安全）
+    installed_refs="$(gh skill list --scope user --json path,version --jq '.[] | "\(.path)\t\(.version)"' 2>/dev/null)"
+
     while IFS= read -r line || [[ -n "$line" ]]; do
       line="${line%%#*}"
       line="$(echo "$line" | xargs)"
@@ -129,10 +138,26 @@ if [[ -f "$skills_file" ]]; then
       skill_base="${skill_base%/SKILL.md}"
       skill_name="$(basename "$skill_base")"
 
-      if [[ -e "$HOME/.claude/skills/$skill_name/SKILL.md" && -e "$HOME/.agents/skills/$skill_name/SKILL.md" ]]; then
+      want_ref=""
+      [[ "$skill_ref" == *@* ]] && want_ref="${skill_ref##*@}"
+
+      install_reason=""
+      if [[ ! -e "$HOME/.claude/skills/$skill_name/SKILL.md" || ! -e "$HOME/.agents/skills/$skill_name/SKILL.md" ]]; then
+        install_reason="not installed"
+      elif [[ -n "$want_ref" ]]; then
+        for install_path in "$HOME/.claude/skills/$skill_name" "$HOME/.agents/skills/$skill_name"; do
+          have_ref="$(printf '%s\n' "$installed_refs" | awk -F'\t' -v p="$install_path" '$1 == p { print $2; exit }')"
+          if [[ "$have_ref" != "$want_ref" ]]; then
+            install_reason="ref ${have_ref:-unknown} -> $want_ref"
+            break
+          fi
+        done
+      fi
+
+      if [[ -z "$install_reason" ]]; then
         echo "SKIP (already installed): $skill_name"
       else
-        echo "INSTALL: $skill_name from $source_repo"
+        echo "INSTALL: $skill_name from $source_repo ($install_reason)"
         gh skill install "$source_repo" "$skill_ref" --agent claude-code --scope user --force
         gh skill install "$source_repo" "$skill_ref" --agent universal --scope user --force
       fi
