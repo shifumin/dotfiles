@@ -4,7 +4,7 @@
 
 `bash <<'SCRIPT'` blocks in SKILL.md are finished artifacts — copy them to the Bash tool unmodified. A single dropped character (`$1`, `!`, `&&`, backslash) can fail silently: awk `$1==f` mistyped as `==f` matches every line, breaking dedup without any error. If a block needs changing, update the skill first, then run it — never improvise mid-run.
 
-**Slash-command rendering expands `$1`–`$9`** before the skill body reaches the model (empty string when no argument), so the block is already broken on arrival. Never write `$1`–`$9` in the body of a skill invoked as a slash command; pass values via environment variables instead (`N="${N:-10}" bash <<'SCRIPT'`). `${...}` outside the heredoc is fine (the outer shell expands it). If a skill "looks broken" around `$1`, Read the SKILL.md file — the rendered prompt likely diverges from the file on disk.
+**Slash-command rendering expands `$0`–`$9`** before the skill body reaches the model (empty string when no argument), so the block is already broken on arrival. `$0` is included: awk `line[NR] = $0` in convert-hatena-blog-to-obsidian arrived as `line[NR] = <the URL argument>`. Never write `$0`–`$9` in the body of a skill invoked as a slash command; pass values via environment variables instead (`N="${N:-10}" bash <<'SCRIPT'`). In awk, reference the record and fields as `$(0)` / `$(1)`, which awk reads identically. `${...}` outside the heredoc is fine (the outer shell expands it). If a skill "looks broken" around a dollar-digit, Read the SKILL.md file — the rendered prompt likely diverges from the file on disk. When scanning a skill for this, grep `\$[0-9]`, not `\$[1-9]`.
 
 ## Sanity-check regexes before committing them into a skill
 
