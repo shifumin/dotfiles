@@ -3,7 +3,7 @@
 #
 # Blocks bare `bundle|rails|rspec|ruby|pnpm|node|npm` invocations so they
 # always run under mise's environment. Compound commands are split on
-# `;`, `&&`, `||`, `|` and inspected per-segment. Leading `FOO=bar`
+# `;`, `&&`, `||`, `|` (outside quotes) and inspected per-segment. Leading `FOO=bar`
 # env-var assignments are skipped before reading the first token.
 #
 # Exit 0 + JSON `permissionDecision: deny` blocks the call and feeds the
@@ -18,7 +18,12 @@ cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // empty')
 
 PATTERN='^(bundle|rails|rspec|ruby|pnpm|node|npm)$'
 
-segments=$(printf '%s' "$cmd" | sed -E 's/(\|\||&&|;|\|)/\n/g')
+# Before splitting: join backslash-newline continuations (so a wrapped
+# `mise exec ... \` + `ruby ...` stays one segment), then blank out quoted
+# strings (so `grep -E 'a|ruby'` or a multi-line commit message is not split).
+segments=$(printf '%s' "$cmd" \
+  | perl -0pe 's/\\\n/ /g; s/\x27[^\x27]*\x27/Q/g; s/"(?:[^"\\]|\\.)*"/Q/gs' \
+  | sed -E 's/(\|\||&&|;|\|)/\n/g')
 
 violation=""
 viol_seg=""
