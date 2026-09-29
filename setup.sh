@@ -98,7 +98,10 @@ done
 # ── .claude/skills/ の自作スキル個別リンク ──
 # skills/を丸ごとリンクすると gh skill install が置くサードパーティ実体と共存できないため
 # 自作スキル（実ディレクトリ）のみ個別にリンクする
+# Codex 等 universal (.agents/skills) 経由でスキルを読むツールにも見えるよう、
+# .claude/skills と .agents/skills の両方にリンクする
 mkdir -p "$HOME/.claude/skills"
+mkdir -p "$HOME/.agents/skills"
 for skill_dir in "$DOTFILES_DIR/.claude/skills"/*/; do
   skill_name="$(basename "$skill_dir")"
   # シンボリックリンク（サードパーティスキル）はスキップ
@@ -107,6 +110,7 @@ for skill_dir in "$DOTFILES_DIR/.claude/skills"/*/; do
     continue
   fi
   link_path "$skill_dir" "$HOME/.claude/skills/$skill_name"
+  link_path "$skill_dir" "$HOME/.agents/skills/$skill_name"
 done
 
 # ── サードパーティスキルのインストール ──
