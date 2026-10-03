@@ -39,6 +39,7 @@ The user's name is shifumin (しふみん). When an Output Style specifies an ad
 | `k` | Kaizen: reflect on this session, find process/artifact improvements (CLAUDE.md, rules, skills, workflows, etc.), and apply them. Use skill-creator skill when improving skills |
 | `q` | Question: ask clarifying questions using AskUserQuestion repeatedly until all ambiguities are resolved, then wait for explicit instruction to proceed |
 | `r` | Recommended — proceed with the recommended option from the most recent proposal |
+| `rr` | Remove Redundancy: cut redundant content (duplicates, restatements, padding) from the target — the file passed as argument, else the file most recently worked on — then report what was cut and what was kept on purpose. Keep a rule's reason even when its conclusion appears elsewhere |
 | `y` | YES / Done — interpret from context and proceed |
 | `z` | Zero-base: ignore existing content/approach, assess from ideal state, propose improvements by back-casting from the ideal |
 
