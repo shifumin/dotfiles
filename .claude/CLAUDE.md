@@ -12,6 +12,7 @@
 |---|-----------|-------------|
 | 1 | Skills first | Check and use Skills before MCP tools. Use `gh skill search <keyword>` when looking for an installable skill |
 | 2 | Fetch before update | When updating external documents (GitHub PR/issue descriptions, Jira tickets, Notion pages, etc.), fetch the latest remote state first and base the update on it. Concurrent human edits must not be overwritten |
+| 3 | Recommend on merit | When proposing options, recommend the one with the best result. Do not let the cost of applying the change (number of edits, files touched, rework) bias the recommendation — for an AI that cost is near zero. Mention cost only when it falls on a human (manual work, review burden) or the change is hard to reverse |
 
 ---
 
