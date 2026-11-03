@@ -56,6 +56,15 @@ cd dotfiles
 - `.rspec` - RSpec defaults
 - `.default-gems` - Default gems for mise
 
+### Coding Agents (shared)
+
+- `AGENTS.md` - Global rules shared by Claude Code and Codex (single source of truth)
+- `.codex/AGENTS.codex.md` - Codex-only additions (persona)
+- `.codex/AGENTS.md` - **Generated** from the two files above (symlinked to `~/.codex/AGENTS.md`); never edit it directly
+- `.codex/build-agents.sh` - Regenerates `.codex/AGENTS.md` (also run by `setup.sh`); `--check` exits 1 on drift
+
+After editing `AGENTS.md` or `.codex/AGENTS.codex.md`, run `.codex/build-agents.sh` and commit the regenerated file.
+
 ### Claude Code
 
 - `.claude/CLAUDE.md` - Global settings (symlinked to `~/.claude/CLAUDE.md`, applied to all projects)

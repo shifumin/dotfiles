@@ -1,18 +1,8 @@
-# Skill Execution & Authoring
+# Skill Execution & Authoring (Claude Code)
 
-## Run skill bash blocks verbatim
-
-`bash <<'SCRIPT'` blocks in SKILL.md are finished artifacts — copy them to the Bash tool unmodified. A single dropped character (`$1`, `!`, `&&`, backslash) can fail silently: awk `$1==f` mistyped as `==f` matches every line, breaking dedup without any error. If a block needs changing, update the skill first, then run it — never improvise mid-run.
+## Slash-command rendering expands `$0`–`$9`
 
 **Slash-command rendering expands `$0`–`$9`** before the skill body reaches the model (empty string when no argument), so the block is already broken on arrival. `$0` is included: awk `line[NR] = $0` in convert-hatena-blog-to-obsidian arrived as `line[NR] = <the URL argument>`. Never write `$0`–`$9` in the body of a skill invoked as a slash command; pass values via environment variables instead (`N="${N:-10}" bash <<'SCRIPT'`). In awk, reference the record and fields as `$(0)` / `$(1)`, which awk reads identically. `${...}` outside the heredoc is fine (the outer shell expands it). If a skill "looks broken" around a dollar-digit, Read the SKILL.md file — the rendered prompt likely diverges from the file on disk. When scanning a skill for this, grep `\$[0-9]`, not `\$[1-9]`.
-
-## Sanity-check regexes before committing them into a skill
-
-Test grep/regex patterns on typical domain data first: Markdown with lists/headings/code blocks, JSON with arrays/null/escapes. "Intuitively correct" patterns often misfire — e.g. counting diff deletions with `^-[^-]` drops Markdown list lines (`-- xxx` = diff prefix + list dash). When excluding something, verify the pattern doesn't also exclude what must be kept. When a subagent reports "this command doesn't work as expected", suspect a bug in the skill's pattern FIRST, not the subagent's usage.
-
-## Skill arguments beat global shortcuts
-
-If a skill defines its own argument table, interpret arguments by that table before global shortcut meanings (`y` = YES, etc.). Real failure: `/carry-over-tasks y` means "yesterday" per the skill, not YES.
 
 ## skill-creator eval limits in this environment (subscription CLI, no API key)
 

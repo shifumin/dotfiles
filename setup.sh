@@ -91,6 +91,11 @@ link_item() {
 
 echo "=== dotfiles setup ==="
 
+# ── Codex 用グローバル指示書の生成 ──
+# Codex は import できないため、共有の AGENTS.md と .codex/AGENTS.codex.md から
+# .codex/AGENTS.md を生成してからリンクする（冪等）
+"$DOTFILES_DIR/.codex/build-agents.sh"
+
 for item in "${dir_links[@]}" "${file_links[@]}" "${claude_links[@]}"; do
   link_item "$item"
 done
