@@ -16,7 +16,6 @@ dir_links=(
   ".config/ghostty"
   ".config/sheldon"
   ".config/karabiner"
-  ".config/cmux"
   ".tmuxinator"
 )
 
