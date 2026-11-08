@@ -9,7 +9,6 @@
   "permissions": {
     "allow": [
       "Bash(chmod +x:*)",
-      "Bash(cmux:*)",
       "Bash(defaults read:*)",
       "Bash(git add:*)",
       "Bash(git checkout:*)",
