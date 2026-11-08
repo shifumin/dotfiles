@@ -175,6 +175,10 @@ if [[ -f "$skills_file" ]]; then
   fi
 fi
 
+# ── herdr スキルをインストール済みバイナリ同梱版に同期 ──
+# herdr 更新後に setup.sh を流せば SKILL.md が追従する（差分が出たら commit する）
+"$DOTFILES_DIR/.claude/sync-herdr-skill.sh" || echo "WARN: herdr skill sync failed"
+
 # ── Cursor エディタのシンボリックリンク ──
 # Cursor設定は ~/Library/Application Support/ にあるため
 # 標準のlink_itemパターンに合わないので個別にリンク
