@@ -91,7 +91,6 @@ After editing `AGENTS.md` or `.codex/AGENTS.codex.md`, run `.codex/build-agents.
 ├── sheldon/     # Zsh plugin manager
 ├── nvim/        # Neovim (dein.vim)
 ├── ghostty/     # Ghostty terminal
-├── cmux/        # cmux (coding agent multiplexer)
 └── herdr/       # Herdr (terminal multiplexer for coding agents)
 .claude/
 ├── CLAUDE.md       # Global Claude Code settings (→ ~/.claude/CLAUDE.md)
