@@ -25,6 +25,11 @@ CATS = {
     "promotions": ("プロモーション", "category:promotions is:unread"),
 }
 ORDER = list(CATS)
+# Gmail permalink per view. Spam is trashed by `apply`, so link where it lands (#trash);
+# archived mail leaves the inbox but stays in All Mail (#all). The ID is the message ID
+# from +triage (no extra API call); Gmail resolves it to the thread.
+GMAIL_URL = "https://mail.google.com/mail/u/0/#{view}/{id}"
+VIEW = {"spam": "trash"}
 
 
 def triage(query):
@@ -71,12 +76,18 @@ def fetch_all(cats):
         return dict(zip(cats, ex.map(run, cats)))
 
 
-def table(msgs):
+def link(cat, msg_id):
+    return f"[開く]({GMAIL_URL.format(view=VIEW.get(cat, 'all'), id=msg_id)})"
+
+
+def table(cat, msgs):
     if not msgs:
         return ["対象のメールはありません"]
-    rows = ["| # | 送信者 | 件名 | 日時 |", "|---|--------|------|------|"]
+    rows = ["| # | 送信者 | 件名 | 日時 | リンク |", "|---|--------|------|------|--------|"]
     for i, m in enumerate(msgs, 1):
-        rows.append(f"| {i} | {cell(sender(m['from']))} | {cell(m['subject'])} | {jst(m['date'])} |")
+        rows.append(
+            f"| {i} | {cell(sender(m['from']))} | {cell(m['subject'])} | {jst(m['date'])} | {link(cat, m['id'])} |"
+        )
     return rows
 
 
@@ -87,12 +98,12 @@ def fetch(cats):
     STATE.write_text(json.dumps({c: [m["id"] for m in res[c]] for c in cats}))
     out = []
     if "spam" in cats:
-        out += [f"## 削除対象（迷惑メール {len(res['spam'])}件）", ""] + table(res["spam"]) + [""]
+        out += [f"## 削除対象（迷惑メール {len(res['spam'])}件）", ""] + table("spam", res["spam"]) + [""]
     archive = [c for c in cats if c != "spam"]
     if archive:
         out += ["## アーカイブ対象", ""]
         for c in archive:
-            out += [f"### {CATS[c][0]}（{len(res[c])}件）", ""] + table(res[c]) + [""]
+            out += [f"### {CATS[c][0]}（{len(res[c])}件）", ""] + table(c, res[c]) + [""]
     print("\n".join(out).rstrip())
     print("\nCOUNTS " + " ".join(f"{c}={len(res[c])}" for c in cats))
 
