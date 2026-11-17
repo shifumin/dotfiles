@@ -69,6 +69,16 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.claude/hooks/memory-inventory-reminder.sh\"",
+            "timeout": 5
+          }
+        ]
       }
     ]
   },
