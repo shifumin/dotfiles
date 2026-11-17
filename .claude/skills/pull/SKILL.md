@@ -10,6 +10,15 @@ description: リモートの最新変更を現在のブランチに取り込む�
 
 リモートの最新変更を現在のブランチに取り込む。
 
+## サンドボックス（Claude Code）
+
+次の git コマンドは **最初から `dangerouslyDisableSandbox: true` で実行する**: `git fetch` / `git stash push` / `git pull` / `git stash pop` / コンフリクト解決後の `git rebase --continue`・`git commit`。
+
+- fetch / pull は SSH 通信がサンドボックス内で失敗する
+- stash / pull / pop は作業ツリーのファイルを書き換える。サンドボックスで読み取り専用のパス（`.claude/skills` や `.claude/hooks` など）に変更があると、`git stash push` は stash を保存した後、作業ツリーを戻す途中で `Operation not permitted` で止まり、作業ツリーが中途半端な状態になる（実際に起きた失敗）
+
+`git status` / `git rev-parse` / `git config` / `git rev-list` / `git log` / `git diff` は読み取りだけなので、サンドボックス内で実行してよい。
+
 ## 処理フロー
 
 ### 1. 状態確認
@@ -139,6 +148,7 @@ stash pop のコンフリクトは pull 自体は完了している状態なの�
 | ネットワークエラー | エラー内容を報告し、再試行を提案 |
 | コンフリクト解決不能 | 中断してユーザーに報告。`git rebase --abort` / `git merge --abort` の選択肢も提示 |
 | stash pop コンフリクト | stashを残したままユーザーに報告。自動解決は試みない |
+| `git stash push` が `Saved working directory...` の後に `Operation not permitted` で止まった | stash は保存済みで、作業ツリーは一部しか戻っていない。stash を再実行せず、`git stash list` と `git status` で状態を確認してユーザーに報告する。作業ツリーに残った変更が stash と同一（`git diff --quiet 'stash@{0}' -- <path>`）なら、その変更を捨ててからサンドボックス外で pull → `git stash pop` すれば復旧できる |
 | pre-commit/pre-merge hook失敗 | hookのエラー内容を報告し、修正を提案 |
 
 **`git pull --force` / `git reset --hard origin/<branch>` は絶対に使わない。** ローカルの未追跡変更や未push変更を破壊する可能性があるため。ユーザーから明示的に依頼された場合のみ、リスクを説明した上で実行する。
