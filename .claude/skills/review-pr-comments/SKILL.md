@@ -11,8 +11,8 @@ PRレビューの指摘を分析し、修正必要性の判断と修正方針を
 | 入力 | 対象 |
 |------|------|
 | コメント URL（`#discussion_r<id>` / `#issuecomment-<id>`） | そのコメント1件 |
-| レビュー URL（`#pullrequestreview-<id>`） | そのレビューのコメント全件 |
-| PR URL のみ | 未解決のレビュースレッド全件 |
+| レビュー URL（`#pullrequestreview-<id>`） | そのレビューのコメント全件と、レビュー本文の中の指摘 |
+| PR URL のみ | 未解決のレビュースレッド全件と、レビュー本文の中の未返信の指摘 |
 | 貼り付けた指摘（must / imo / nits / ask などのラベル付き） | 貼られた指摘全件。ラベルが妥当かも判定する |
 
 入力がなければAskUserQuestionで確認。複数件は1件ずつ手順2〜4を行い、最後に一覧表でまとめる。
@@ -52,7 +52,12 @@ gh api repos/<owner>/<repo>/pulls/<number>/reviews/<review_id>/comments
 # 未解決のレビュースレッド（thread id は resolve で使う）
 gh api graphql -F o=<owner> -F r=<repo> -F n=<number> -f query='query($o:String!,$r:String!,$n:Int!){repository(owner:$o,name:$r){pullRequest(number:$n){reviewThreads(first:100){nodes{id isResolved isOutdated comments(first:20){nodes{databaseId author{login} path line body}}}}}}}' \
   --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved | not)'
+
+# レビュー本文（差分の外の指摘や Nitpick は行コメントにならず、ここにだけ載る）
+gh api repos/<owner>/<repo>/pulls/<number>/reviews --paginate --jq '.[] | select(.body != "") | {id, user: .user.login, submitted_at, commit_id, body}'
 ```
+
+スレッドだけを見ると、レビュー本文の中の指摘（「Outside diff range comments」「Nitpick comments」などの節）を取りこぼす。本文の指摘も1件ずつ対象にする。返信済みかは、その指摘の見出しを引用した PR へのコメントが後にあるかで判断する。
 
 ### 2. コメント内容の分析
 
@@ -172,10 +177,9 @@ Breaking Changesや影響範囲の確認にはGrepツールで使用箇所を検
 
 ## 返信と resolve（承認後）
 
-返信を頼まれたら、返信文の下書きを見せて承認を取り、投稿後に読み返して正しいスレッドに付いたか確かめる。「それぞれ返信」と言われたら全件に返信し、返さないものがあれば理由を確認する。
+返信を頼まれたら、skill `draft-github-comment` の手順で文面を作り、承認を取って投稿する（本人の過去のコメントから文体を取り、投稿後に読み返すところまで含む）。「それぞれ返信」と言われたら全件に返信し、返さないものがあれば理由を確認する。
 
 ```bash
-gh api repos/<owner>/<repo>/pulls/<number>/comments/<comment_id>/replies -F body=@<file>
 gh api graphql -F id=<thread_id> -f query='mutation($id:ID!){resolveReviewThread(input:{threadId:$id}){thread{isResolved}}}'
 ```
 
