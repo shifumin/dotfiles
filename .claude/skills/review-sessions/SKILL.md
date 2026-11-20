@@ -56,13 +56,16 @@ SCRIPT
 
 ## Phase 2 — 並列分析
 
-`references/analyst.md` を読み、`batches.tsv` の1行につきサブエージェントを1体（Claude Code では Agent ツール、`general-purpose`）起動する。全バッチを1つのメッセージでまとめて起動し、並列に走らせる。プロンプトは analyst.md の区切り線より下の本文に、次の3つを埋めたもの。
+`batches.tsv` の1行につきサブエージェントを1体（Claude Code では Agent ツール、`general-purpose`）起動する。全バッチを1つのメッセージでまとめて起動し、並列に走らせる。プロンプトには本文を埋め込まず、次だけを渡す。
 
-- `{BATCH_FILES}`: その行のファイル名（カンマ区切り）
-- `{SESSIONS_DIR}`: `OUT/sessions`
-- `{SKILLS_TSV}`: `OUT/skills.tsv`
+```
+Read <SKILL_DIR>/references/analyst.md and follow the brief below its separator line.
+BATCH_FILES=<その行のファイル名（カンマ区切り）>
+SESSIONS_DIR=<OUT>/sessions
+SKILLS_TSV=<OUT>/skills.tsv
+```
 
-親はダイジェストを自分で読まない。コンテキストを集約と検証に残すためだ。
+親はダイジェストも analyst.md の本文も自分で読まない。コンテキストを集約と検証に残すためだ。
 
 ## Phase 3 — 集約と検証
 
@@ -82,8 +85,8 @@ SCRIPT
 期間・セッション数（ツール別・プロジェクト別）・バッチ数
 
 ## 反映できる提案（dotfiles / my-vault）
-| # | 種類 | 対象 | 置き場所 | 問題 → 提案 | 根拠 |
-（種類は 既存改善 / 新規スキル / ルール・hook。根拠はセッション数と代表例1つ）
+| # | 判断 | 種類 | 対象 | 内容 | なぜ（根拠） |
+（判断は やる / 見送る。やるものを優先度順に上へ。種類は 既存改善 / 新規スキル / ルール・hook。根拠はセッション数と代表例1つ）
 
 ## 提案のみ（チーム・組織・上流）
 対象ごとに1〜2行。どこに出せばよいか（リポジトリ、上流）も添える
@@ -96,13 +99,15 @@ SCRIPT
 
 ## Phase 5 — 承認と反映
 
-AskUserQuestion（multiSelect）で、反映する提案の番号を選んでもらう。1問の選択肢は4つまでなので、提案が多いときは問いを分ける。
+判断は修正コストではなく効果で決める（AGENTS.md の Principle 3）。ユーザーには「やると判断したものを全部反映していいか」を1回だけ確認し、外したいものがあれば番号で受ける。
 
 承認されたものを、1件ずつ次の手順で反映する。
 
-1. 既存スキルの改善も新規作成も skill-creator の流れに従う（`k` と同じ）。変更前後を before/after で見せる
+1. 既存スキルの改善も新規作成も skill-creator の書き方に従う（`k` と同じ）。評価ループと before/after は頼まれたときだけ行う。文言は短く保つ（AGENTS.md の「Rules and skills」）
 2. 置き場所の規則に従う
    - dotfiles の新規スキル: `.claude/skills/<name>/` に作り、`./setup.sh` でリンクする（スキルはディレクトリを作るだけで自動リンクされる）。`~/.claude/skills/` はサンドボックスで書き込み不可なので、`setup.sh` はサンドボックス外で実行する
    - my-vault のスキル: `.claude/skills/<name>/` が唯一の正本。追加・改名・削除をしたら `.agents/sync-skills.sh` を実行し、`.agents/` も一緒にコミットする（my-vault の AGENTS.md「Skills」）
    - Write / Edit はシンボリックリンクを通して書けないので、`~/.claude/skills/...` ではなくリポジトリのパスを編集する
-3. コミットは、差分を見せてユーザーの確認を取ってから行う。メッセージは Conventional Commits（例: `feat(skills): add <name>`）
+3. コミットは、ユーザーの確認を取ってから、今回変えたファイルだけをパス指定で行う。既存の未コミット差分には触れない。メッセージは Conventional Commits（例: `feat(skills): add <name>`）。push は push スキルで行う（公開リポジトリの検査が入る）
+
+最後に、反映したものを「対象・変えたこと・なぜ」の表で報告する。見送ったものと、ユーザーに頼むこと（環境の修正など）も添える。
