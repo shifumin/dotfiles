@@ -129,13 +129,19 @@ HANDOFF_FILE="$HOME/.claude/handoffs/<書き出したファイル名>" DIR=right
 set -eu
 NAME="handoff-$(date +%H%M)"
 PANE=$(herdr pane split --current --direction "$DIR" --cwd "$PWD" --no-focus | jq -r '.result.pane.pane_id')
-herdr agent start "$NAME" --kind claude --pane "$PANE" --timeout 60000 >/dev/null
+for i in 1 2 3 4 5 6 7 8 9 10; do
+  herdr agent start "$NAME" --kind claude --pane "$PANE" --timeout 60000 >"$TMPDIR/handoff.err" 2>&1 && break
+  grep -q agent_pane_busy "$TMPDIR/handoff.err" || { cat "$TMPDIR/handoff.err"; exit 1; }
+  sleep 1
+done
 herdr agent prompt "$NAME" "$(cat "$HANDOFF_FILE")" --wait --timeout 180000 >/dev/null
 echo "pane=$PANE agent=$NAME"
 herdr agent read "$NAME" --source recent-unwrapped --lines 40 | tail -25
 SCRIPT
 ```
 
+- herdr のコマンドはサンドボックスの外で実行する。中ではソケットに繋がらず `PermissionDenied` になる
+- split 直後の pane はシェルが起動中で、`agent start` が `agent_pane_busy` を返す。pane を作り直さず、同じ pane で再試行する
 - `agent start` は、claude が入力を受け付けられる状態になるまで待つ。`pane run` で `claude` を打つと、起動前にプロンプトを送ってしまうことがある
 - 引き継ぎは `agent prompt` で送る。bracketed paste で1回の貼り付けとして送るので、改行の多い長文でも途中で送信されない
 - エージェント名は時刻付きにする。名前は生きているエージェントの間で一意である必要があり、前の引き継ぎのセッションが残っていると `handoff` だけでは衝突する
