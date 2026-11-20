@@ -29,7 +29,7 @@ research MDを元に詳細な実装計画をObsidian Vault（my-vault）の `065
 |------|------|-----|
 | 実装する機能・要件 | 必須（新規時） | 「通知システムのリファクタ」 |
 | プロジェクト名 | 必須（cwdから推定可） | `webapp` |
-| research MDのパス | 任意 | `065_dev/2026-03-05_webapp_research_通知システム.md` |
+| research MDのパス | 任意 | `065_dev/research_webapp_xxx_2026-03-05.md` |
 | 既存plan MDのパス | 任意（更新時） | `065_dev/plan_webapp_xxx_2026-03-06.md` |
 
 **モード判定**: 「注釈を反映して」「計画を更新して」など既存plan MDの更新を求められた場合は **Step 6（注釈の反映）** に進む。新規作成の場合は Step 2 に進む。

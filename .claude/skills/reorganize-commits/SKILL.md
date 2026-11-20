@@ -142,7 +142,7 @@ git diff --name-status "$BASE" "$BACKUP"
 
 分割の原則そのものは、プロジェクト側の commit 規約スキルに従う。
 リポジトリに `.agents/skills/commit/SKILL.md` または `.claude/skills/commit/SKILL.md` があれば
-**必ず読んでから**分割する（webapp にはある）。無ければ Conventional Commits と
+**必ず読んでから**分割する。無ければ Conventional Commits と
 「1 コミット = 独立して revert できる 1 つの意図」を基準にする。
 
 規約に加えて、再構成のときだけ効く観点が 3 つある。

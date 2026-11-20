@@ -61,7 +61,7 @@ SKILL.mdから参照される技術仕様。引数・実行方法はSKILL.mdを�
     "headers": [
       {"name": "Date", "value": "Sat, 14 Mar 2026 09:36:15 +0000"},
       {"name": "From", "value": "\"Amazon.co.jp\" <store-news@amazon.co.jp>"},
-      {"name": "To", "value": "shifumin4230@gmail.com"},
+      {"name": "To", "value": "me@example.com"},
       {"name": "Subject", "value": "件名"}
     ],
     "mimeType": "multipart/alternative",
