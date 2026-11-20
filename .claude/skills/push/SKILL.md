@@ -74,7 +74,12 @@ description: 変更内容をcommitしてリモートにpushする。Conventional
 各コミットで以下を実行:
 
 1. `git add`で対象ファイルをステージ。意図しないファイル（.env、大きなバイナリ等）の混入を防ぐため、`git add .` は避け、個別のファイルパスを指定する（`git add file1 file2`）
-2. `git diff --staged`で秘匿情報（API key、パスワード、トークン等）がないか確認
+2. `git diff --staged`で秘匿情報（API key、パスワード、トークン等）がないか確認する。語だけでなく値の形でも探す。公開リポジトリでは、個人情報・業務情報（本名、勤務先、社内の ID・URL など）も秘匿情報として扱う。その語の一覧はリポジトリに書くと漏洩になるので、ローカルの `~/.config/push-denylist.txt`（1行1語）に置く
+   ```bash
+   git diff --staged | grep '^+' | grep -nE 'ghp_|gho_|github_pat_|CCIPAT_|xox[abprs]-|sk-[A-Za-z0-9]{20,}|PRIVATE KEY'
+   [ "$(gh repo view --json visibility -q .visibility)" = PUBLIC ] && git diff --staged | grep '^+' | grep -niF -f ~/.config/push-denylist.txt
+   ```
+   公開リポジトリで denylist がなければ、検査できなかったことを報告する
 3. 秘匿情報を検出 → 該当ファイルのステージを解除しコミットしない。**それまでに作成済みのコミット（他の種類のコミット）があっても Push（ステップ5）は実行せず、タスク全体を停止してユーザーに報告する**（部分pushによる秘匿情報漏洩リスクを避ける既定挙動。ユーザーから明示的に「安全なコミットだけ先にpushして」等の指示があればその限りではない）。**既に作成済みのローカルコミットは `git reset` 等で取り消さずそのまま残す。秘匿情報を含むファイル自体の削除・書き換えも行わない**（ユーザーの意図しない変更を避けるため、後処理はユーザーの判断に委ねて検出結果の報告に留める）
 4. コミットメッセージを作成してコミット
 
