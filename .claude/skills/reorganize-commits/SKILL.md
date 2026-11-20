@@ -104,10 +104,15 @@ gh pr view --json reviews,comments -q \
 BRANCH=$(git branch --show-current)
 BACKUP="backup/${BRANCH}-$(date +%Y%m%d-%H%M%S)"
 git branch "$BACKUP"
+git fetch origin "$BRANCH" && LEASE=$(git rev-parse "origin/$BRANCH") && echo "lease: $LEASE"
+git merge-base --is-ancestor "$LEASE" "$BACKUP" || echo "リモートにローカルにないコミットがある"
 ```
 
 この ref は後段の検証と復旧の両方で使う。reflog より確実で、消し忘れても実害がない。
 最後にユーザーへ名前を伝え、削除は任せる（`git branch -D "$BACKUP"`）。
+
+`LEASE` は手順10の force push で使う。リモートにローカルにないコミットがあれば、取り込むか確認するまで止める。
+リモートにブランチがなければ `LEASE` は空で、手順10は通常の `git push -u` になる。
 
 ## 5. 変更を index から解く
 
@@ -157,6 +162,7 @@ git diff --name-status "$BASE" "$BACKUP"
 
 レビュアーは実装の正しさを spec で判断する。離すと、実装コミットを見た時点では
 判断材料がなく、spec コミットに着いた頃には実装を忘れている。
+プロジェクトの規約が test と実装を別コミットにするよう求めるときは、規約を優先する。
 
 **③ 機械的な差分は独立させて末尾に置く**
 
@@ -211,13 +217,6 @@ git checkout "$BACKUP" -- .
 git status --porcelain -uno 2>/dev/null   # 出力があれば取りこぼし。追加コミットするか見直す
 ```
 
-サンドボックス下では、読めないファイル（`.pem` / `.key` など）に対して
-`error: unable to create file ...: File exists` が並ぶ。それらは変更対象ではないので
-無視してよく、判定は上の `git status` と次のステップの tree 比較で行う。
-
-なお `cp` は `rm` と同じく `-i` にエイリアスされていることがあり、上書き確認のプロンプトで
-無言のまま固まる。ファイルを書き戻すときは `/bin/cp -f` を使う。
-
 ### コミットメッセージ
 
 元のコミットメッセージは**意図を拾うヒントとしてだけ**使い、まとめた後の diff を読んで
@@ -225,6 +224,9 @@ git status --porcelain -uno 2>/dev/null   # 出力があれば取りこぼし。
 
 形式はプロジェクトの commit 規約スキルに従う。無ければ Conventional Commits。
 本文には diff を見れば分かること（変更したファイル一覧）ではなく、**なぜそうしたか**を書く。
+
+本文付きのメッセージは scratchpad にファイルとして書き、`git commit -F <file>` で渡す。
+heredoc を `&&` でつなぐと、zsh がタイトル行をコマンドとして実行し、タイトルが消える。
 
 ### husky / lint-staged があるリポジトリ
 
@@ -271,13 +273,12 @@ git log --stat --oneline "$BASE..HEAD"
 出力が自分にも見えるので、そのまま検証まで続けられる。
 
 ```
-! git fetch origin <branch> && git push --force-with-lease origin <branch>
+! git push --force-with-lease=<branch>:<LEASE の SHA> origin <branch>
 ```
 
-`fetch` を挟むのは、lease を最新化しないと `--force-with-lease` が判定に使う ref が
-古いままになるため。素の `--force` は提示しない。他の人が同じブランチに push していた場合、
-それを黙って消してしまう。`--force-with-lease` は「自分が最後に見た状態から動いていない」
-ことを条件にするので、そのケースでは失敗してくれる。
+lease には手順4で記録した SHA をそのまま埋め込む。push の直前に `fetch` すると lease の基準が
+最新になり、その間に他の人が push したコミットを黙って消してしまう。SHA を固定すれば、
+リモートが動いていたときに push が失敗してくれる。素の `--force` は提示しない。
 
 push が終わったら一致を確認して完了報告する。
 
@@ -308,9 +309,9 @@ force push 後に元へ戻したい場合も同じで、戻したうえで再度
 - [ ] backup ブランチを作った
 - [ ] プロジェクトの commit 規約スキルを読んだ（あれば）
 - [ ] リファクタと振る舞いの変更を分けた
-- [ ] 実装とその spec を同じコミットに入れた
+- [ ] 実装とその spec を同じコミットに入れた（規約が分離を求める場合を除く）
 - [ ] 機械的差分を独立させて末尾に置いた
 - [ ] `git diff --stat "$BACKUP" HEAD` が空だった
 - [ ] `git log --stat` を見せて push の承認を得た
-- [ ] `--force-with-lease` の push コマンドを `!` 付きで提示し、実行後に HEAD と upstream の一致を確認した
+- [ ] 手順4の SHA を lease にした push コマンドを `!` 付きで提示し、実行後に HEAD と upstream の一致を確認した
 - [ ] backup ブランチ名を伝えた
