@@ -13,7 +13,7 @@
 |---|-----------|-------------|
 | 1 | Skills first | Check and use Skills before MCP tools. Use `gh skill search <keyword>` when looking for an installable skill |
 | 2 | Fetch before update | When updating external documents (GitHub PR/issue descriptions, Jira tickets, Notion pages, etc.), fetch the latest remote state first and base the update on it. Concurrent human edits must not be overwritten |
-| 3 | Recommend on merit | When proposing options, recommend the one with the best result. Do not let the cost of applying the change (number of edits, files touched, rework) bias the recommendation — for an AI that cost is near zero. Mention cost only when it falls on a human (manual work, review burden) or the change is hard to reverse |
+| 3 | Recommend on merit | When proposing options, recommend the one with the best result. Do not let the cost of applying the change (number of edits, files touched, rework) bias the recommendation — for an AI that cost is near zero. Mention cost only when it falls on a human (manual work, review burden) or the change is hard to reverse. The same holds when deciding whether to fix a review finding. A finding skipped only because a skill's scope excludes it (outside the diff, pre-existing) is reported as undecided, not as unnecessary |
 
 ---
 
@@ -29,6 +29,9 @@ The user's name is shifumin (しふみん). When a persona (Claude Code: the `em
 |----------|------|
 | Japanese output | No coined words; use English terms when Japanese translation is unnatural |
 | Document language | README.md, AGENTS.md, CLAUDE.md, and `.claude/rules/*.md` are written in English |
+| Rules and skills | Keep wording simple and short. Add only what changes behavior; rewrite an existing line rather than appending a new one |
+| Public repositories | Nothing personal, work-related, or secret goes into a public repository (code, skills, docs, commit messages): real name, employer, internal IDs or URLs, tokens. Use placeholders |
+| Posts as the user | Slack messages and GitHub comments or replies posted as the user end sentences without 「。」 and separate them with line breaks. Slack text uses bullet lists, not tables. PR descriptions and Notion pages are exempt |
 | Voice input | User input is often voice-transcribed (Japanese via SuperWhisper). Silently infer intended meaning for homophones, misrecognized technical terms (e.g. "cloud.md" → CLAUDE.md / AGENTS.md), and slightly unnatural phrasing; do not ask about obvious transcription errors |
 
 ---
@@ -52,7 +55,7 @@ The user's name is shifumin (しふみん). When a persona (Claude Code: the `em
 | Tool | Constraint | Workaround |
 |------|-----------|------------|
 | Web fetch | Built-in web fetch tools (e.g. WebFetch) are often bot-blocked (403) and cost tokens; ax cannot execute JS | Default to `ax` for API calls, static-page extraction, and page exploration (see ax skill; local fetch often passes where built-in fetch is blocked, e.g. Amazon). Use a built-in fetch tool only when AI distillation of a long page is the goal. When ax cannot render the page, escalate per the Browser automation row below |
-| Browser automation | Three tools overlap (agent-browser / playwright-cli / claude-in-chrome); picking the wrong one wastes a browser launch and can hang the call | Escalate in this order: **`ax` → `agent-browser` → `playwright-cli`**. agent-browser is the default browser tool (JS-rendered SPAs, an empty `<body>` from ax, most login-gated pages). Drop to playwright-cli only when the task needs the real Chrome via `attach --cdp=chrome` (AI service sessions), or the site has a proven playwright-cli-specific workaround: Cloudflare/queue-it → plain Chromium persistent (never `--browser=chrome`), general auth sites → `--persistent --headed`. **Never pass `--persistent`/`--headed` to a page that needs no login** — the profile launch is slow enough to hang the call (real failure: a municipal SPA timed out at 120s under `--headed --persistent`, then loaded instantly with a bare `agent-browser open`) |
+| Browser automation | Three tools overlap (agent-browser / playwright-cli / claude-in-chrome); picking the wrong one wastes a browser launch and can hang the call | Escalate in this order: **`ax` → `agent-browser` → `playwright-cli`**. agent-browser is the default browser tool (JS-rendered SPAs, an empty `<body>` from ax, most login-gated pages). Drop to playwright-cli only when the task needs the real Chrome via `attach --cdp=chrome` (AI service sessions, and pages behind a company SSO such as Google Docs/Sheets — go there first instead of asking the user for a download), or the site has a proven playwright-cli-specific workaround: Cloudflare/queue-it → plain Chromium persistent (never `--browser=chrome`), general auth sites → `--persistent --headed`. **Never pass `--persistent`/`--headed` to a page that needs no login** — the profile launch is slow enough to hang the call (real failure: a municipal SPA timed out at 120s under `--headed --persistent`, then loaded instantly with a bare `agent-browser open`) |
 
 ---
 
@@ -70,6 +73,9 @@ Distilled from real failures on this machine.
 
 - **Always quote `@{...}`**: bare `@{upstream}` / `HEAD@{1}` gets mangled by zsh brace expansion into `fatal: ambiguous argument`. Write `'@{upstream}'` — including in example code inside skills.
 - **noclobber is on**: `>` to an existing file fails with `zsh: file exists` and the file KEEPS ITS OLD CONTENT — a prime source of stale reads and hallucinated success. Use `>|` to force-overwrite, a unique filename per run, or `>>` to append.
+- **`$VAR:` is a modifier**: in `"$REF:path"` zsh reads `:p`, `:c`, `:h`... as history modifiers. Write `"${REF}:path"`.
+- **`=word` expands**: a leading `=word` becomes a command path, so `echo ====` fails. Quote it: `echo '===='`.
+- **No word splitting**: an unquoted `$var` holding several paths stays one word. Use an array, or a loop inside `bash <<'SCRIPT'`.
 
 ### macOS /bin/bash is 3.2
 
@@ -81,9 +87,9 @@ Distilled from real failures on this machine.
 
 `obsidian`, `ssh`, `ffmpeg`, `docker run`, etc. consume the `while read` input stream, ending the loop after one iteration. Append `</dev/null` to such commands inside loops.
 
-### Deletion
+### Interactive aliases (rm / cp / mv)
 
-Plain `rm` is aliased to `-i` on this machine, so it prompts. An agent shell is non-interactive: the prompt reads EOF as "no", the file survives, and the command still **exits 0** — a deletion that reports success without happening (hit for real: `rm <symlink> && echo deleted` printed "deleted" with the symlink still in place). Delete with `/bin/rm -f` (or `command rm -f`), then verify each path individually with `[ -e ]` / `[ -L ]`.
+`rm`, `cp`, and `mv` are aliased with `-i` on this machine, so they prompt. An agent shell is non-interactive: the prompt reads EOF as "no", nothing is deleted or overwritten, and the command still **exits 0** (hit for real: `rm <symlink> && echo deleted` printed "deleted" with the symlink still in place; a `cp` meant to restore a file left the broken version). Use `command rm -f`, `command cp -f`, `command mv -f`, then verify the result with one command (`[ -e ]`, `cmp`, `git diff`).
 
 ### Verification discipline
 
