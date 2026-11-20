@@ -29,7 +29,7 @@ description: コードベースを深く調査し、research MDをObsidian Vault
 | プロジェクト名 | 必須（cwdから推定可） | `webapp`, `my-vault` |
 | 調査の目的・背景 | 任意 | 「通知システムをリファクタしたい」 |
 
-プロジェクト名はcwdの最後のディレクトリ名から推定する（例: `/Users/shifumin/ghq/github.com/acme/webapp` → `webapp`）。
+プロジェクト名はcwdの最後のディレクトリ名から推定する（例: `~/ghq/github.com/acme/webapp` → `webapp`）。
 
 ### 2. コードベースの深い調査
 
