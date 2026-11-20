@@ -1,6 +1,6 @@
 # Analyst brief (one batch of session digests)
 
-This file is the prompt body for each analyst subagent. The parent fills in `{BATCH_FILES}`, `{SESSIONS_DIR}`, and `{SKILLS_TSV}`.
+Each analyst subagent reads this file and follows the brief below the separator. The parent's prompt gives `BATCH_FILES`, `SESSIONS_DIR`, and `SKILLS_TSV`; substitute them for `{BATCH_FILES}`, `{SESSIONS_DIR}`, and `{SKILLS_TSV}`.
 
 ---
 
