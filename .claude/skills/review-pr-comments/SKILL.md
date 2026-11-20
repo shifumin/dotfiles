@@ -1,13 +1,21 @@
 ---
-description: PRレビューコメントを分析し、修正方針を提案する。
-  「レビューコメント対応」「PRコメント対応」「review-pr-comments」「コメントに対応」などのリクエストで使用。
+description: PRレビューコメントを分析し、修正方針を提案する。承認されたら返信・resolve まで行う。
+  「レビューコメント対応」「PRコメント対応」「review-pr-comments」「コメントに対応」
+  「未解決の指摘を精査」「must/imo/ask を判定して」「レビュー結果を貼るので判断して」などのリクエストで使用。
 ---
 
 # Reviewing PR Comments
 
-PRレビューコメントのURLを受け取り、指摘内容を分析して修正必要性の判断と修正方針を提案する。
+PRレビューの指摘を分析し、修正必要性の判断と修正方針を提案する。
 
-コメントURLを引数で受け取る。省略時はAskUserQuestionで確認。
+| 入力 | 対象 |
+|------|------|
+| コメント URL（`#discussion_r<id>` / `#issuecomment-<id>`） | そのコメント1件 |
+| レビュー URL（`#pullrequestreview-<id>`） | そのレビューのコメント全件 |
+| PR URL のみ | 未解決のレビュースレッド全件 |
+| 貼り付けた指摘（must / imo / nits / ask などのラベル付き） | 貼られた指摘全件。ラベルが妥当かも判定する |
+
+入力がなければAskUserQuestionで確認。複数件は1件ずつ手順2〜4を行い、最後に一覧表でまとめる。
 
 ---
 
@@ -34,6 +42,17 @@ gh pr diff <number> --repo <owner>/<repo>
 ```
 
 取得した全コメントから、対象コメントIDに一致するものを特定する。
+
+レビュー URL と PR URL のときは、対象を次で取る。
+
+```bash
+# レビュー配下のコメント
+gh api repos/<owner>/<repo>/pulls/<number>/reviews/<review_id>/comments
+
+# 未解決のレビュースレッド（thread id は resolve で使う）
+gh api graphql -F o=<owner> -F r=<repo> -F n=<number> -f query='query($o:String!,$r:String!,$n:Int!){repository(owner:$o,name:$r){pullRequest(number:$n){reviewThreads(first:100){nodes{id isResolved isOutdated comments(first:20){nodes{databaseId author{login} path line body}}}}}}}' \
+  --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved | not)'
+```
 
 ### 2. コメント内容の分析
 
@@ -119,15 +138,25 @@ Breaking Changesや影響範囲の確認にはGrepツールで使用箇所を検
 1. {具体的なアクション}
 ```
 
+複数件のときは、上の形式を1件ずつ書く代わりに次の表にまとめ、必要・要検討のものだけ修正方針を書く。
+
+```markdown
+| # | 指摘（投稿者） | ラベル妥当性 | 修正必要性 | 根拠 file:line | 方針 |
+```
+
+ラベル妥当性の列は、貼り付けた指摘のときだけ埋める。
+
 ### 判断基準
 
 | 修正必要性 | 条件 |
 |-----------|------|
 | 必要 | バグ指摘、セキュリティ問題、明確な規約違反 |
 | 要検討 | 設計方針の相違、トレードオフがある提案 |
-| 不要 | 好みの問題、既に対応済み、誤解に基づく指摘 |
+| 不要 | 既に対応済み、誤解に基づく指摘、前提が成り立たない |
 
-**不要の場合も理由を明確に説明する。**
+判定に修正コスト（時間・変更量）を入れない。あるべき状態に近づく提案なら、「好みの範囲」「得が小さい」「後で対応」を不要の理由にしない。
+
+**不要の場合は、根拠となるコード・spec・データを示す。** 示せなければ要検討にして、何を調べれば決まるかを書く。
 
 **境界事例（対応済みかの判定、PRの状態を問わない）**: 対象コメントの提案が返信スレッド・最新diff（`gh pr diff`）・PR現在のmainのいずれかで既に反映されているか確認する（PRがOPENのまま後続コミットで対応済みのケースも含む）。
 
@@ -137,7 +166,20 @@ Breaking Changesや影響範囲の確認にはGrepツールで使用箇所を検
 | 指摘者本人がスレッド内で撤回・誤解と判明（コード変更なしで解消） | 不要（誤解に基づく指摘）。撤回・反証の経緯を判断理由に記載する |
 | 変更要求を含まない承認・確認コメント | 不要（変更要求なし） |
 | 未反映だが議論が上位の設計判断や別PRに引き継がれている | 要検討 |
-| 未反映かつ今後フォローする動きもない軽微な提案 | 不要 |
+| 指摘は正しいが、原因がPRの差分の外にある | 要検討。差分の外であることを根拠に示し、このPRで直すか別チケットにするかを書く |
+
+---
+
+## 返信と resolve（承認後）
+
+返信を頼まれたら、返信文の下書きを見せて承認を取り、投稿後に読み返して正しいスレッドに付いたか確かめる。「それぞれ返信」と言われたら全件に返信し、返さないものがあれば理由を確認する。
+
+```bash
+gh api repos/<owner>/<repo>/pulls/<number>/comments/<comment_id>/replies -F body=@<file>
+gh api graphql -F id=<thread_id> -f query='mutation($id:ID!){resolveReviewThread(input:{threadId:$id}){thread{isResolved}}}'
+```
+
+resolve は bot の指摘で対応を決めたものに限る。人間のレビュアーの指摘は本人に任せる。
 
 ---
 
