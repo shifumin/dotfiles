@@ -28,7 +28,12 @@ gh pr view <number> --repo <owner>/<repo> --json files,additions,deletions,chang
 
 # PR diff
 gh pr diff <number> --repo <owner>/<repo>
+
+# 既存のレビューコメント（bot・人間の両方）
+gh api repos/<owner>/<repo>/pulls/<number>/comments --jq '.[] | {user: .user.login, path, line, body, html_url}'
 ```
+
+既存のコメントと同じ指摘は、新しい指摘として数えない。
 
 ### 2. 変更ファイルの読み込み
 
@@ -146,6 +151,7 @@ gh pr diff <number> --repo <owner>/<repo>
 | ルール | 詳細 |
 |--------|------|
 | 問題なし項目 | 「修正が必要な点」に記載しない |
+| 既存コメントとの重複 | 「修正が必要な点」に入れず、末尾に「既存コメントと重複」として投稿者とリンクだけ並べる。総評に新規の指摘件数を書く |
 | 行番号 | Readツールで確認した正確な行番号のみ記載 |
 | コードパス | リポジトリルートからの相対パスを使用 |
 | 言語別チェック | 該当言語がない場合はスキップ |
