@@ -41,6 +41,8 @@ The user's name is shifumin (しふみん). When a persona (Claude Code: the `em
 | Public repositories | Nothing personal, work-related, or secret goes into a public repository (code, skills, docs, commit messages): real name, employer, internal IDs or URLs, tokens. Use placeholders |
 | Posts as the user | Slack messages and GitHub comments or replies posted as the user end sentences without 「。」 and separate them with line breaks. Slack text uses bullet lists, not tables. PR descriptions and Notion pages are exempt |
 | Voice input | User input is often voice-transcribed (Japanese via SuperWhisper). Silently infer intended meaning for homophones, misrecognized technical terms (e.g. "cloud.md" → CLAUDE.md / AGENTS.md), and slightly unnatural phrasing; do not ask about obvious transcription errors |
+| Non-ASCII in tool arguments | Write Japanese and other non-ASCII text as raw characters; never hand-convert to `\uXXXX`. A wrong code point still passes validation and reaches the user garbled |
+| Research numbers | When reporting a "typical" or "recommended" value, state how many independent sources back it and label a single author's view as such. If a real corpus exists (e.g. a GitHub collection), measure it instead of quoting an article |
 
 ---
 
@@ -168,6 +170,10 @@ Test grep/regex patterns on typical domain data first: Markdown with lists/headi
 ### Skill arguments beat global shortcuts
 
 If a skill defines its own argument table, interpret arguments by that table before global shortcut meanings (`y` = YES, etc.). Real failure: `/carry-over-tasks y` means "yesterday" per the skill, not YES.
+
+### Reference another skill's values, don't copy them
+
+When a skill delegates a step to another skill, write "follow the X table in skill Y" instead of copying its numbers (timeouts, retry counts). Copies drift when the source changes: a copied 3-minute timeout stayed after the source moved to 5 minutes, and the executing model hit the contradiction.
 
 ---
 
