@@ -87,6 +87,45 @@ link_item() {
   link_path "$DOTFILES_DIR/$item" "$HOME/$item"
 }
 
+write_generated_file() {
+  local target="$1"
+  local content="$2"
+
+  if [[ -f "$target" && ! -L "$target" ]] && [[ "$(cat "$target")" == "$content" ]]; then
+    echo "OK:   $target"
+    return
+  fi
+
+  mkdir -p "$(dirname "$target")"
+  local tmp
+  tmp="$(mktemp "${target}.XXXXXX")"
+  printf '%s\n' "$content" >| "$tmp"
+  chmod 644 "$tmp"
+  command mv -f "$tmp" "$target"
+  echo "GEN:  $target"
+}
+
+json_escape() {
+  printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'
+}
+
+render_t3_skills_json() {
+  local paths=()
+  if [[ -d "$DOTFILES_DIR/.gemini/skills" ]]; then
+    paths+=("$DOTFILES_DIR/.gemini/skills")
+  fi
+  paths+=("$HOME/.agents/skills")
+
+  printf '{\n  "entries": [\n'
+  local i last=$((${#paths[@]} - 1))
+  for i in "${!paths[@]}"; do
+    local comma=","
+    [[ "$i" -eq "$last" ]] && comma=""
+    printf '    {\n      "path": "%s"\n    }%s\n' "$(json_escape "${paths[$i]}")" "$comma"
+  done
+  printf '  ]\n}'
+}
+
 # dotfiles 配下を指す壊れたシンボリックリンクだけ安全に削除する
 prune_broken_links() {
   local dir="$1"
@@ -133,11 +172,15 @@ for skill_dir in "$DOTFILES_DIR/.claude/skills"/*/; do
   link_path "$skill_dir" "$HOME/.agents/skills/$skill_name"
 done
 
-# ── T3 Code (Antigravity) 向けシンボリックリンク ──
+# ── T3 Code (Antigravity) 向け設定 ──
 # T3 Code はグローバル設定ルートを ~/.gemini/config/ ではなく
 # ~/.t3/userdata/providers/antigravity/<hash>/config/ に隔離する。
 # ランタイムファイル（config.json, mcp_config.json, projects/ 等）と同居するため
-# 管理対象のみ個別にリンクする（サードパーティスキルは skills.json → ~/.agents/skills 経由）
+# 管理対象のみ個別に配置する。
+# - config/skills は T3 Code の linkAntigravityUserConfig が ~/.gemini/config/skills に
+#   同期（無ければ削除）するため直接リンクしない
+# - skills.json は Antigravity の customization.go が "~/" を展開できず絶対パスを要求するため、
+#   リポジトリに実パスをコミットせず setup.sh で絶対パス展開して生成する
 t3_ag_configs=()
 for d in "$HOME/.t3/userdata/providers/antigravity"/*/config; do
   [[ -d "$d" ]] && t3_ag_configs+=("$d")
@@ -145,12 +188,20 @@ done
 if [[ ${#t3_ag_configs[@]} -eq 0 ]]; then
   echo "WARN: T3 Code Antigravity config dir not found (~/.t3/userdata/providers/antigravity/*/config); launch T3 Code once and re-run setup.sh"
 else
+  t3_skills_json="$(render_t3_skills_json)"
   for t3_config in "${t3_ag_configs[@]}"; do
     link_path "$DOTFILES_DIR/AGENTS.md" "$t3_config/AGENTS.md"
     link_path "$DOTFILES_DIR/.gemini/config/GEMINI.md" "$t3_config/GEMINI.md"
-    link_path "$DOTFILES_DIR/.gemini/config/skills.json" "$t3_config/skills.json"
-    if [[ -d "$DOTFILES_DIR/.gemini/skills" ]]; then
-      link_path "$DOTFILES_DIR/.gemini/skills" "$t3_config/skills"
+    write_generated_file "$t3_config/skills.json" "$t3_skills_json"
+    # 旧 setup.sh が張った config/skills リンクが残っていれば掃除（skills.json 経由へ移行済み）
+    if [[ -L "$t3_config/skills" ]]; then
+      target="$(readlink "$t3_config/skills")"
+      case "$target" in
+        "$DOTFILES_DIR"/*)
+          command rm -f "$t3_config/skills"
+          echo "PRUNE: $t3_config/skills (migrated to skills.json)"
+          ;;
+      esac
     fi
   done
 fi
