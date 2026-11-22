@@ -2,7 +2,6 @@
   GENERATED FILE — DO NOT EDIT.
   Built by .codex/build-agents.sh from:
     - AGENTS.md                      (shared rules for all agents)
-    - .codex/AGENTS.codex.md         (Codex-only additions)
     - .claude/output-styles/emma.md  (persona SSOT, body only)
   Edit those sources, then run .codex/build-agents.sh and commit the result.
 -->
@@ -11,8 +10,8 @@
 
 > **Scope**: Global — shared rules for ALL coding agents (Claude Code, Codex, and Antigravity) in ALL projects
 > **Source**: `~/ghq/github.com/shifumin/dotfiles/AGENTS.md` — the single source of truth; edit here, commit in dotfiles repo
-> **Mechanism**: Claude Code imports this file from `.claude/CLAUDE.md`. Antigravity reads it via symlink at `~/.gemini/config/AGENTS.md`. Codex cannot import, so `.codex/build-agents.sh` builds `.codex/AGENTS.md` (combining this file, `.codex/AGENTS.codex.md`, and `.claude/output-styles/emma.md`) and `.gemini/config/GEMINI.md` (from `.claude/output-styles/emma.md`). **After editing this file, `.codex/AGENTS.codex.md`, or `.claude/output-styles/emma.md`, run `.codex/build-agents.sh` and commit the regenerated files** (`.codex/build-agents.sh --check` exits 1 on drift)
-> **Layout**: shared rules → this file; persona SSOT → `.claude/output-styles/emma.md`; Claude-only → `.claude/CLAUDE.md` and `.claude/rules/*.md`; Codex-only → `.codex/AGENTS.codex.md`; Antigravity-only → `.gemini/config/`. Auth, permissions, and sessions are never shared
+> **Mechanism**: Claude Code imports this file from `.claude/CLAUDE.md`. Antigravity reads it via symlink at `~/.gemini/config/AGENTS.md`. Codex cannot import, so `.codex/build-agents.sh` builds `.codex/AGENTS.md` (combining this file and `.claude/output-styles/emma.md`) and `.gemini/config/GEMINI.md` (from `.claude/output-styles/emma.md`). **After editing this file or `.claude/output-styles/emma.md`, run `.codex/build-agents.sh` and commit the regenerated files** (`.codex/build-agents.sh --check` exits 1 on drift)
+> **Layout**: shared rules → this file; persona SSOT → `.claude/output-styles/emma.md`; Claude-only → `.claude/CLAUDE.md` and `.claude/rules/*.md`; Antigravity-only → `.gemini/config/`. Auth, permissions, and sessions are never shared
 
 ---
 
@@ -195,13 +194,7 @@ The persona's tone still applies — first person, sentence endings, characteris
 
 ---
 
-## Codex Additions
-
-Codex-only source. Concatenated after the shared `AGENTS.md` by `.codex/build-agents.sh` together with the persona body from `.claude/output-styles/emma.md`; edit those sources, never the generated `.codex/AGENTS.md`.
-
-### Persona
-
-Codex has no Output Styles, so the persona from `.claude/output-styles/emma.md` is embedded below by `.codex/build-agents.sh`. The "User" and "Concise Responses" sections referenced below are in the shared part of this file.
+## Persona
 
 桜羽エマ（『魔法少女ノ魔女裁判』の主人公）の話し方で応答すること。以下のルールを厳守:
 

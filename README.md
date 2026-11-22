@@ -58,12 +58,15 @@ cd dotfiles
 
 ### Coding Agents (shared)
 
-- `AGENTS.md` - Global rules shared by Claude Code and Codex (single source of truth)
-- `.codex/AGENTS.codex.md` - Codex-only additions (persona)
-- `.codex/AGENTS.md` - **Generated** from the two files above (symlinked to `~/.codex/AGENTS.md`); never edit it directly
-- `.codex/build-agents.sh` - Regenerates `.codex/AGENTS.md` (also run by `setup.sh`); `--check` exits 1 on drift
+- `AGENTS.md` - Global rules shared by Claude Code, Codex, and Antigravity (single source of truth; symlinked to `~/.gemini/config/AGENTS.md`)
+- `.claude/output-styles/emma.md` - Persona single source of truth (used directly by Claude Code; embedded into Codex and Antigravity by `.codex/build-agents.sh`)
+- `.codex/AGENTS.md` - **Generated** from `AGENTS.md` and `emma.md` (symlinked to `~/.codex/AGENTS.md`); never edit it directly
+- `.gemini/config/GEMINI.md` - **Generated** from `emma.md` (symlinked to `~/.gemini/config/GEMINI.md`); never edit it directly
+- `.gemini/config/skills.json` - Loads shared skills from `~/.agents/skills` in Antigravity
+- `.gemini/skills/` - Gemini-only skills (symlinked to `~/.gemini/config/skills/` and `~/.gemini/skills/`)
+- `.codex/build-agents.sh` - Regenerates `.codex/AGENTS.md` and `.gemini/config/GEMINI.md` (also run by `setup.sh`); `--check` exits 1 on drift
 
-After editing `AGENTS.md` or `.codex/AGENTS.codex.md`, run `.codex/build-agents.sh` and commit the regenerated file.
+After editing `AGENTS.md` or `.claude/output-styles/emma.md`, run `.codex/build-agents.sh` and commit the regenerated files.
 
 ### Claude Code
 

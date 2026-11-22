@@ -2,8 +2,8 @@
 
 > **Scope**: Global — shared rules for ALL coding agents (Claude Code, Codex, and Antigravity) in ALL projects
 > **Source**: `~/ghq/github.com/shifumin/dotfiles/AGENTS.md` — the single source of truth; edit here, commit in dotfiles repo
-> **Mechanism**: Claude Code imports this file from `.claude/CLAUDE.md`. Antigravity reads it via symlink at `~/.gemini/config/AGENTS.md`. Codex cannot import, so `.codex/build-agents.sh` builds `.codex/AGENTS.md` (combining this file, `.codex/AGENTS.codex.md`, and `.claude/output-styles/emma.md`) and `.gemini/config/GEMINI.md` (from `.claude/output-styles/emma.md`). **After editing this file, `.codex/AGENTS.codex.md`, or `.claude/output-styles/emma.md`, run `.codex/build-agents.sh` and commit the regenerated files** (`.codex/build-agents.sh --check` exits 1 on drift)
-> **Layout**: shared rules → this file; persona SSOT → `.claude/output-styles/emma.md`; Claude-only → `.claude/CLAUDE.md` and `.claude/rules/*.md`; Codex-only → `.codex/AGENTS.codex.md`; Antigravity-only → `.gemini/config/`. Auth, permissions, and sessions are never shared
+> **Mechanism**: Claude Code imports this file from `.claude/CLAUDE.md`. Antigravity reads it via symlink at `~/.gemini/config/AGENTS.md`. Codex cannot import, so `.codex/build-agents.sh` builds `.codex/AGENTS.md` (combining this file and `.claude/output-styles/emma.md`) and `.gemini/config/GEMINI.md` (from `.claude/output-styles/emma.md`). **After editing this file or `.claude/output-styles/emma.md`, run `.codex/build-agents.sh` and commit the regenerated files** (`.codex/build-agents.sh --check` exits 1 on drift)
+> **Layout**: shared rules → this file; persona SSOT → `.claude/output-styles/emma.md`; Claude-only → `.claude/CLAUDE.md` and `.claude/rules/*.md`; Antigravity-only → `.gemini/config/`. Auth, permissions, and sessions are never shared
 
 ---
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build generated agent instruction files from single-source-of-truth files:
-#   - .codex/AGENTS.md         (AGENTS.md + .codex/AGENTS.codex.md + emma.md body)
+#   - .codex/AGENTS.md         (AGENTS.md + emma.md body)
 #   - .gemini/config/GEMINI.md (emma.md body for Antigravity)
 #
 # Usage:
@@ -10,7 +10,6 @@ set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 shared="$DOTFILES_DIR/AGENTS.md"
-codex_only="$DOTFILES_DIR/.codex/AGENTS.codex.md"
 persona="$DOTFILES_DIR/.claude/output-styles/emma.md"
 codex_target="$DOTFILES_DIR/.codex/AGENTS.md"
 gemini_target="$DOTFILES_DIR/.gemini/config/GEMINI.md"
@@ -31,16 +30,13 @@ render_codex() {
   GENERATED FILE — DO NOT EDIT.
   Built by .codex/build-agents.sh from:
     - AGENTS.md                      (shared rules for all agents)
-    - .codex/AGENTS.codex.md         (Codex-only additions)
     - .claude/output-styles/emma.md  (persona SSOT, body only)
   Edit those sources, then run .codex/build-agents.sh and commit the result.
 -->
 
 EOF
   cat "$shared"
-  printf '\n---\n\n'
-  cat "$codex_only"
-  printf '\n'
+  printf '\n---\n\n## Persona\n\n'
   strip_frontmatter "$persona"
 }
 

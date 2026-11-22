@@ -14,7 +14,7 @@ Skill・Memory・Rule・指示書をゼロベースで見直し、元の意図�
 | 種別 | 主な対象 |
 |---|---|
 | Skill / Command | `SKILL.md`, `references/`, `scripts/`, `.claude/commands/*.md` |
-| Rule / 指示書 | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.claude/rules/*.md`, `.codex/AGENTS.codex.md` |
+| Rule / 指示書 | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.claude/rules/*.md` |
 | Memory | `~/.claude/projects/<project>/memory/`（`MEMORY.md`・トピックファイル群） |
 
 ## 手順
