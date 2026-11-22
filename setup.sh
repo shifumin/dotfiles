@@ -26,6 +26,8 @@ file_links=(
   ".config/herdr/config.toml"
   ".default-gems"
   ".default-npm-packages"
+  ".gemini/config/GEMINI.md"
+  ".gemini/config/skills.json"
   ".gemrc"
   ".gitconfig"
   ".obsidian.vimrc"
@@ -98,6 +100,9 @@ echo "=== dotfiles setup ==="
 for item in "${dir_links[@]}" "${file_links[@]}" "${claude_links[@]}"; do
   link_item "$item"
 done
+
+# Antigravity 向けグローバル AGENTS.md（リポジトリルートの共通 AGENTS.md を直接リンク）
+link_path "$DOTFILES_DIR/AGENTS.md" "$HOME/.gemini/config/AGENTS.md"
 
 # ── .claude/skills/ の自作スキル個別リンク ──
 # skills/を丸ごとリンクすると gh skill install が置くサードパーティ実体と共存できないため

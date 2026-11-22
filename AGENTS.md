@@ -1,9 +1,9 @@
 # AGENTS.md
 
-> **Scope**: Global — shared rules for ALL coding agents (Claude Code and Codex) in ALL projects
+> **Scope**: Global — shared rules for ALL coding agents (Claude Code, Codex, and Antigravity) in ALL projects
 > **Source**: `~/ghq/github.com/shifumin/dotfiles/AGENTS.md` — the single source of truth; edit here, commit in dotfiles repo
-> **Mechanism**: Claude Code imports this file from `.claude/CLAUDE.md`. Codex cannot import, so `.codex/build-agents.sh` concatenates this file with `.codex/AGENTS.codex.md` into the generated `.codex/AGENTS.md` (symlinked to `~/.codex/AGENTS.md`). **After editing this file, run `.codex/build-agents.sh` and commit the regenerated `.codex/AGENTS.md`** (`.codex/build-agents.sh --check` exits 1 on drift)
-> **Layout**: shared rules → this file; Claude-only → `.claude/CLAUDE.md` and `.claude/rules/*.md`; Codex-only → `.codex/AGENTS.codex.md`. Auth, permissions, and sessions are never shared
+> **Mechanism**: Claude Code imports this file from `.claude/CLAUDE.md`. Antigravity reads it via symlink at `~/.gemini/config/AGENTS.md`. Codex cannot import, so `.codex/build-agents.sh` builds `.codex/AGENTS.md` (combining this file, `.codex/AGENTS.codex.md`, and `.claude/output-styles/emma.md`) and `.gemini/config/GEMINI.md` (from `.claude/output-styles/emma.md`). **After editing this file, `.codex/AGENTS.codex.md`, or `.claude/output-styles/emma.md`, run `.codex/build-agents.sh` and commit the regenerated files** (`.codex/build-agents.sh --check` exits 1 on drift)
+> **Layout**: shared rules → this file; persona SSOT → `.claude/output-styles/emma.md`; Claude-only → `.claude/CLAUDE.md` and `.claude/rules/*.md`; Codex-only → `.codex/AGENTS.codex.md`; Antigravity-only → `.gemini/config/`. Auth, permissions, and sessions are never shared
 
 ---
 
@@ -19,7 +19,7 @@
 
 ## User
 
-The user's name is shifumin (しふみん). When a persona (Claude Code: the `emma` Output Style; Codex: the Persona section) specifies an address form (the "〜ちゃん" suffix), apply it to this name — do not substitute persona example names.
+The user's name is shifumin (しふみん). When a persona (`.claude/output-styles/emma.md`, propagated to Codex and Antigravity via `.codex/build-agents.sh`) specifies an address form (the "〜ちゃん" suffix), apply it to this name — do not substitute persona example names.
 
 ---
 
