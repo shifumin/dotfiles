@@ -1,155 +1,102 @@
 ---
 name: pull
-description: リモートの最新変更を現在のブランチに取り込む。未コミット変更は自動stash→pull→popで保護し、
-  コンフリクトは可能な限り自動解決を試みる。`git config pull.rebase`の設定を尊重する。
-  「pullして」「最新を取得」「リモートから引っ張って」「pull」「最新化して」「リモートを反映」
-  「fetchして取り込んで」などのリクエストで使用。
-  単発のpullではなく、未コミット変更の退避・コンフリクト対応・結果報告まで含めて一気通貫で行いたい場合に特に有用。
+description: "リモートの最新変更を現在のブランチに取り込む。未コミット変更を自動stash→pull→popで保護し、git config pull.rebaseを尊重してコンフリクトも可能な範囲で自動解決する。「pullして」「最新を取得」「リモートから引っ張って」「pull」「最新化して」「リモートを反映」「fetchして取り込んで」で使用。"
 ---
 
 # Pull
 
-リモートの最新変更を現在のブランチに取り込む。
-
-## サンドボックス（Claude Code）
-
-次の git コマンドは **最初から `dangerouslyDisableSandbox: true` で実行する**: `git fetch` / `git stash push` / `git pull` / `git stash pop` / コンフリクト解決後の `git rebase --continue`・`git commit`。
-
-- fetch / pull は SSH 通信がサンドボックス内で失敗する
-- stash / pull / pop は作業ツリーのファイルを書き換える。サンドボックスで読み取り専用のパス（`.claude/skills` や `.claude/hooks` など）に変更があると、`git stash push` は stash を保存した後、作業ツリーを戻す途中で `Operation not permitted` で止まり、作業ツリーが中途半端な状態になる（実際に起きた失敗）
-
-`git status` / `git rev-parse` / `git config` / `git rev-list` / `git log` / `git diff` は読み取りだけなので、サンドボックス内で実行してよい。
+リモートの最新変更を現在のブランチに取り込む。`@{...}` 構文は zsh 対策のため必ずシングルクォートで囲む。
 
 ## 処理フロー
 
 ### 1. 状態確認
 
-以下を並列で実行:
+以下を並列で実行する:
 
 | コマンド | 目的 |
 |---------|------|
-| `git status --porcelain` | 未コミット変更の有無（ステップ2でも再利用） |
-| `git branch --show-current` | 現在のブランチ名 |
-| `git rev-parse --abbrev-ref '@{upstream}'` | 追跡ブランチの確認（zshのbrace展開対策でクォート必須） |
-| `git config pull.rebase` | rebase設定の確認（ローカル → グローバルの順で解決される） |
-| `git fetch` | リモートの最新情報を取得（マージはしない） |
+| `git status --porcelain` | 未コミット変更の有無（ステップ 2 で再利用） |
+| `git branch --show-current` | 現在のブランチ名（空なら detached HEAD） |
+| `git rev-parse --abbrev-ref '@{upstream}'` | 追跡ブランチの確認（無ければエラー終了＝追跡なしシグナル） |
+| `git config pull.rebase` | リポジトリ／ユーザーの rebase 設定確認 |
+| `git fetch` | リモートの最新情報を取得 |
 
-`git rev-parse --abbrev-ref '@{upstream}'` は **追跡ブランチが無いと失敗する**。失敗自体を「追跡ブランチなし」のシグナルとして以下の判断で扱う（事前判定不要）。
-
-fetch 後、取り込む変更があるかを次のコマンドで判定する:
-
-```
-git rev-list --count 'HEAD..@{upstream}'
-```
-
-`@{upstream}` や `HEAD@{1}` などの `@{...}` 構文は **必ずシングルクォートで囲む**。Claude Code の Bash ツールは zsh の eval 経由で実行され、クォートなしだと brace 展開で `@a` などに化ける。
-
-`0` なら「ローカルが最新」、`1` 以上なら取り込む変更がある。
-
-#### 判断
+fetch 後、取り込む変更件数を `git rev-list --count 'HEAD..@{upstream}'` で確認し、次の通り分岐する:
 
 | 状況 | 対応 |
 |------|------|
-| 追跡ブランチあり + 取り込む変更あり | ステップ2へ進む |
-| 追跡ブランチあり + ローカルが最新 | 「最新です」と報告して終了 |
-| 追跡ブランチなし | pullを中止。`origin/<branch>` が存在する場合は次のコマンドをユーザーに提案する: `git branch --set-upstream-to=origin/<branch>`。存在しない場合は「pull対象がない」旨を報告して終了 |
-
-追跡ブランチなしで中止するのは、誤ったブランチを追いかける事故を防ぐため。
+| detached HEAD（ブランチ名が空） | pull を中止し、ブランチをチェックアウトするよう報告して終了 |
+| 追跡ブランチなし | pull を中止。`origin/<branch>` が存在すれば `git branch --set-upstream-to=origin/<branch>` を提案、無ければ「pull 対象がない」と報告して終了 |
+| 取り込む変更が `0` 件 | 「最新です」と報告して終了 |
+| 取り込む変更が `1` 件以上 | ステップ 2 へ進む |
 
 ### 2. 未コミット変更の退避
 
-ステップ1で取得した `git status --porcelain` の出力が空でない場合、untrackedファイルも含めて自動stashで退避する。
+ステップ 1 の `git status --porcelain` が空でなければ、untracked を含めてタイムスタンプ付きで退避する。既存の別 stash と混同しないよう、実行前後の `refs/stash` を比較して今回作成されたか判定する:
 
-```
+```bash
+bash <<'SCRIPT'
+set -euo pipefail
+BEFORE=$(git rev-parse -q --verify 'refs/stash' || true)
 git stash push -u -m "auto-stash before pull at $(date +%Y-%m-%dT%H:%M:%S)"
+AFTER=$(git rev-parse -q --verify 'refs/stash' || true)
+if [ -n "$AFTER" ] && [ "$AFTER" != "$BEFORE" ]; then
+  echo "STASH_CREATED=1"
+else
+  echo "STASH_CREATED=0"
+fi
+SCRIPT
 ```
 
-メッセージにタイムスタンプを含めるのは、復元時にどのstashを使うか識別しやすくするため、および誤って他のstashをpopしないようにするため。
+`STASH_CREATED=0`（`.gitignore` 対象のみの変更など）ならステップ 4 の `stash pop` はスキップする。
 
-退避後、stashが本当に作成されたかを `git stash list` で確認する。これは `git stash push` が変更を見つけられず stash を作らないケース（例: `.gitignore` 対象のみ変更）と、変更ありで stash 成功したケースを区別するため。stash が作成されなかった場合はステップ4の `git stash pop` をスキップする。
+### 3. Pull 実行とコンフリクト処理
 
-### 3. Pull実行
-
-`git config pull.rebase` の設定を尊重する。
+`git config pull.rebase` の設定を尊重して実行する:
 
 | `pull.rebase` の値 | 実行コマンド |
-|------|---------|
-| `true` / `interactive` | `git pull --rebase` |
-| `false` / 未設定 | `git pull`（git のデフォルト挙動に従う） |
+|---|---|
+| `true` / `interactive` | `git pull --rebase`（非対話環境でのエディタ停止を避けるため `interactive` も非対話で実行） |
 | `merges` / `preserve` | `git pull --rebase=merges` |
+| `false` / 未設定 | `git pull` |
 
-push 側で明示指定する push スキルと異なり、pull は **リポジトリ/ユーザーの設定を信頼する**。意図しない統合方式の上書きを避けるため。
+コンフリクトなく完了したらステップ 4 へ進む。コンフリクト発生時は以下の順で自動解決を試みる:
 
-#### Pull結果
+1. `git status` でコンフリクト対象を確認する
+2. 各ファイルを次の基準で解決する:
+   - 片側のみ変更（add/add、modify/delete 等で意図が明確）→ 適切な側を採用
+   - 両側の変更が論理的に矛盾しない（別関数・別セクションへの追加等）→ 両方を残して統合
+   - import 文・lock ファイル等の機械的競合 → 両側を統合
+3. 同一行の論理競合など自動解決できない箇所が残る場合は中断し、`git status` の結果と `git rebase --abort` / `git merge --abort` の選択肢をユーザーに報告する
+4. 全ファイル解決できたら、`git add <resolved-files>` 後に現在の統合方式に応じて完了する:
+   - rebase 中（`git rev-parse --git-path rebase-merge` または `rebase-apply` が存在）: `GIT_EDITOR=true git rebase --continue`（エディタ起動によるハング防止。後続コミットで再コンフリクトした場合は 1〜4 を繰り返す）
+   - merge 中（`git rev-parse --git-path MERGE_HEAD` が存在）: `git commit --no-edit`
 
-| 結果 | 対応 |
-|------|------|
-| 成功（コンフリクトなし） | ステップ4（stash復元）へ |
-| コンフリクト発生 | 次の「コンフリクト処理」へ |
-| 認証エラー | エラー処理表参照 |
+自動解決を行った場合は、各ファイルの判断内容をステップ 5 で必ず報告する。
 
-#### コンフリクト処理
+### 4. stash 復元
 
-コンフリクトが発生した場合は、可能な限り自動解決を試みる。
+ステップ 2 で `STASH_CREATED=1` だった場合のみ `git stash pop` を実行する。
 
-1. `git status` でコンフリクト対象ファイル一覧を取得
-2. 各ファイルについて以下の順で解決を試みる:
-   - **片側のみ変更**（add/add, modify/delete 等で意図が明らかな場合） → 適切な側を採用
-   - **コンフリクトマーカーの両側が論理的に矛盾しない**（別関数・別セクションへの追加など） → 両方を残す形でマージ
-   - **インポート文・lockファイル等の機械的なマージ** → 両側を統合
-3. 上記で解決できないコンフリクト（同一行の論理競合、意味的に矛盾する変更等）が残っている場合は **解決を中止** し、`git status` の出力とコンフリクトファイル一覧をユーザーに報告して指示を仰ぐ
-
-自動解決を試みた場合は、各ファイルでどう判断したかを **必ずユーザーに報告** する。勝手に統合した内容を後から見つけられるようにするため。
-
-解決完了後の完了コマンドは、上記の Pull 実行で `pull --rebase` を使ったか通常の `pull`（merge）を使ったかで分岐する:
-
-| 統合方式 | 完了コマンド |
-|------|---------|
-| rebase（`pull --rebase` を使った場合） | `git add <resolved-files>` → `GIT_EDITOR=true git rebase --continue` |
-| merge（通常の `pull` を使った場合） | `git add <resolved-files>` → `git commit --no-edit`（デフォルトのマージコミットメッセージで完了。エディタは開かない） |
-
-`git rebase --continue` は（コミットメッセージ自体は変更しなくても）内部でエディタを起動する。`core.editor` がターミナル向けエディタ（vim/nvim等）の場合、TTYが無い実行環境では起動に失敗しコミットが完了しない。`GIT_EDITOR=true` を付けて起動自体をスキップする。
-
-### 4. stash復元
-
-ステップ2で stash を作成した場合のみ実行する。
-
-```
-git stash pop
-```
-
-| 結果 | 対応 |
-|------|------|
-| 成功 | ステップ5（結果報告）へ |
-| コンフリクト発生 | **stashは残したまま** ユーザーに報告して指示を仰ぐ |
-
-stash pop のコンフリクトは pull 自体は完了している状態なので、**自動解決は試みない**。`git stash list` でstashが残っていることを確認し、ユーザーに以下を伝える:
-
-- pullは成功した
-- stash復元時にコンフリクトが発生した
-- stashは残っているため、`git stash pop` / `git stash drop` はユーザーの判断で実行する
+- **成功**: ステップ 5 へ進む
+- **コンフリクト発生**: **自動解決を試みず、stash を残したまま** ユーザーへ報告する（`git stash list` で残存を確認し、pull 自体は完了済みであること・`git stash pop` / `drop` はユーザー判断であることを伝える）
 
 ### 5. 結果報告
 
-以下を含むサマリーを報告する:
+`ORIG_HEAD`（merge・rebase 問わず pull 実行前の HEAD を指す。`HEAD@{1}` は rebase 経由で `HEAD` と一致するため使わない）を基準に以下を報告する:
 
-- 取り込んだコミット数（`git log ORIG_HEAD..HEAD --oneline` で確認。`ORIG_HEAD` はpull直前のHEADを指す）
-- 変更されたファイル数（`git diff ORIG_HEAD..HEAD --stat` で確認）
-- 自動stash → popを行った場合はその旨
+- 取り込んだコミット数・概要（`git log ORIG_HEAD..HEAD --oneline`）
+- 変更されたファイル数（`git diff ORIG_HEAD..HEAD --stat`）
+- 自動 stash → pop を行った場合はその旨
 - コンフリクトを自動解決した場合は対象ファイルと判断内容
 
-`HEAD@{1}` ではなく `ORIG_HEAD` を使う。`git pull --rebase` 経由（`rebase --continue` で完了した場合）は reflog 上で `HEAD@{1}` が `HEAD@{0}` と同一コミットを指してしまい、`HEAD@{1}..HEAD` が常に空になる（0件と誤報告する）。`ORIG_HEAD` は通常の merge pull・rebase pull のどちらでも pull 実行前のHEADを正しく指す。
+## エラー処理と安全策
 
-## エラー処理
+| 状況 | 対処 |
+|------|------|
+| 認証エラー | 認証情報の確認を案内（`gh auth status`、SSH 鍵、credential helper 等） |
+| ネットワークエラー | エラー内容を報告し再試行を提案 |
+| pre-commit / pre-merge hook 失敗 | hook のエラー内容を報告し修正を提案 |
+| `git stash push` が `Saved working directory...` 後に `Operation not permitted` で途中停止 | stash は保存済みで作業ツリーが中途半端な状態。stash を再実行せず `git stash list` と `git status` を報告する。残存差分が stash と同一（`git diff --quiet 'stash@{0}' -- <path>`）なら、その変更を戻してからサンドボックス外で pull → `git stash pop` で復旧可能 |
 
-| エラー | 対処 |
-|--------|------|
-| 追跡ブランチなし | pullを中止。`origin/<branch>` の存在を確認し、あれば `--set-upstream-to` を提案 |
-| 認証エラー | 認証情報の確認を案内（gh auth status、SSH鍵、credential helper等） |
-| ネットワークエラー | エラー内容を報告し、再試行を提案 |
-| コンフリクト解決不能 | 中断してユーザーに報告。`git rebase --abort` / `git merge --abort` の選択肢も提示 |
-| stash pop コンフリクト | stashを残したままユーザーに報告。自動解決は試みない |
-| `git stash push` が `Saved working directory...` の後に `Operation not permitted` で止まった | stash は保存済みで、作業ツリーは一部しか戻っていない。stash を再実行せず、`git stash list` と `git status` で状態を確認してユーザーに報告する。作業ツリーに残った変更が stash と同一（`git diff --quiet 'stash@{0}' -- <path>`）なら、その変更を捨ててからサンドボックス外で pull → `git stash pop` すれば復旧できる |
-| pre-commit/pre-merge hook失敗 | hookのエラー内容を報告し、修正を提案 |
-
-**`git pull --force` / `git reset --hard origin/<branch>` は絶対に使わない。** ローカルの未追跡変更や未push変更を破壊する可能性があるため。ユーザーから明示的に依頼された場合のみ、リスクを説明した上で実行する。
+- `git pull --force` や `git reset --hard origin/<branch>` は使わない（ユーザーから明示的に依頼された場合のみ、リスクを説明した上で実行する）。

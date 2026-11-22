@@ -1,113 +1,129 @@
 ---
 name: push
-description: 変更内容をcommitしてリモートにpushする。Conventional Commits形式でコミット粒度を自動判断し、
-  秘匿情報チェック・リンター実行も行う。「pushして」「コミットしてpush」「変更をプッシュ」「push」
-  「変更を送って」「リモートに反映」「コードを上げて」などのリクエストで使用。
-  コミットだけでなくpushまで一気通貫で行いたい場合に特に有用。
+description: "変更内容をcommitしてリモートにpushする。Conventional Commits形式でコミット粒度を判断し、リンター・秘匿情報チェックも行う。「pushして」「コミットしてpush」「変更をプッシュ」「push」「変更を送って」「リモートに反映」「コードを上げて」で使用。"
 ---
 
 # Push
 
-変更内容をcommitしてリモートにpushする。
+変更内容を commit してリモートに push する。`@{...}` 構文は zsh 対策のため必ずシングルクォートで囲む。
 
 ## 処理フロー
 
 ### 1. 状態確認
 
-以下を並列で実行:
+以下を並列で実行する:
 
 | コマンド | 目的 |
 |---------|------|
-| `git status` | 変更ファイルの一覧 |
-| `git diff` | unstaged変更の内容 |
-| `git diff --staged` | staged変更の内容 |
-| `git branch --show-current` | 現在のブランチ名 |
-| `git log --oneline -5` | 直近のコミットメッセージ（スタイル参考） |
-| `git log origin/{branch}..HEAD` | push未のコミット確認 |
+| `git status --porcelain` | 変更ファイル一覧 |
+| `git diff` | unstaged 変更の内容 |
+| `git diff --staged` | staged 変更の内容 |
+| `git branch --show-current` | 現在のブランチ名（空なら detached HEAD） |
+| `git log --oneline -5` | 直近のコミットメッセージ傾向 |
+| `git fetch` | リモートの最新状態を取得 |
 
-`git log origin/{branch}..HEAD` は **追跡ブランチが無いと失敗する**。失敗自体を「追跡ブランチなし」のシグナルとしてステップ 5 で扱う（事前判定不要）。
-
-#### 判断
+fetch 後、`git log --oneline '@{upstream}..HEAD'` で未 push コミットを確認する（追跡ブランチが無いと失敗するが、失敗自体を「追跡ブランチなし」のシグナルとしてステップ 5 で扱う）。
 
 | 状況 | 対応 |
 |------|------|
-| ワーキングツリーに変更あり | ステップ2へ進む |
-| 変更なし + push未コミットあり | ステップ5（Push）へ直接進む |
-| 変更なし + push未コミットなし | 「変更なし」と報告して終了 |
+| detached HEAD（ブランチ名が空） | push を中止し、ブランチを作成するよう案内して終了 |
+| ワーキングツリーまたはステージに変更あり | ステップ 2 へ進む |
+| 変更なし + 未 push コミットあり（または追跡ブランチなし） | ステップ 5 へ進む |
+| 変更なし + 未 push コミットなし | 「変更なし」と報告して終了 |
 
 ### 2. コミット前チェック
 
-プロジェクトにリンター・テストがある場合は実行する。検出は次の優先順:
+プロジェクトのリンター・テストを次の優先順で検出し、見つかれば実行する:
 
-1. プロジェクトの `CLAUDE.md` / `README.md` にコマンド指定があればそれを使う
-2. 一般的な設定ファイル（`package.json` の scripts、`Gemfile` の rake/rspec、`pyproject.toml`、`Makefile` の lint/test ターゲット 等）から推定
-3. どちらも見つからなければスキップ
+1. プロジェクトの `AGENTS.md` / `CLAUDE.md` / `README.md` に記載されたコマンド
+2. 設定ファイル（`package.json` の scripts、`Gemfile` の rake/rspec、`pyproject.toml`、`Makefile` 等）
+3. どちらも無ければスキップ
 
-| 結果 | 対応 |
-|------|------|
-| パス | 次のステップへ |
-| 失敗 | 問題を修正してから再実行 |
-| リンター・テストなし | スキップ |
+失敗した場合は修正して再実行し、パスしてからステップ 3 へ進む。
 
 ### 3. コミット粒度の判断
 
-プロジェクトの CLAUDE.md にコミットメッセージ形式の指定がある場合は、そちらを優先する。指定がない場合は Conventional Commits 形式に従う。`git log --oneline` の直近コミットも参考にして、プロジェクトの慣習に合わせる。
+コミットメッセージ形式はプロジェクトの `AGENTS.md` / `CLAUDE.md` の指定を優先し、無ければ Conventional Commits と直近の `git log --oneline` に合わせる。
 
-変更の種類でコミットを分割する。git bisect や revert の粒度を保つため、異なる種類の変更は別コミットにする。
-
-細かい type 判定（コメント追加・命名修正など曖昧なケース）と、**同 type で scope 違いの分割可否** は `git log --oneline` の直近スタイルに倣う。明示的な指針が無ければ次の既定値を採用:
-
+異なる種類の変更は git bisect / revert の粒度を保つため別コミットに分ける。迷う場合の既定値:
 - コメント追加・既存挙動の明示化 → `fix` か `chore`（影響度が大きい方）
-- 同 type で scope 違い → **1 コミットに統合**（過剰分割を避ける）
+- 同 type で scope 違い → 1 コミットに統合
 
-| 状況 | 対応 |
-|------|------|
-| 単一種類の変更 | 1コミットにまとめる |
-| 複数種類が混在（別ファイル） | 種類ごとに別ファイルを `git add` して別コミット |
-| 複数種類が混在（同一ファイル内、別ハンク） | 全 diff を `git diff <file> > /tmp/p.patch` で書き出し、`Edit` ツール / heredoc / `sed` 等で該当ハンク以外を **手動削除** → `git apply --cached /tmp/p.patch` でステージ。残りハンクは次コミットで普通に `git add <file>` |
-| 複数種類が混在（同一ハンク内、別行） | git の hunk 単位ではなく **論理的な行範囲** で patch を切り分ける。手順: (1) `git diff <file> > /tmp/p.patch` で全 diff を書き出す (2) 1 種類目（例: fix）の行だけを残すように patch を編集し、hunk ヘッダ（`@@ -旧開始,旧行数 +新開始,新行数 @@`）の行数を残した行数に合わせて手動修正する (3) `git apply --cached --check` で検証後 `git apply --cached /tmp/p.patch` でステージしコミット (4) 残りの変更（2 種類目以降）は `git diff <file>` を再確認し、単一種類のみになっていれば通常どおり `git add <file>` でよい。まだ複数種類が残っている場合は (2)-(3) をその種類分繰り返す |
-| 複数種類が混在（同一行内） | 分離せず 1 コミットに統合してよい。type は影響度が大きい方を採用（例: `fix` と `feat` の混在 → `feat`。`chore` と `fix` → `fix`） |
+| 変更の分布 | 対応 |
+|---|---|
+| 単一種類 | 1 コミットにまとめる |
+| 複数種類（別ファイル） | 種類ごとにファイルを分けて別コミット（例: `docs` → `feat`） |
+| 複数種類（同一ファイル内・別ハンクまたは同一ハンク別行） | 下記のパッチ分割手順で種類ごとにステージして別コミット |
+| 複数種類（同一行内） | 分離せず 1 コミットに統合（影響度が大きい type を採用。例: `fix`+`feat` → `feat`） |
 
-例: `docs`の変更と`feat`の変更 → `docs`を先にコミット → `feat`をコミット
+#### 同一ファイル内のパッチ分割手順
 
-### 4. コミット作成
+`noclobber` や並行実行による衝突を避けるため、必ず `mktemp` の一時ファイルを使う:
 
-各コミットで以下を実行:
+1. `PATCH=$(mktemp "${TMPDIR:-/tmp}/push-split.XXXXXX.patch")` で一時ファイルを作り、`git diff -- <file> >| "$PATCH"` で全差分を書き出す
+2. 今回のコミットに含める変更だけを残すよう `"$PATCH"` を編集する（同一ハンク内の行単位分割では、残した行数に合わせて `@@ -旧開始,旧行数 +新開始,新行数 @@` ヘッダも更新する）
+3. `git apply --cached --check "$PATCH"` で検証後、`git apply --cached "$PATCH"` でステージし、`command rm -f "$PATCH"` で一時ファイルを削除してコミットする
+4. 残りの変更を `git diff -- <file>` で確認し、単一種類になっていれば通常の `git add` でコミットする（まだ複数種類が残っていれば 1〜3 を繰り返す）
 
-1. `git add`で対象ファイルをステージ。意図しないファイル（.env、大きなバイナリ等）の混入を防ぐため、`git add .` は避け、個別のファイルパスを指定する（`git add file1 file2`）
-2. `git diff --staged`で秘匿情報（API key、パスワード、トークン等）がないか確認する。語だけでなく値の形でも探す。公開リポジトリでは、個人情報・業務情報（本名、勤務先、社内の ID・URL など）も秘匿情報として扱う。その語の一覧はリポジトリに書くと漏洩になるので、ローカルの `~/.config/push-denylist.txt`（1行1語）に置く
-   ```bash
-   git diff --staged | grep '^+' | grep -nE 'ghp_|gho_|github_pat_|CCIPAT_|xox[abprs]-|sk-[A-Za-z0-9]{20,}|PRIVATE KEY'
-   [ "$(gh repo view --json visibility -q .visibility)" = PUBLIC ] && git diff --staged | grep '^+' | grep -niF -f ~/.config/push-denylist.txt
-   ```
-   公開リポジトリで denylist がなければ、検査できなかったことを報告する
-3. 秘匿情報を検出 → 該当ファイルのステージを解除しコミットしない。**それまでに作成済みのコミット（他の種類のコミット）があっても Push（ステップ5）は実行せず、タスク全体を停止してユーザーに報告する**（部分pushによる秘匿情報漏洩リスクを避ける既定挙動。ユーザーから明示的に「安全なコミットだけ先にpushして」等の指示があればその限りではない）。**既に作成済みのローカルコミットは `git reset` 等で取り消さずそのまま残す。秘匿情報を含むファイル自体の削除・書き換えも行わない**（ユーザーの意図しない変更を避けるため、後処理はユーザーの判断に委ねて検出結果の報告に留める）
-4. コミットメッセージを作成してコミット
+### 4. ステージ・秘匿情報チェック・コミット
 
-### 5. Push
+コミットごとに以下を実行する:
 
-1. リモート同期・Push
+1. **個別ステージ**: 意図しないファイル混入を避けるため `git add .` は使わず、対象パスを明示指定する。削除ファイルは `git rm -- <deleted-files>` を使い、`git add` には存在するファイルのみ渡す
+2. **秘匿情報チェック**: 次のブロックでトークン・秘密鍵と、公開リポジトリでの個人情報・業務情報（`~/.config/push-denylist.txt`、1 行 1 語）を検査する（プロジェクトの `AGENTS.md` で明示承認された例外は除く）:
 
-| 状況 | コマンド |
-|------|---------|
-| 追跡ブランチあり | まず `git push` を試み、rejected ならステップ 5 - エラー処理「リモートが先行」に従う。すでに `git fetch` 済みでリモート先行が分かっている場合は先に `git pull --rebase` |
-| 追跡ブランチなし | `git push -u origin {branch}`（`pull --rebase` は不要） |
+```bash
+bash <<'SCRIPT'
+set -euo pipefail
+ADDED=$(git diff --staged --src-prefix=a/ --dst-prefix=b/ -U0 | grep '^+' | grep -vE '^\+\+\+ (b/|/dev/null)' || true)
+FOUND=0
 
-`git pull --rebase`でコンフリクトが発生した場合はユーザーに報告し、解消後に再pushする。
+if printf '%s\n' "$ADDED" | grep -nE 'ghp_|gho_|github_pat_|CCIPAT_|xox[abprs]-|sk-[A-Za-z0-9]{20,}|PRIVATE KEY'; then
+  echo "ERROR: potential secret token detected in staged diff" >&2
+  FOUND=1
+fi
 
-2. 結果の報告
+VIS=$(gh repo view --json visibility -q .visibility 2>/dev/null || echo "UNKNOWN")
+if [ "$VIS" = "PUBLIC" ] || [ "$VIS" = "UNKNOWN" ]; then
+  DENYLIST="$HOME/.config/push-denylist.txt"
+  if [ ! -f "$DENYLIST" ]; then
+    echo "WARN: repository visibility=$VIS, denylist not found: $DENYLIST" >&2
+  else
+    PATTERNS=$(grep -v '^[[:space:]]*$' "$DENYLIST" || true)
+    if [ -n "$PATTERNS" ]; then
+      if printf '%s\n' "$ADDED" | grep -niF -f <(printf '%s\n' "$PATTERNS"); then
+        echo "ERROR: denylist match detected in staged diff (visibility=$VIS)" >&2
+        FOUND=1
+      fi
+    fi
+  fi
+fi
 
-| 結果 | 対応 |
-|------|------|
-| 成功 | コミット内容のサマリーを報告 |
-| 失敗 | 次のエラー処理を参照 |
+exit "$FOUND"
+SCRIPT
+```
 
-**`git push --force` は絶対に使わない。** リモートの他者の変更を上書きし、取り返しのつかないデータ損失を引き起こすため。ユーザーから明示的に依頼された場合のみ、リスクを説明した上で実行する。
+- `WARN` が出た場合は、公開リポジトリで denylist 検査ができなかった旨を報告する（`UNKNOWN` で非公開と確定できる場合はその旨を判断材料として伝える）
+- **検出時（exit 1）の対応**:
+  - 該当ファイルのステージを解除し、コミットしない
+  - 既に作成済みの別コミットがあっても Push（ステップ 5）は実行せずタスク全体を停止してユーザーに報告する（部分 push による漏洩防止）
+  - 作成済みローカルコミットの `git reset` や、対象ファイルの編集・削除は行わずユーザーの判断に委ねる
+3. **コミット作成**: チェック通過後、コミットメッセージを作成して `git commit` する
 
-## エラー処理
+### 5. Push と検証
+
+1. **リモート先行の確認（追跡ブランチあり時）**: `git rev-list --count 'HEAD..@{upstream}'` が `1` 以上なら、先に `GIT_EDITOR=true git pull --rebase --autostash` で取り込む。コンフリクトが発生した場合はユーザーに報告して中断する
+2. **Push 実行**:
+   - 追跡ブランチあり: `git push`（rejected 時は `GIT_EDITOR=true git pull --rebase --autostash` 後に再 push）
+   - 追跡ブランチなし: `git push -u origin <branch>`
+3. **結果検証**: パイプで終了コードを潰さず、`git push` の成功に加えて `git rev-parse HEAD` と `git rev-parse '@{u}'` の一致を確認してからコミット内容のサマリーを報告する
+
+## エラー処理と安全策
 
 | エラー | 対処 |
 |--------|------|
-| リモートが先行（rejected） | `git pull --rebase`後に再push。コンフリクト発生時はユーザーに報告 |
+| リモート先行でコンフリクト | 中断してユーザーに報告し、解消後に再 push |
 | 認証エラー | 認証情報の確認を案内 |
-| pre-commit hookの失敗 | hookのエラー内容を報告し、修正を提案 |
+| pre-commit / pre-push hook 失敗 | hook のエラー内容を報告し修正を提案 |
+
+- `git push --force` は使わない（ユーザーから明示的に依頼された場合のみ、リスクを説明した上で実行する）。
