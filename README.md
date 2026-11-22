@@ -72,7 +72,6 @@ After editing `AGENTS.md` or `.claude/output-styles/emma.md`, run `.codex/build-
 
 - `.claude/CLAUDE.md` - Global settings (symlinked to `~/.claude/CLAUDE.md`, applied to all projects)
 - `.claude/rules/` - Context-specific rules (coding, dotfiles, git, shell, skills)
-- `.claude/commands/` - Custom slash commands
 - `.claude/skills/` - Custom skills
 - `.claude/skills.txt` - Third-party skill manifest (auto-installed on setup)
 - `.claude/settings.json` - Permissions and hooks configuration
@@ -90,6 +89,7 @@ After editing `AGENTS.md` or `.claude/output-styles/emma.md`, run `.codex/build-
 
 ```
 .config/
+├── git/         # Global gitignore (→ ~/.config/git/ignore)
 ├── karabiner/   # Karabiner-Elements key remapping
 ├── sheldon/     # Zsh plugin manager
 ├── nvim/        # Neovim (dein.vim)
@@ -97,14 +97,16 @@ After editing `AGENTS.md` or `.claude/output-styles/emma.md`, run `.codex/build-
 └── herdr/       # Herdr (terminal multiplexer for coding agents)
 .claude/
 ├── CLAUDE.md       # Global Claude Code settings (→ ~/.claude/CLAUDE.md)
-├── commands/       # Custom slash commands
 ├── hooks/          # PreToolUse hooks
-├── output-styles/  # Output styles
+├── output-styles/  # Output styles (emma.md is persona SSOT)
 ├── rules/          # Context-specific rules
 ├── skills/         # Custom skills
 ├── skills.txt      # Third-party skill manifest
 ├── settings.json   # Permissions and hooks configuration
 └── statusline.py   # Status line script
+.gemini/
+├── config/         # Antigravity config (GEMINI.md, skills.json)
+└── skills/         # Gemini-only skills
 Cursor/             # Cursor editor settings (→ ~/Library/Application Support/Cursor/User)
 Library/
 └── LaunchAgents/   # launchd jobs (→ ~/Library/LaunchAgents)

@@ -49,7 +49,6 @@ claude_links=(
   ".claude/CLAUDE.md"
   ".claude/settings.json"
   ".claude/statusline.py"
-  ".claude/commands"
   ".claude/hooks"
   ".claude/rules"
   ".claude/output-styles"
@@ -88,6 +87,23 @@ link_path() {
 link_item() {
   local item="$1"
   link_path "$DOTFILES_DIR/$item" "$HOME/$item"
+}
+
+# dotfiles 配下を指す壊れたシンボリックリンクだけ安全に削除する
+prune_broken_links() {
+  local dir="$1"
+  [[ -d "$dir" ]] || return 0
+  local entry target
+  for entry in "$dir"/*; do
+    [[ -L "$entry" && ! -e "$entry" ]] || continue
+    target="$(readlink "$entry")"
+    case "$target" in
+      "$DOTFILES_DIR"/*)
+        command rm -f "$entry"
+        echo "PRUNE: $entry (broken link to $target)"
+        ;;
+    esac
+  done
 }
 
 echo "=== dotfiles setup ==="
@@ -213,6 +229,21 @@ if [[ -d "$cursor_source" ]]; then
     link_path "$f" "$cursor_target/$(basename "$f")"
   done
 fi
+
+# ── 削除・移行済みリンクの自動掃除 ──
+# 旧 ~/.gitignore symlink（.config/git/ignore へ分離済み）
+if [[ -L "$HOME/.gitignore" && "$(readlink "$HOME/.gitignore")" == "$DOTFILES_DIR/.gitignore" ]]; then
+  command rm -f "$HOME/.gitignore"
+  echo "PRUNE: $HOME/.gitignore (migrated to ~/.config/git/ignore)"
+fi
+for prune_dir in \
+  "$HOME/.claude" \
+  "$HOME/.claude/skills" \
+  "$HOME/.agents/skills" \
+  "$HOME/.gemini/config/skills" \
+  "$HOME/.gemini/skills"; do
+  prune_broken_links "$prune_dir"
+done
 
 # ── 権限設定 ──
 karabiner_json="$DOTFILES_DIR/.config/karabiner/karabiner.json"
