@@ -117,6 +117,24 @@ for skill_dir in "$DOTFILES_DIR/.claude/skills"/*/; do
   link_path "$skill_dir" "$HOME/.agents/skills/$skill_name"
 done
 
+# ── .gemini/skills/ の Gemini 専用スキル個別リンク ──
+# Claude Code / Codex には配らず、Antigravity（~/.gemini/config/skills）と
+# Gemini CLI（~/.gemini/skills）の両方から見えるようリンクする
+if [[ -d "$DOTFILES_DIR/.gemini/skills" ]]; then
+  mkdir -p "$HOME/.gemini/config/skills"
+  mkdir -p "$HOME/.gemini/skills"
+  for skill_dir in "$DOTFILES_DIR/.gemini/skills"/*/; do
+    [[ -d "$skill_dir" ]] || continue
+    skill_name="$(basename "$skill_dir")"
+    if [[ -L "${skill_dir%/}" ]]; then
+      echo "SKIP (third-party skill): $skill_name"
+      continue
+    fi
+    link_path "$skill_dir" "$HOME/.gemini/config/skills/$skill_name"
+    link_path "$skill_dir" "$HOME/.gemini/skills/$skill_name"
+  done
+fi
+
 # ── サードパーティスキルのインストール ──
 # .claude/skills.txt に定義されたスキルを gh skill install でインストール
 # claude-code（~/.claude/skills）と universal（~/.agents/skills）の両方に実体を配置し、
