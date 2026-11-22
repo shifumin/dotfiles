@@ -173,14 +173,16 @@ for skill_dir in "$DOTFILES_DIR/.claude/skills"/*/; do
 done
 
 # ── T3 Code (Antigravity) 向け設定 ──
-# T3 Code はグローバル設定ルートを ~/.gemini/config/ ではなく
-# ~/.t3/userdata/providers/antigravity/<hash>/config/ に隔離する。
-# ランタイムファイル（config.json, mcp_config.json, projects/ 等）と同居するため
-# 管理対象のみ個別に配置する。
-# - config/skills は T3 Code の linkAntigravityUserConfig が ~/.gemini/config/skills に
-#   同期（無ければ削除）するため直接リンクしない
+# T3 Code はグローバル設定ルートを ~/.t3/userdata/providers/antigravity/<hash>/ に隔離する一方、
+# UI のスキル検出（AntigravitySkills.ts）は ~/.gemini/config/skills.json を参照し、
+# 起動時の linkAntigravityUserConfig がそれをプロファイルの config/skills.json へ自動リンクする。
+# - config/skills は linkAntigravityUserConfig が ~/.gemini/config/skills に同期（無ければ削除）
+#   するため直接リンクしない
 # - skills.json は Antigravity の customization.go が "~/" を展開できず絶対パスを要求するため、
-#   リポジトリに実パスをコミットせず setup.sh で絶対パス展開して生成する
+#   リポジトリに実パスをコミットせず setup.sh で ~/.gemini/config/skills.json を生成する
+t3_skills_json="$(render_t3_skills_json)"
+write_generated_file "$HOME/.gemini/config/skills.json" "$t3_skills_json"
+
 t3_ag_configs=()
 for d in "$HOME/.t3/userdata/providers/antigravity"/*/config; do
   [[ -d "$d" ]] && t3_ag_configs+=("$d")
@@ -188,11 +190,14 @@ done
 if [[ ${#t3_ag_configs[@]} -eq 0 ]]; then
   echo "WARN: T3 Code Antigravity config dir not found (~/.t3/userdata/providers/antigravity/*/config); launch T3 Code once and re-run setup.sh"
 else
-  t3_skills_json="$(render_t3_skills_json)"
   for t3_config in "${t3_ag_configs[@]}"; do
     link_path "$DOTFILES_DIR/AGENTS.md" "$t3_config/AGENTS.md"
     link_path "$DOTFILES_DIR/.gemini/config/GEMINI.md" "$t3_config/GEMINI.md"
-    write_generated_file "$t3_config/skills.json" "$t3_skills_json"
+    # 旧 setup.sh が生成した実ファイルが残っていれば消してから ~/.gemini/config/skills.json へリンク
+    if [[ -f "$t3_config/skills.json" && ! -L "$t3_config/skills.json" ]]; then
+      command rm -f "$t3_config/skills.json"
+    fi
+    link_path "$HOME/.gemini/config/skills.json" "$t3_config/skills.json"
     # 旧 setup.sh が張った config/skills リンクが残っていれば掃除（skills.json 経由へ移行済み）
     if [[ -L "$t3_config/skills" ]]; then
       target="$(readlink "$t3_config/skills")"
@@ -204,6 +209,46 @@ else
       esac
     fi
   done
+fi
+
+# ── 自作スキルの YAML フロントマター検証 ──
+# T3 Code (AntigravitySkills.ts) は厳格な YAML パーサでフロントマターを読み、
+# クォートなしの ": " や name 欠落があるとスキル一覧から静かに落とすため事前検証する
+if command -v ruby &>/dev/null; then
+  ruby -ryaml -e '
+    errors = 0
+    ARGV.each do |root|
+      next unless Dir.exist?(root)
+      Dir.glob(File.join(root, "*", "SKILL.md")).sort.each do |p|
+        dir = File.basename(File.dirname(p))
+        txt = File.read(p, encoding: "UTF-8")
+        s = txt.index("---")
+        e = s ? txt.index("---", s + 3) : nil
+        if !s || !e
+          warn "SKILL FRONTMATTER ERROR: #{p}: missing frontmatter"
+          errors += 1
+          next
+        end
+        begin
+          doc = YAML.safe_load(txt[(s + 3)...e].strip)
+          name = doc.is_a?(Hash) ? doc["name"] : nil
+          desc = doc.is_a?(Hash) ? doc["description"] : nil
+          if !name.is_a?(String) || name.strip.empty? || name != dir
+            warn "SKILL FRONTMATTER ERROR: #{p}: name (#{name.inspect}) must match dir (#{dir})"
+            errors += 1
+          end
+          if !desc.is_a?(String) || desc.strip.empty?
+            warn "SKILL FRONTMATTER ERROR: #{p}: missing description"
+            errors += 1
+          end
+        rescue => ex
+          warn "SKILL FRONTMATTER ERROR: #{p}: #{ex.message.lines.first.strip}"
+          errors += 1
+        end
+      end
+    end
+    exit(errors == 0 ? 0 : 1)
+  ' "$DOTFILES_DIR/.claude/skills" "$DOTFILES_DIR/.gemini/skills"
 fi
 
 # ── サードパーティスキルのインストール ──
@@ -287,10 +332,10 @@ if [[ -L "$HOME/.gitignore" && "$(readlink "$HOME/.gitignore")" == "$DOTFILES_DI
   echo "PRUNE: $HOME/.gitignore (migrated to ~/.config/git/ignore)"
 fi
 # 旧 ~/.gemini/ 配下の dotfiles 管理リンク（T3 Code の Antigravity config へ移行済み）
+# 注: ~/.gemini/config/skills.json は T3 Code のスキル検出先として生成するため対象外
 for entry in \
   "$HOME/.gemini/config/AGENTS.md" \
   "$HOME/.gemini/config/GEMINI.md" \
-  "$HOME/.gemini/config/skills.json" \
   "$HOME/.gemini/config/skills"/* \
   "$HOME/.gemini/skills"/*; do
   [[ -L "$entry" ]] || continue
