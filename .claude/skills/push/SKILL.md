@@ -1,4 +1,5 @@
 ---
+name: push
 description: 変更内容をcommitしてリモートにpushする。Conventional Commits形式でコミット粒度を自動判断し、
   秘匿情報チェック・リンター実行も行う。「pushして」「コミットしてpush」「変更をプッシュ」「push」
   「変更を送って」「リモートに反映」「コードを上げて」などのリクエストで使用。

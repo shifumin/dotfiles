@@ -1,4 +1,5 @@
 ---
+name: search-x-posts
 description: X (Twitter) のポストをxAI Grok APIで検索する。
   「Xで検索」「ポストを検索」「ツイートを探して」「〜のXのポスト」
   「x search」などのリクエストで使用。

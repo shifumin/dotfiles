@@ -1,4 +1,5 @@
 ---
+name: toggle-language
 description: Claude Codeのペルソナ（Output Style）をトグルする（ON/OFF切り替え）。
   「outputStyleトグル」「output style切り替え」「ペルソナ切り替え」「ペルソナをオフ」「ペルソナをオン」
   「キャラをオフ」「キャラ設定をオフ」「素のClaude Codeに戻して」「toggle language」「toggle output style」などのリクエストで使用。

@@ -1,4 +1,5 @@
 ---
+name: reviewing-pr
 description: PRをレビューし、変更内容の要約と改善点を報告する。
   「PRレビュー」「PRを見て」「review-pr」「PRをレビューして」などのリクエストで使用。
 ---

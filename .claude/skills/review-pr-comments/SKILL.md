@@ -1,4 +1,5 @@
 ---
+name: review-pr-comments
 description: PRレビューコメントを分析し、修正方針を提案する。承認されたら返信・resolve まで行う。
   「レビューコメント対応」「PRコメント対応」「review-pr-comments」「コメントに対応」
   「未解決の指摘を精査」「must/imo/ask を判定して」「レビュー結果を貼るので判断して」などのリクエストで使用。

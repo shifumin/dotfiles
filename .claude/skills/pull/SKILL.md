@@ -1,4 +1,5 @@
 ---
+name: pull
 description: リモートの最新変更を現在のブランチに取り込む。未コミット変更は自動stash→pull→popで保護し、
   コンフリクトは可能な限り自動解決を試みる。`git config pull.rebase`の設定を尊重する。
   「pullして」「最新を取得」「リモートから引っ張って」「pull」「最新化して」「リモートを反映」
