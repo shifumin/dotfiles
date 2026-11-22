@@ -58,12 +58,12 @@ cd dotfiles
 
 ### Coding Agents (shared)
 
-- `AGENTS.md` - Global rules shared by Claude Code, Codex, and Antigravity (single source of truth; symlinked to `~/.gemini/config/AGENTS.md`)
+- `AGENTS.md` - Global rules shared by Claude Code, Codex, and Antigravity (single source of truth; linked into T3 Code's Antigravity config)
 - `.claude/output-styles/emma.md` - Persona single source of truth (used directly by Claude Code; embedded into Codex and Antigravity by `.codex/build-agents.sh`)
 - `.codex/AGENTS.md` - **Generated** from `AGENTS.md` and `emma.md` (symlinked to `~/.codex/AGENTS.md`); never edit it directly
-- `.gemini/config/GEMINI.md` - **Generated** from `emma.md` (symlinked to `~/.gemini/config/GEMINI.md`); never edit it directly
+- `.gemini/config/GEMINI.md` - **Generated** from `emma.md` (linked into T3 Code's Antigravity config); never edit it directly
 - `.gemini/config/skills.json` - Loads shared skills from `~/.agents/skills` in Antigravity
-- `.gemini/skills/` - Gemini-only skills (symlinked to `~/.gemini/config/skills/` and `~/.gemini/skills/`)
+- `.gemini/skills/` - Gemini-only skills (linked into T3 Code's Antigravity config)
 - `.codex/build-agents.sh` - Regenerates `.codex/AGENTS.md` and `.gemini/config/GEMINI.md` (also run by `setup.sh`); `--check` exits 1 on drift
 
 After editing `AGENTS.md` or `.claude/output-styles/emma.md`, run `.codex/build-agents.sh` and commit the regenerated files.
@@ -105,8 +105,8 @@ After editing `AGENTS.md` or `.claude/output-styles/emma.md`, run `.codex/build-
 ├── settings.json   # Permissions and hooks configuration
 └── statusline.py   # Status line script
 .gemini/
-├── config/         # Antigravity config (GEMINI.md, skills.json)
-└── skills/         # Gemini-only skills
+├── config/         # Antigravity config (GEMINI.md, skills.json → T3 Code provider config)
+└── skills/         # Gemini-only skills (→ T3 Code provider config)
 Cursor/             # Cursor editor settings (→ ~/Library/Application Support/Cursor/User)
 Library/
 └── LaunchAgents/   # launchd jobs (→ ~/Library/LaunchAgents)

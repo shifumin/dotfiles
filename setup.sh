@@ -26,8 +26,6 @@ file_links=(
   ".config/herdr/config.toml"
   ".default-gems"
   ".default-npm-packages"
-  ".gemini/config/GEMINI.md"
-  ".gemini/config/skills.json"
   ".gemrc"
   ".gitconfig"
   ".obsidian.vimrc"
@@ -117,9 +115,6 @@ for item in "${dir_links[@]}" "${file_links[@]}" "${claude_links[@]}"; do
   link_item "$item"
 done
 
-# Antigravity 向けグローバル AGENTS.md（リポジトリルートの共通 AGENTS.md を直接リンク）
-link_path "$DOTFILES_DIR/AGENTS.md" "$HOME/.gemini/config/AGENTS.md"
-
 # ── .claude/skills/ の自作スキル個別リンク ──
 # skills/を丸ごとリンクすると gh skill install が置くサードパーティ実体と共存できないため
 # 自作スキル（実ディレクトリ）のみ個別にリンクする
@@ -138,21 +133,25 @@ for skill_dir in "$DOTFILES_DIR/.claude/skills"/*/; do
   link_path "$skill_dir" "$HOME/.agents/skills/$skill_name"
 done
 
-# ── .gemini/skills/ の Gemini 専用スキル個別リンク ──
-# Claude Code / Codex には配らず、Antigravity（~/.gemini/config/skills）と
-# Gemini CLI（~/.gemini/skills）の両方から見えるようリンクする
-if [[ -d "$DOTFILES_DIR/.gemini/skills" ]]; then
-  mkdir -p "$HOME/.gemini/config/skills"
-  mkdir -p "$HOME/.gemini/skills"
-  for skill_dir in "$DOTFILES_DIR/.gemini/skills"/*/; do
-    [[ -d "$skill_dir" ]] || continue
-    skill_name="$(basename "$skill_dir")"
-    if [[ -L "${skill_dir%/}" ]]; then
-      echo "SKIP (third-party skill): $skill_name"
-      continue
+# ── T3 Code (Antigravity) 向けシンボリックリンク ──
+# T3 Code はグローバル設定ルートを ~/.gemini/config/ ではなく
+# ~/.t3/userdata/providers/antigravity/<hash>/config/ に隔離する。
+# ランタイムファイル（config.json, mcp_config.json, projects/ 等）と同居するため
+# 管理対象のみ個別にリンクする（サードパーティスキルは skills.json → ~/.agents/skills 経由）
+t3_ag_configs=()
+for d in "$HOME/.t3/userdata/providers/antigravity"/*/config; do
+  [[ -d "$d" ]] && t3_ag_configs+=("$d")
+done
+if [[ ${#t3_ag_configs[@]} -eq 0 ]]; then
+  echo "WARN: T3 Code Antigravity config dir not found (~/.t3/userdata/providers/antigravity/*/config); launch T3 Code once and re-run setup.sh"
+else
+  for t3_config in "${t3_ag_configs[@]}"; do
+    link_path "$DOTFILES_DIR/AGENTS.md" "$t3_config/AGENTS.md"
+    link_path "$DOTFILES_DIR/.gemini/config/GEMINI.md" "$t3_config/GEMINI.md"
+    link_path "$DOTFILES_DIR/.gemini/config/skills.json" "$t3_config/skills.json"
+    if [[ -d "$DOTFILES_DIR/.gemini/skills" ]]; then
+      link_path "$DOTFILES_DIR/.gemini/skills" "$t3_config/skills"
     fi
-    link_path "$skill_dir" "$HOME/.gemini/config/skills/$skill_name"
-    link_path "$skill_dir" "$HOME/.gemini/skills/$skill_name"
   done
 fi
 
@@ -236,12 +235,32 @@ if [[ -L "$HOME/.gitignore" && "$(readlink "$HOME/.gitignore")" == "$DOTFILES_DI
   command rm -f "$HOME/.gitignore"
   echo "PRUNE: $HOME/.gitignore (migrated to ~/.config/git/ignore)"
 fi
+# 旧 ~/.gemini/ 配下の dotfiles 管理リンク（T3 Code の Antigravity config へ移行済み）
+for entry in \
+  "$HOME/.gemini/config/AGENTS.md" \
+  "$HOME/.gemini/config/GEMINI.md" \
+  "$HOME/.gemini/config/skills.json" \
+  "$HOME/.gemini/config/skills"/* \
+  "$HOME/.gemini/skills"/*; do
+  [[ -L "$entry" ]] || continue
+  target="$(readlink "$entry")"
+  case "$target" in
+    "$DOTFILES_DIR"/*)
+      command rm -f "$entry"
+      echo "PRUNE: $entry (migrated to T3 Code Antigravity config)"
+      ;;
+  esac
+done
+for empty_dir in \
+  "$HOME/.gemini/config/skills" \
+  "$HOME/.gemini/config" \
+  "$HOME/.gemini/skills"; do
+  rmdir "$empty_dir" 2>/dev/null || true
+done
 for prune_dir in \
   "$HOME/.claude" \
   "$HOME/.claude/skills" \
-  "$HOME/.agents/skills" \
-  "$HOME/.gemini/config/skills" \
-  "$HOME/.gemini/skills"; do
+  "$HOME/.agents/skills"; do
   prune_broken_links "$prune_dir"
 done
 
