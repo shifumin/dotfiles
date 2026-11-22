@@ -10,7 +10,6 @@
   grep   = auto
 
 [core]
-  excludesfile = ~/.gitignore  # globalな.gitignoreの指定
   autocrlf = input             # CRLFを自動変換
   editor = nvim
   quotepath = false

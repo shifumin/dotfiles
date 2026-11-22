@@ -34,7 +34,7 @@ cd dotfiles
 ### Git
 
 - `.gitconfig` - Git configuration
-- `.gitignore` - Global gitignore
+- `.config/git/ignore` - Global gitignore (Git default XDG path)
 
 ### Editor
 

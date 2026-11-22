@@ -22,12 +22,12 @@ dir_links=(
 # ── ファイル単位のシンボリックリンク ──
 file_links=(
   ".codex/AGENTS.md"
+  ".config/git/ignore"
   ".config/herdr/config.toml"
   ".default-gems"
   ".default-npm-packages"
   ".gemrc"
   ".gitconfig"
-  ".gitignore"
   ".obsidian.vimrc"
   ".pryrc"
   ".rspec"

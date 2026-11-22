@@ -123,11 +123,11 @@ These produce "looked successful, actually not applied":
 - `git push | tail; echo $?` reports tail's exit code, so push failures (no upstream, no remote) look like exit 0. Judge with `if git push --quiet; then`, or verify `git rev-parse HEAD` == `git rev-parse '@{u}'` (quotes required under zsh).
 - In multi-repo batch work, final-verify HEAD == upstream per repo, and check `git remote -v` first — some repos have no remote.
 
-### Global .gitignore Scope
+### Global Git Ignore Scope
 
-Global `~/.gitignore` (symlinked from this repo) is intentionally limited to macOS OS junk and `.claude/settings.local.json` (~30 lines).
+Global `~/.config/git/ignore` (Git's default XDG path, symlinked from `.config/git/ignore` in this repo) is intentionally limited to macOS OS junk and personal agent-tool artifacts (~30 lines).
 
-- Never add language/framework patterns (Ruby, Rails, Node, ...) globally — they belong in each project's `.gitignore`. Push back if asked.
+- Never add language/framework patterns (Ruby, Rails, Node, Python, ...) globally — they belong in each project's `.gitignore` (including this repo's own `.gitignore`). Push back if asked.
 - If a global pattern is truly warranted, prefer anchored (`/Foo`) or escape-explicit (`Icon\r`) forms; bare names match recursively AND case-insensitively on macOS (a bare `Icon` rule once false-matched `public/icon/` directories).
 - Don't reintroduce the Finder `Icon` rule; Finder icon files are rare and harmless to commit.
 
