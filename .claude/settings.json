@@ -1,7 +1,4 @@
 {
-  "env": {
-    "ANTHROPIC_CUSTOM_MODEL_OPTION": "claude-opus-4-7"
-  },
   "attribution": {
     "commit": "",
     "pr": ""
@@ -11,12 +8,10 @@
       "Bash(chmod +x:*)",
       "Bash(defaults read:*)",
       "Bash(git add:*)",
-      "Bash(git checkout:*)",
       "Bash(git commit:*)",
       "Bash(git pull:*)",
       "Bash(git push:*)",
       "Bash(git remote:*)",
-      "Bash(git restore:*)",
       "Bash(git stash:*)",
       "Bash(mdfind:*)",
       "Bash(mkdir:*)",
@@ -43,6 +38,7 @@
     ],
     "defaultMode": "auto"
   },
+  "model": "opus",
   "fallbackModel": [
     "sonnet"
   ],
@@ -100,15 +96,10 @@
     "sentry@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
     "slack@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": true,
+    "cc-plugin-you-should-know@builtin": true
   },
   "extraKnownMarketplaces": {
-    "anthropic-agent-skills": {
-      "source": {
-        "source": "github",
-        "repo": "anthropics/skills"
-      }
-    },
     "openai-codex": {
       "source": {
         "source": "github",
@@ -122,5 +113,8 @@
   "tui": "fullscreen",
   "skipWorkflowUsageWarning": true,
   "preferredNotifChannel": "terminal_bell",
-  "remoteControlAtStartup": true
+  "remoteControlAtStartup": true,
+  "skillOverrides": {
+    "auto-mode-setup": "off"
+  }
 }
