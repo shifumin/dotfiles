@@ -10,6 +10,4 @@
 # japanese-tech-writing is a single-file gist SKILL.md (gh skill cannot install gists); vendored in .claude/skills/japanese-tech-writing from https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d (update = manual diff vs gist)
 mattpocock/skills productivity/grilling@6654f6b60cd9d5be8b54c6fafe44346dabeb3b76
 mizchi/skills meta/empirical-prompt-tuning/SKILL.md@5aaf2d126a04a8b079fd5184eb1860f232afffd3
-yoshiko-pg/difit difit
-yoshiko-pg/difit difit-review
 yusukebe/ax ax
