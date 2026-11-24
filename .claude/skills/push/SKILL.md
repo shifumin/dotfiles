@@ -70,37 +70,10 @@ fetch 後、`git log --oneline '@{upstream}..HEAD'` で未 push コミットを�
 コミットごとに以下を実行する:
 
 1. **個別ステージ**: 意図しないファイル混入を避けるため `git add .` は使わず、対象パスを明示指定する。削除ファイルは `git rm -- <deleted-files>` を使い、`git add` には存在するファイルのみ渡す
-2. **秘匿情報チェック**: 次のブロックでトークン・秘密鍵と、公開リポジトリでの個人情報・業務情報（`~/.config/push-denylist.txt`、1 行 1 語）を検査する（プロジェクトの `AGENTS.md` で明示承認された例外は除く）:
+2. **秘匿情報チェック**: `audit-public-repo` スキルのスキャナを `--mode staged` で実行し、トークン・秘密鍵・危険ファイルと、公開リポジトリでの個人情報・業務情報（`~/.config/push-denylist.txt`）を検査する（プロジェクトの `AGENTS.md` で明示承認された例外、または `~/.config/public-audit-allowlist.txt` 登録済みは除く）:
 
 ```bash
-bash <<'SCRIPT'
-set -euo pipefail
-ADDED=$(git diff --staged --src-prefix=a/ --dst-prefix=b/ -U0 | grep '^+' | grep -vE '^\+\+\+ (b/|/dev/null)' || true)
-FOUND=0
-
-if printf '%s\n' "$ADDED" | grep -nE 'ghp_|gho_|github_pat_|CCIPAT_|xox[abprs]-|sk-[A-Za-z0-9]{20,}|PRIVATE KEY'; then
-  echo "ERROR: potential secret token detected in staged diff" >&2
-  FOUND=1
-fi
-
-VIS=$(gh repo view --json visibility -q .visibility 2>/dev/null || echo "UNKNOWN")
-if [ "$VIS" = "PUBLIC" ] || [ "$VIS" = "UNKNOWN" ]; then
-  DENYLIST="$HOME/.config/push-denylist.txt"
-  if [ ! -f "$DENYLIST" ]; then
-    echo "WARN: repository visibility=$VIS, denylist not found: $DENYLIST" >&2
-  else
-    PATTERNS=$(grep -v '^[[:space:]]*$' "$DENYLIST" || true)
-    if [ -n "$PATTERNS" ]; then
-      if printf '%s\n' "$ADDED" | grep -niF -f <(printf '%s\n' "$PATTERNS"); then
-        echo "ERROR: denylist match detected in staged diff (visibility=$VIS)" >&2
-        FOUND=1
-      fi
-    fi
-  fi
-fi
-
-exit "$FOUND"
-SCRIPT
+/usr/bin/env python3 ~/.claude/skills/audit-public-repo/scripts/scan.py --mode staged
 ```
 
 - `WARN` が出た場合は、公開リポジトリで denylist 検査ができなかった旨を報告する（`UNKNOWN` で非公開と確定できる場合はその旨を判断材料として伝える）
