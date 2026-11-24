@@ -97,9 +97,10 @@ Critical / High / Medium が 0 件なら、確認済み範囲と Low/Info（あ�
 
 1. **前提確認とバックアップ**:
    - `git filter-repo --version` を確認（未導入なら `brew install git-filter-repo` を案内）
-   - 未コミット変更がないことを確認し、バックアップブランチを作成:
+   - 未コミット変更がないことを確認し、リポジトリの外に mirror でバックアップする（`filter-repo` は全 ref を書き換え reflog も消すため、リポジトリ内のバックアップブランチは一緒に書き換わり役に立たない）:
      ```bash
-     git branch "backup/pre-audit-rewrite-$(date +%Y%m%d-%H%M%S)"
+     B="$HOME/.local/share/audit-backups/$(basename "$PWD")-$(date +%Y%m%d-%H%M%S).git"
+     mkdir -p "$(dirname "$B")" && git clone --mirror . "$B"
      ```
 2. **書き換え内容の事前提示と承認**: 具体的なコマンドを提示してから実行する
    - 特定ファイルの履歴除去: `git filter-repo --invert-paths --path <path>`
@@ -109,4 +110,4 @@ Critical / High / Medium が 0 件なら、確認済み範囲と Low/Info（あ�
 3. **再スキャン検証**: 書き換え後に `scan.py --mode full` を再実行し、対象が現行・履歴の両方から完全に消えたことを確認する
 4. **リモート反映（別途明示承認必須）**:
    - `git push --force-with-lease`（複数ブランチ・タグを含む場合は対象を明示）の影響（履歴改変、他端末での再 clone/reset 必要、GitHub のキャッシュ・PR・既存フォークには残り得る点）を説明し、明示的な承認を得てから実行する
-   - 完了後、ローカルのバックアップブランチは確認後に削除するよう案内する（バックアップブランチが残っていると次回 `full` スキャンで再び検出される）
+   - 完了後、他端末で問題ないと確認できたら `$B` を削除するよう案内する（除去した情報がまだ入っているため残さない）
