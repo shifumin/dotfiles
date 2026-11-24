@@ -31,3 +31,4 @@ Temporary Items
 
 # Agent tool artifacts (session logs/dumps, appear in any repo)
 .playwright-cli/
+.claude/.cc-writes/
