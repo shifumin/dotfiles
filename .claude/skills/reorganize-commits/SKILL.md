@@ -1,251 +1,142 @@
 ---
 name: reorganize-commits
-description: >
-  ブランチのコミット履歴を、人間がレビューしやすい粒度に再構成して force push する。
-  細かく散らばったコミット群を「独立して revert できる意図」単位にまとめ直し、
-  backup ブランチと tree 一致検証で安全性を担保したうえで、承認を取ってから push する。
-  「コミットをまとめて」「コミットを整理して」「レビューしやすいようにコミットを分け直して」
-  「コミットが多すぎる」「履歴を整理して」「squash して」「PR を出す前に履歴を綺麗にしたい」
-  といった依頼で必ず使う。レビュー依頼を出す直前や、レビュアーから「コミットが多くて追えない」
-  と言われたときにも使う。
-  ※ 手元の未コミット変更を新しくコミットするだけなら commit スキル、既存の履歴をそのまま
-  push するだけなら push スキルを使う。このスキルは「すでに存在するコミット群を組み直す」もの。
+description: "ブランチのコミット履歴をレビューしやすい「独立して revert できる意図」単位へ再構成し、backup ブランチと tree 一致検証のうえ承認後に force-with-lease push する。「コミット整理/まとめ」「履歴を綺麗に」「squash」「分け直して」「reorganize-commits」等で使用。対象外: 未コミット変更の新規コミットや既存履歴のそのまま push（push スキル）。"
 ---
 
 # コミット履歴の再構成
 
-## このスキルが解こうとしている問題
+作業ログとして散らばったブランチのコミット群を、最終ツリーを 1 バイトも変えずに意図単位の履歴へ組み直す。計画テキストではなく**実物を先に組んで提示してから** push の承認を取る（backup ブランチでいつでも元へ戻せる）。
 
-作業中のコミットは「そのとき自分が何をやっていたか」の記録になる。typo 修正、レビュー前の
-手直し、試行錯誤の往復がそのまま残るので、30 コミットあっても意図は 5 つ、ということが起きる。
-
-レビュアーは逆に「この変更は何のためか」を知りたい。作業の時系列は彼らにとってノイズでしかない。
-このスキルは、作業ログとしての履歴を、**読み物としての履歴**に組み直す。
-
-最終ツリーは 1 バイトも変えない。変えるのは、そこに至る道のりの見せ方だけ。
-
-## 全体の流れ
-
+```text
+事前チェック → base 決定 → レビュー確認 → backup 作成 → reset
+  → 意図ごとに再コミット → tree 一致検証 → 実物提示・承認 → push
 ```
-事前チェック → base 決定 → backup 作成 → reset → 意図ごとに再コミット
-  → tree 一致検証 → 実物を提示して承認 → force push
-```
-
-再構成は**先に実行して、実物を見せてから**承認を取る。計画をテキストで見せても
-「その分け方で diff がどう見えるか」は分からない。backup があるので、気に入らなければ捨てられる。
-
----
 
 ## 1. 事前チェック
 
-未コミット変更がある状態で始めると、それが再構成の途中でどのコミットに紛れ込んだか
-追えなくなる。追跡済みファイルに変更があれば、何もせずに止める。
-
 ```bash
+BRANCH=$(git branch --show-current)
+[ -n "$BRANCH" ] || { echo "detached HEAD のため中断"; exit 1; }
 git status --porcelain -uno 2>/dev/null
 ```
 
-出力があれば中断し、`git stash` か、コミットしてから再実行するよう伝える。
-
-`-uno` で未追跡ファイルを除外するのは、作業と無関係な未追跡ファイル（ローカル設定、
-一時的な作業メモなど）が常にあるリポジトリでも止まらないようにするため。
-このスキルは対象パスを明示して `git add` するので、未追跡ファイルは紛れ込まない。
-
-`2>/dev/null` は、サンドボックス環境で読めないファイル（`.pem` / `.key` など）に対する
-git のエラー出力を落とすため。これがないと作業ツリーが綺麗でも出力が空にならない。
-
-対象ブランチも確認する。引数で PR 番号や URL が渡され、現在のブランチと異なる場合は、
-勝手に切り替えず「`gh pr checkout <番号>` で切り替えていい?」と確認してから実行する。
+- 追跡済みファイルに出力があれば中断し、`git stash` またはコミット後に再実行してもらう（`-uno` は無関係な未追跡ファイル無視、`2>/dev/null` は読み取り不可ファイル `.pem`/`.key` のエラー抑止）。
+- 引数で別 PR 番号・URL が渡された場合は勝手に切り替えず、`gh pr checkout <番号>` で切り替えてよいか確認する。
 
 ## 2. base を決める
 
-まとめる範囲の起点。PR があればその base、なければデフォルトブランチとの merge-base。
+PR があればその base、無ければデフォルトブランチとの merge-base を起点にする。
 
 ```bash
-# PR の base（PR がない / gh が使えない場合は空になる）
-BASE_REF=$(gh pr view --json baseRefName -q .baseRefName 2>/dev/null)
-
-# fallback: リモートのデフォルトブランチ
+BASE_REF=$(gh pr view --json baseRefName -q .baseRefName 2>/dev/null || true)
 if [ -z "$BASE_REF" ]; then
-  BASE_REF=$(git symbolic-ref --quiet refs/remotes/origin/HEAD | sed 's|refs/remotes/origin/||')
+  BASE_REF=$(git symbolic-ref --quiet refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||')
 fi
+if [ -z "$BASE_REF" ]; then
+  BASE_REF=$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name 2>/dev/null || true)
+fi
+if [ -z "$BASE_REF" ]; then
+  for cand in main master; do
+    if git show-ref --verify --quiet "refs/remotes/origin/$cand"; then BASE_REF="$cand"; break; fi
+  done
+fi
+[ -n "$BASE_REF" ] || { echo "base ブランチを特定できません"; exit 1; }
 
 git fetch origin "$BASE_REF"
 BASE=$(git merge-base HEAD "origin/$BASE_REF")
-
 echo "base: $BASE_REF ($BASE)"
-git log --oneline --no-merges "origin/$BASE_REF..HEAD" | wc -l
+git log --oneline --no-merges "$BASE..HEAD"
 ```
 
-`git log --oneline --no-merges "origin/$BASE_REF..HEAD"` で対象コミットを一覧し、件数と base を提示する。
-
-件数が明らかに多すぎる（3 桁など）場合は base の誤判定を疑って止める。PoC ブランチから
-切ったブランチなど、実際の分岐元が origin のデフォルトブランチでないことがある。
-
-`git log --merges "origin/$BASE_REF..HEAD"` に出力があればマージコミットを含む。
-再構成後は履歴が直線になることを伝えておく（多くの場合これは望ましいが、意図せず
-潰したと思われないように）。
+- 対象コミット数と base を提示する。件数が不自然に多い（3 桁等）場合は base 誤判定を疑って止める。
+- `git log --merges "$BASE..HEAD"` に出力があれば、再構成後に履歴が直線になる旨を先に伝える。
 
 ## 3. レビューコメントの確認
 
-force push すると行番号がずれ、既存のインラインコメントが outdated になったり
-迷子になったりする。止めはしないが、件数を出して判断してもらう。
-
 ```bash
-gh pr view --json reviews,comments -q \
-  '"reviews: \(.reviews | length) / comments: \(.comments | length)"' 2>/dev/null
+gh pr view --json reviews,comments,reviewThreads -q \
+  '"reviews: \(.reviews | length) / threads: \(.reviewThreads | length) / comments: \(.comments | length)"' 2>/dev/null || true
 ```
 
-0 件でなければ「レビューコメントが N 件ある。force push すると紐付きが崩れる可能性があるけど進める?」と確認する。
+（PR 読み取り専用ツールがある環境ではそれを使ってもよい。）1 件以上あれば「force push でインラインコメントの行紐付きが崩れ得るが進めるか」を確認する。
 
-## 4. backup を作る
+## 4. backup を作り lease を固定する
 
 ```bash
-BRANCH=$(git branch --show-current)
 BACKUP="backup/${BRANCH}-$(date +%Y%m%d-%H%M%S)"
 git branch "$BACKUP"
-git fetch origin "$BRANCH" && LEASE=$(git rev-parse "origin/$BRANCH") && echo "lease: $LEASE"
-git merge-base --is-ancestor "$LEASE" "$BACKUP" || echo "リモートにローカルにないコミットがある"
+LEASE=""
+if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+  git fetch origin "$BRANCH"
+  LEASE=$(git rev-parse "origin/$BRANCH")
+  echo "lease: $LEASE"
+  if ! git merge-base --is-ancestor "$LEASE" "$BACKUP"; then
+    echo "リモートにローカル未取り込みのコミットがあります。取り込み方針を確認してください"
+    exit 1
+  fi
+else
+  echo "リモート未登録の新規ブランチ（通常 push -u 対象）"
+fi
 ```
 
-この ref は後段の検証と復旧の両方で使う。reflog より確実で、消し忘れても実害がない。
-最後にユーザーへ名前を伝え、削除は任せる（`git branch -D "$BACKUP"`）。
+- リモートに未取り込みのコミットがある場合は止めてユーザーに確認する。
+- `$BACKUP` は検証と復旧に使い、最後にブランチ名を伝えて削除（`git branch -D "$BACKUP"`）はユーザーに任せる。
 
-`LEASE` は手順10の force push で使う。リモートにローカルにないコミットがあれば、取り込むか確認するまで止める。
-リモートにブランチがなければ `LEASE` は空で、手順10は通常の `git push -u` になる。
-
-## 5. 変更を index から解く
+## 5. index を解除して変更一覧を得る
 
 ```bash
-git reset "$BASE"    # HEAD と index を base に戻す。作業ツリーは最終状態のまま
-
-# ブランチで新規追加されたファイルだけを intent-to-add する
-git diff --name-only --diff-filter=A "$BASE" "$BACKUP" \
-  | tr '\n' '\0' | xargs -0 -r git add -N --
-```
-
-これで作業ツリーには最終状態が残り、ブランチの全変更が未ステージの差分として見える。
-ここから意図ごとに `git add` して積み直す。コンフリクトは原理的に起きない。
-
-intent-to-add の対象を `--diff-filter=A` のリストに絞るのが重要。`git add -N .` と書くと、
-作業と無関係な未追跡ファイルまで拾い、コミットに紛れ込ませてしまう。
-
-分割を考えるための対象ファイル一覧は次で得る。
-
-```bash
+git reset "$BASE"
+while IFS= read -r -d '' f; do
+  git add -N -- "$f"
+done < <(git diff -z --name-only --diff-filter=A "$BASE" "$BACKUP")
 git diff --name-status "$BASE" "$BACKUP"
 ```
 
-この時点で、途中で打ち消し合った変更（追加してから削除したファイル、typo を入れて直した箇所）は
-差分に現れず、自動的に消える。作業ログを読み物に変えるうえで、これはこの方式の大きな利点。
+- `git reset "$BASE"` で作業ツリーを最終状態のまま残し、ブランチで新規追加されたファイルだけを `-z` 経由で `git add -N` する（`git add -N .` は無関係な未追跡ファイルを巻き込むため禁止）。
+- 途中で打ち消し合った変更はこの時点で差分に現れず自動除去される。
 
 ## 6. 分割単位を決める
 
-**最重要のステップ。** ここの質だけがレビューのしやすさを決める。
+プロジェクトに `.agents/skills/commit/SKILL.md` または `.claude/skills/commit/SKILL.md` があれば**必ず読んで**その規約を優先する。無ければ Conventional Commits と「1 コミット = 独立して revert できる 1 つの意図」を基準にする。
 
-### 判断基準
+**再構成の 3 原則**:
+1. **リファクタと振る舞いの変更は必ず分ける**（振る舞い不変の確認と仕様確認を混ぜない）
+2. **実装とその spec は同じコミットに入れる**（プロジェクト規約が分離を求める場合を除く）
+3. **機械的差分は独立させて末尾に置く**（`rubocop -a`、`schema.rb`、`package_todo.yml`、生成物、フォーマッタ差分）
 
-分割の原則そのものは、プロジェクト側の commit 規約スキルに従う。
-リポジトリに `.agents/skills/commit/SKILL.md` または `.claude/skills/commit/SKILL.md` があれば
-**必ず読んでから**分割する。無ければ Conventional Commits と
-「1 コミット = 独立して revert できる 1 つの意図」を基準にする。
+**並び順（読む順）**: 土台（マイグレーション・スキーマ・定数・型） → 中核ロジック＋spec → 呼び出し側・配線 → 付随（i18n・docs・設定） → 機械的差分。
 
-規約に加えて、再構成のときだけ効く観点が 3 つある。
+**数**: 先に目標数を決めず、意図の数に合わせる。12 を超えたら作業の時系列が残っていないか見直す。
 
-**① リファクタと振る舞いの変更は必ず分ける**
-
-レビュアーの読み方が根本的に違う。リファクタは「振る舞いが変わっていないこと」を確認する
-読み方で、機能追加は「仕様どおりか」を確認する読み方。混ざると両方できなくなり、
-結果として「まあ大丈夫だろう」で流される。
-
-**② 実装とその spec は同じコミットに入れる**
-
-レビュアーは実装の正しさを spec で判断する。離すと、実装コミットを見た時点では
-判断材料がなく、spec コミットに着いた頃には実装を忘れている。
-プロジェクトの規約が test と実装を別コミットにするよう求めるときは、規約を優先する。
-
-**③ 機械的な差分は独立させて末尾に置く**
-
-`rubocop -a` の整形、`schema.rb`、`package_todo.yml`、生成物、フォーマッタの差分は
-1 コミットにまとめて最後に置く。読み飛ばせる塊が末尾にあるだけで、レビュアーの
-負担は目に見えて減る。逆に本題のコミットに混ざると、全行を目で追う羽目になる。
-
-### 並び順
-
-コミットは読む順に並べる。おおむね次の順が自然に読める。
-
-1. 土台（マイグレーション、スキーマ、定数、型定義）
-2. 中核ロジック + その spec
-3. 呼び出し側・配線（controller、routes、view、フロントの接続）
-4. 付随（i18n、docs、設定）
-5. 機械的差分
-
-### 数について
-
-コミット数の目標は先に決めない。数字を先に置くと、無関係な変更を無理に同居させるか、
-1 つの意図を不自然に割ることになり、どちらもレビューを難しくする。**意図を数えて、その数にする。**
-
-ただし 12 を超えたら一度立ち止まって「これは本当に別々に revert する場面があるか」を
-自分に問い直す。多くの場合、細かすぎる分割は「作業の時系列」が残っている兆候で、
-それはまさにこのスキルが取り除きたかったもの。
-
-## 7. 再コミットする
-
-意図ごとに、対象パスを `git add` して commit する。
+## 7. 意図ごとに再コミットする
 
 ```bash
-git add path/to/a path/to/b
+git add -- path/to/a path/to/b
 git commit -m "..."
 ```
 
-### ファイル内に複数の意図が混ざっている場合
+- **本文付きコミットメッセージ**: 一時ファイルに書いて渡し、コミット後に消す（zsh で heredoc + `&&` するとタイトル行が壊れるため）。
+  ```bash
+  MSG=$(mktemp)
+  cat >| "$MSG" <<'EOF'
+  feat: ...
 
-既定はファイル単位。1 ファイルに複数の意図が入っているときだけ、hunk 単位に降りる。
+  Why ...
+  EOF
+  git commit -F "$MSG" && command rm -f "$MSG"
+  ```
+- 元メッセージは意図を拾うヒントに留め、まとめた後の diff を見て「なぜそうしたか」を新しく書く。
+- **1 ファイルに複数意図が混在するとき**: そのコミット時点であるべき内容へ編集して `git add` する。互いに依存する hunk は引き離さず、迷えばファイル単位に寄せる。hunk 分割したファイルは最後に `git checkout "$BACKUP" -- <file>` で最終状態へ戻し、`git status --porcelain -uno 2>/dev/null` で取りこぼしが無いか確認する。
+- **pre-commit フック（husky / lint-staged + mise）**: `node` 不在等で失敗したら `mise exec -- git commit ...` へ切り替える（サンドボックス制約がある環境では解除して実行）。
 
-やり方は「そのコミット時点であるべきファイル内容を書いて `git add` する」。
-patch の切り貼りより確実で、意図も明示的になる。
-
-ただし**互いに依存する hunk を引き離さない**。片方だけ入った中間状態が構文的に壊れると、
-そのコミットは単体で読めなくなり、分けた意味がなくなる。判断に迷ったらファイル丸ごと
-1 コミットに寄せる。分割の粒度より、各コミットが読めることのほうが優先。
-
-最後に必ず作業ツリーを最終状態へ戻す（hunk 分割で書き換えた内容の戻し忘れを防ぐ）。
-
-```bash
-# リポジトリルートで実行する
-git checkout "$BACKUP" -- .
-git status --porcelain -uno 2>/dev/null   # 出力があれば取りこぼし。追加コミットするか見直す
-```
-
-### コミットメッセージ
-
-元のコミットメッセージは**意図を拾うヒントとしてだけ**使い、まとめた後の diff を読んで
-新しく書く。元メッセージを連結すると、typo 修正のような消したかったノイズが本文に残る。
-
-形式はプロジェクトの commit 規約スキルに従う。無ければ Conventional Commits。
-本文には diff を見れば分かること（変更したファイル一覧）ではなく、**なぜそうしたか**を書く。
-
-本文付きのメッセージは scratchpad にファイルとして書き、`git commit -F <file>` で渡す。
-heredoc を `&&` でつなぐと、zsh がタイトル行をコマンドとして実行し、タイトルが消える。
-
-### husky / lint-staged があるリポジトリ
-
-Node のツールチェーンを使う pre-commit フックがあり、リポジトリが mise 管理の場合、
-素の `git commit` はフックの中で node が見つからず落ちることがある。
-ステージに `.ts` / `.tsx` などフックの対象ファイルが含まれるコミットで失敗したら、
-`mise exec -- git commit ...` に切り替える（このとき Bash はサンドボックス無効化が必要）。
-
-## 8. tree 一致を検証する
-
-**このステップは飛ばさない。** まとめ損ね・取りこぼし・hunk 分割の戻し忘れは、
-ここでしか機械的に検出できない。
+## 8. tree 一致を検証する（必須）
 
 ```bash
 git diff --stat "$BACKUP" HEAD
+git diff --quiet "$BACKUP" HEAD || { echo "最終ツリーに差分あり"; exit 1; }
 ```
 
-**出力が空でなければ、最終状態が変わっている。** 差分を確認して修正するか、
-`git reset --hard "$BACKUP"` で元に戻してやり直す。空になるまで push には進まない。
+差分が 1 バイトでもあれば修正するか `git reset --hard "$BACKUP"` でやり直す。一致するまで先へ進まない。
 
 ## 9. 実物を提示して承認を取る
 
@@ -253,65 +144,32 @@ git diff --stat "$BACKUP" HEAD
 git log --stat --oneline "$BASE..HEAD"
 ```
 
-これをそのまま見せ、あわせて次を伝える。
-
+出力をそのまま提示し、以下を添えて push の承認を取る（**承認なしに push しない**）:
 - 元のコミット数 → 新しいコミット数
-- tree 一致検証が通ったこと
-- backup ブランチ名
-- 既存レビューコメントの件数（あれば）
+- tree 一致検証 OK
+- backup ブランチ名（気に入らなければ `git reset --hard "$BACKUP"` で元に戻せる旨も併記）
+- 既存レビューコメント件数（1 件以上の場合）
 
-そのうえで「この内容で force push していい?」と確認する。**承認なしに push しない。**
-承認が得られなければ `git reset --hard "$BACKUP"` で元に戻せることも伝える。
+## 10. push と一致確認
 
-## 10. force push は user に実行してもらう
+- **既存リモートブランチ（`LEASE` あり）**: 履歴書き換えの安全策として、手順 4 で固定した SHA を使ったコマンドをユーザーへ提示し実行してもらう（`!` シェル実行に対応した環境では先頭に `! ` を付けて提示可。素の `--force` や push 直前の再 `fetch` は他者の先行 push を消す恐れがあるため禁止）。
+  ```bash
+  git push --force-with-lease="<branch>:<LEASE>" origin "<branch>"
+  ```
+- **新規ブランチ（`LEASE` 空）**: 承認後、通常の `git push -u origin "<branch>"` を行う。
 
-**force push は Claude Code の権限ゲートに阻まれる。** 自分で実行しようとしても
-`Permission to use Bash ... has been denied` で止まる。これは履歴を壊す操作に対する
-妥当な防御なので、回避しようとせず、コマンドを提示して user に実行してもらう。
-
-承認が得られたら、次の形をそのまま提示する。`!` 接頭辞を付けるとセッション内で実行され、
-出力が自分にも見えるので、そのまま検証まで続けられる。
-
-```
-! git push --force-with-lease=<branch>:<LEASE の SHA> origin <branch>
-```
-
-lease には手順4で記録した SHA をそのまま埋め込む。push の直前に `fetch` すると lease の基準が
-最新になり、その間に他の人が push したコミットを黙って消してしまう。SHA を固定すれば、
-リモートが動いていたときに push が失敗してくれる。素の `--force` は提示しない。
-
-push が終わったら一致を確認して完了報告する。
+push 完了後、一致を確認して完了報告する:
 
 ```bash
-git rev-parse HEAD
-git rev-parse '@{u}'   # zsh ではクォート必須
+[ "$(git rev-parse HEAD)" = "$(git rev-parse '@{u}')" ] && echo "OK: $(git rev-parse --short HEAD)"
 ```
 
-失敗していた場合は、リモートに他の変更が入っている可能性を伝え、勝手に押し切らない。
+失敗時はリモートに別変更が入った可能性を伝え、勝手に押し切らない。
 
----
+## 失敗時の復旧
 
-## 失敗したときの復旧
-
-どの段階で失敗しても、backup ブランチがあれば 1 コマンドで戻せる。
+どの段階でも backup ブランチから 1 コマンドで戻せる（force push 後も同じ手順＋再度 `--force-with-lease`）:
 
 ```bash
 git reset --hard "$BACKUP"
 ```
-
-force push 後に元へ戻したい場合も同じで、戻したうえで再度 `--force-with-lease` する。
-
-## チェックリスト
-
-- [ ] 追跡済みファイルに未コミット変更がないことを確認した
-- [ ] base と対象コミット数を提示した
-- [ ] 既存レビューコメントを確認した（あれば件数を伝えた）
-- [ ] backup ブランチを作った
-- [ ] プロジェクトの commit 規約スキルを読んだ（あれば）
-- [ ] リファクタと振る舞いの変更を分けた
-- [ ] 実装とその spec を同じコミットに入れた（規約が分離を求める場合を除く）
-- [ ] 機械的差分を独立させて末尾に置いた
-- [ ] `git diff --stat "$BACKUP" HEAD` が空だった
-- [ ] `git log --stat` を見せて push の承認を得た
-- [ ] 手順4の SHA を lease にした push コマンドを `!` 付きで提示し、実行後に HEAD と upstream の一致を確認した
-- [ ] backup ブランチ名を伝えた
