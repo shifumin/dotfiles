@@ -1,387 +1,100 @@
 ---
 name: gmail
-description: Gmailのメール検索・取得・迷惑メール管理・カテゴリタブ一括整理を行う。
-  ユーザーがメールに関する操作を求めたら必ずこのスキルを使用すること。
-  「メールを検索」「〜からのメール」「〜のメールある？」「未読メール確認」「メール何通来てる？」
-  「迷惑メールを削除」「スパムを整理」
-  「Socialタブを整理」「プロモーションを整理」「ソーシャルメールをアーカイブ」「SNS通知を既読に」
-  「最近Amazonで何か買ったっけ」「請求書のメール探して」のような間接的なメール確認リクエストにも対応。
+description: "Gmailのメール検索・本文取得・迷惑メール削除・単一カテゴリ整理・ラベル変更を行う。「メール検索」「〜からのメール」「未読確認」「請求書メール探して」「迷惑メール確認/削除」「Social/プロモーションタブ整理」等で使用。複数カテゴリ一括整理は cleanup-inbox-mail が優先。"
 ---
 
 # Gmail操作
 
-## 操作の判定
+Google Workspace CLI（`gws`）をラップする `scripts/gmail.py`（`<base>` は本 `SKILL.md` があるディレクトリの絶対パス）で Gmail の検索・詳細取得・スパム管理・ラベル操作を行う。
 
-| 操作 | トリガーとなる表現例 | 使用コマンド |
-|------|---------------------|-------------|
-| 検索 | 「メールを検索」「〜からのメール」「〜のメールを探して」 | `+triage` / `messages get` |
-| 取得 | 「メールの詳細」「メールを開いて」「本文を見せて」 | `messages get` |
-| スパム管理（削除） | 「迷惑メールを削除」「スパムを整理」「スパム消して」 | `messages list` + `messages trash` |
-| スパム確認（件数のみ） | 「迷惑メール確認」「スパム何通来てる？」「迷惑メールどれくらい？」 | `+triage` のみ（trashしない） |
-| カテゴリタブ整理 | 「Socialタブを整理」「プロモーションを整理」「SNS通知を既読に」 | `+triage` + `messages batchModify` |
-| カテゴリタブ確認（件数のみ） | 「Socialタブ何件？」「プロモいくつ来てる？」 | `+triage` のみ（batchModifyしない） |
+- 複数カテゴリの一括整理（迷惑メール＋購入＋ソーシャル＋プロモーション）は `cleanup-inbox-mail` を使う。
+- 完全削除（expunge）と添付ファイルダウンロードは未対応（スパム管理はゴミ箱移動のみ）。
 
-### 意図解釈ルール（件数確認 vs 操作実行）
+## 操作の判定と安全ルール
 
-ユーザーの発話に **動詞が含まれない / 件数や状況を尋ねる疑問詞** がある場合は「確認のみ」と解釈し、**破壊的操作（trash / batchModify）を実行しない**。Step 1（一覧取得）と件数報告のみで停止する。確認質問（「削除しますか？」等）も出さない。
+| 操作 | トリガー例 | サブコマンド |
+|---|---|---|
+| 検索 | 「〜からのメール」「未読メール」「請求書を探して」「Amazonから何件？」 | `search` |
+| 詳細取得 | 「本文を見せて」「詳細を開いて」 | `get` |
+| スパム・カテゴリ確認（件数のみ） | 「迷惑メール何通？」「Socialタブいくつ？」 | `search --format table`（変更しない） |
+| スパム削除 | 「迷惑メールを削除」「スパム消して」 | `search --format table` → 確認 → `trash` |
+| カテゴリ整理・ラベル操作 | 「Social/プロモを整理」「ラベルを付けて」 | `search --format table` → 確認 → `modify` |
 
-| 発話パターン | 解釈 | 出力 |
-|------------|------|------|
-| 「削除して」「整理して」「アーカイブして」「消して」 | 操作実行 | Step 1→2→3（確認後実行） |
-| 「どれくらい？」「何通？」「ある？」「来てる？」「確認」 | 件数確認のみ | Step 1のみ→件数とテーブル表示で終了 |
-| 判別不能 | 件数確認として扱う（安全側） | Step 1のみ→「削除する場合は明示してください」と補足 |
+**意図解釈（件数確認 vs 操作実行）**:
+- 変更を指示する動詞（「削除して」「整理して」「アーカイブして」「消して」等）が無く、件数・状況を尋ねる疑問形または判別不能な発話は**件数確認のみ**（安全側）として扱い、確認質問を出さず一覧表示で終了する。
+- 変更操作は必ず対象全件をテーブル表示し（`〜等` で省略禁止）、**ユーザーの明示的な同意を得てから**実行する。
 
----
+## 1. メール検索
 
-## 共通設定
+自然言語を Gmail 検索クエリへ変換して `search` を実行する:
 
-Google Workspace CLI（`gws`）を使用:
-```bash
-gws gmail <subcommand> [options]
-```
+| 自然言語 | Gmail クエリ |
+|---|---|
+| 「〜からのメール」（固有名詞） | `from:<語幹>`（部分一致。ドメイン明示時は `from:example.co.jp`） |
+| 「〜さんへ」「件名に〜」 | `to:user@example.com` / `subject:<語>` |
+| 「最近」「先月」 / 「最新」「直近」「今週」 | `newer_than:1m` / `newer_than:7d` |
+| 「今年」「M/D以降」「M/Dまで」 | `after:YYYY/01/01` / `after:YYYY/MM/DD` / `before:YYYY/MM/DD` |
+| 添付・状態 | `has:attachment` / `filename:pdf` / `is:unread` / `is:important` / `is:starred` / `label:<名>` |
 
----
-
-## メール検索
-
-### 処理フロー
-
-1. ユーザー入力から検索意図を解釈
-2. 自然言語をGmail検索クエリに変換
-3. gwsコマンドを実行
-4. 出力をMarkdown形式に整形して表示
-
-### 検索フローと件数確認モードの関係
-
-検索フロー（このセクション）は **デフォルトで件数を冒頭に明示する** ため、「〜ある？」「何件？」のような疑問形検索もそのまま検索フローで処理して良い。バッチ操作系の「件数確認モード」（`category:` や `in:spam` 等のラベル/カテゴリ単位）とは独立に動作する。
-
-| 発話パターン | 適用フロー |
-|------------|-----------|
-| 「Amazonからのメール何件？」「先月のメール一覧」「重要なメール何通？」 | 検索フロー（このセクション） |
-| 「迷惑メール何件？」「Socialタブいくつ？」「プロモいくつ？」 | バッチ操作の「件数確認モード」 |
-
-### 自然言語からGmail検索クエリへの変換
-
-| 自然言語表現 | Gmail検索クエリ |
-|-------------|----------------|
-| 「〜からのメール」（送信元固有名詞） | `from:<語幹>`（**部分一致**：例 「Amazon」→ `from:amazon`、サブドメイン違いも拾う） |
-| 「〜.co.jpからのメール」（明示的にドメイン指定） | `from:<完全ドメイン>`（例: `from:amazon.co.jp`） |
-| 「〜さんへのメール」 | `to:email@example.com` |
-| 「件名に請求書を含む」 | `subject:請求書` |
-| 「最近」「最近の」「ここ最近」 | `newer_than:1m`（**デフォルト1ヶ月**） |
-| 「最新」「直近」 | `newer_than:7d` |
-| 「今週のメール」 | `newer_than:7d` |
-| 「先月のメール」 | `newer_than:1m` |
-| 「今年のメール」 | `after:YYYY/01/01`（現在年を使用） |
-| 「1月1日以降」 | `after:YYYY/01/01` |
-| 「12月31日まで」 | `before:YYYY/12/31` |
-| 「添付ファイル付き」 | `has:attachment` |
-| 「PDFが添付されている」 | `filename:pdf` |
-| 「未読メール」 | `is:unread` |
-| 「ラベル〜のメール」 | `label:ラベル名` |
-| 「重要なメール」 | `is:important` |
-| 「スター付き」 | `is:starred` |
-
-### `--max` のデフォルト方針
-
-| 用途 | `--max` |
-|------|---------|
-| 検索（件数明示なし） | `20`（デフォルト） |
-| バッチ操作（件数明示なし） | `50` |
-| 「全部見たい」「全件」「もっと」等の明示 | `200` |
-| ユーザーが件数を明示（例: 「30件」） | 明示値 |
-
-### 複合クエリの組み立て
-
-複数の条件はスペースで連結（AND検索）:
-- 「Amazonからの今月のメール」→ `from:amazon.co.jp newer_than:1m`
-- 「添付ファイル付きの請求書」→ `subject:請求書 has:attachment`
-
-### 実行コマンド
-
-#### 概要のみ（本文不要 — デフォルト）
+**`--max` 既定**: 検索 `20` / バッチ操作 `50` / 「全件・全部見たい」 `200` / 件数明示時は明示値。
 
 ```bash
-gws gmail +triage --query '<検索クエリ>' --max <N> --format json
+python3 -B "<base>/scripts/gmail.py" search --query '<クエリ>' --max <N> [--labels]
 ```
 
-#### 本文付き
+スクリプトが RFC2822→JST 変換・ラベル日本語化・`resultSizeEstimate` 注記を自動整形する。本文が必要なメールだけ `get` で取得する（概要リストに添える場合は `--max-body 500`）。
 
-Step 1: メッセージ一覧取得
-```bash
-gws gmail +triage --query '<検索クエリ>' --max <N> --format json
-```
-
-Step 2: 各メッセージの本文取得（必要な分だけ）
-```bash
-gws gmail users messages get --params '{"userId":"me","id":"<message_id>"}' --format json
-```
-
-### オプション
-
-| オプション | 説明 |
-|-----------|------|
-| `--query` | **必須** Gmail検索クエリ |
-| `--max` | 最大取得件数（デフォルト: 20） |
-| `--format` | 出力形式: json / table / yaml / csv |
-| `--labels` | ラベル名を出力に含める |
-
-### 出力の整形
-
-`+triage` のJSON出力を以下のMarkdown形式に変換:
-
-```markdown
-## メール検索結果（N件）
-
-検索クエリ: `<query>`
-
-### 1. 件名
-- **From**: 送信者名 <email@example.com>
-- **Date**: YYYY-MM-DD HH:MM
-- **ID**: `message_id`
-
----
-```
-
-| 項目 | ルール |
-|------|--------|
-| 日付 | RFC2822 → `YYYY-MM-DD HH:MM`（**UTC→JST変換、+9時間** — reference.md準拠） |
-| 送信者 | `"Name" <email>` 形式をそのまま表示 |
-| 本文 | 要求時のみ `messages get` で取得して表示（500文字超は省略） |
-| HTMLメール | `messages get` で取得したpayloadから抽出 |
-| 0件 | 「該当するメールが見つかりませんでした」 |
-| ラベル | 日本語表示（変換表はreference.md参照） |
-| 件数表示 | 見出しは **実際に表示している件数** を使う（`## メール検索結果（20件）`）。サーバー側推定総数（`resultSizeEstimate`）が表示件数より大きい場合は **末尾に1行注記**（例: 「（全 N 件中、最新 M 件を表示）」） |
-
----
-
-## メール取得
-
-### 処理フロー
-
-1. ユーザーからメッセージIDを取得（検索結果から選択）
-2. `messages get` を実行
-3. レスポンスから情報を抽出し、Markdown形式に整形して表示
-
-### 実行コマンド
+## 2. メール詳細取得
 
 ```bash
-gws gmail users messages get --params '{"userId":"me","id":"<メッセージID>"}' --format json
+python3 -B "<base>/scripts/gmail.py" get "<message_id>" [--max-body 0]
 ```
 
-### gws出力からの情報抽出
+ヘッダー（件名・From・To・JST 日時・日本語ラベル）・デコード済み本文（`text/plain` 優先、無ければ HTML テキスト抽出）・添付ファイル一覧を出力する。
 
-gws はGmail API の生レスポンスを返す。以下のフィールドを `payload.headers` から抽出:
+## 3. バッチ操作（スパム管理・カテゴリ整理・汎用ラベル操作）
 
-| 表示項目 | ヘッダー名 |
-|---------|-----------|
-| 件名 | `Subject` |
-| From | `From` |
-| To | `To` |
-| 日付 | `Date` |
+| 操作 | クエリ | 実行コマンド |
+|---|---|---|
+| スパム管理 | `in:spam` | `trash <id1> <id2> ...` |
+| Social / Promotions / Updates / Forums 整理 | `category:<name> is:unread` | `modify --ids ... --remove INBOX --remove UNREAD --operation-name "アーカイブして既読に"` |
+| 汎用ラベル操作 | `<任意クエリ>` | `modify --ids ... [--add <LABEL>] [--remove <LABEL>]` |
 
-本文は `payload.parts` または `payload.body` の `data` フィールドからBase64デコードして取得。
-ラベルは `labelIds` フィールドから取得。
-
-### 出力の整形
-
-```markdown
-## メール詳細
-
-- **件名**: 件名
-- **From**: 送信者
-- **To**: 宛先
-- **Date**: YYYY-MM-DD HH:MM
-- **Labels**: ラベル1, ラベル2
-
-### 本文
-
-本文テキスト...
-
-### 添付ファイル（N件）
-
-| ファイル名 | 種類 | サイズ |
-|-----------|------|-------|
-| file.pdf | application/pdf | 1.2 MB |
-```
-
----
-
-## バッチ操作（スパム管理・カテゴリタブ整理）
-
-### 処理フロー（共通）
-
-1. **一覧取得**: gwsコマンドで対象メールを一覧表示
-2. **ユーザー確認**: テーブル形式で表示し、操作の同意を得る
-3. **実行**: 確認後、操作に応じたgwsコマンドで処理
-
-### 操作別パラメータ
-
-| 操作 | 検索コマンド | 実行コマンド | 操作名（確認文に使う） |
-|------|------------|-------------|----------------------|
-| スパム管理 | `+triage --query 'in:spam'`（優先）/ `messages list`（フォールバック） | 各IDに `messages trash` | ゴミ箱に移動 |
-| Socialタブ整理 | `+triage --query 'category:social is:unread'` | `messages batchModify` (removeLabelIds: INBOX,UNREAD) | アーカイブして既読に |
-| Promotionsタブ整理 | `+triage --query 'category:promotions is:unread'` | `messages batchModify` (removeLabelIds: INBOX,UNREAD) | アーカイブして既読に |
-| 汎用ラベル操作 | `+triage --query '<任意クエリ>'` | `messages batchModify` | （操作内容に応じて記述） |
-
-他のカテゴリ（Updates、Forums）も同様に `category:<name> is:unread` で対応可能。
-汎用ラベル操作では `addLabelIds` でラベル付与、`removeLabelIds` でラベル削除が可能（少なくとも一方は必須）。例: 特定メールに一括でラベルを付ける、特定条件のメールをまとめてアーカイブする等。
-
-### Step 1: 一覧取得
-
-**カテゴリタブ整理**:
-```bash
-gws gmail +triage --query '<検索クエリ>' --max 50 --format json
-```
-
-**スパム管理**:
-
-優先: `+triage --query 'in:spam'`（件名・送信者・日時を一括取得できる）
-```bash
-gws gmail +triage --query 'in:spam' --max 50 --format json
-```
-
-フォールバック（`+triage`で取得できない場合）: `messages list` + `messages get`
-```bash
-# Step 1-1: メッセージID一覧を取得
-gws gmail users messages list --params '{"userId":"me","q":"label:spam","maxResults":50,"includeSpamTrash":true}' --format json
-
-# Step 1-2: 各IDのメタデータを取得（件名・送信者・日時の表示用）
-gws gmail users messages get --params '{"userId":"me","id":"<message_id>","format":"metadata","metadataHeaders":["Subject","From","Date"]}' --format json
-```
-
-`format: metadata` + `metadataHeaders` で必要なヘッダーのみ取得し、本文ダウンロードを回避する。
-レスポンスの `payload.headers` から Subject / From / Date を抽出してテーブル表示に使用する。
-
-### Step 2: ユーザーへの表示と確認
-
-JSON出力をテーブル形式に変換して表示。**「件数確認のみ」と「操作実行」で出力フォーマットを変える**:
-
-#### 操作実行モード（「削除して」「整理して」等）
-
-```markdown
-## <操作名>一覧（N件）
-
-| # | 送信者 | 件名 | 日時 |
-|---|--------|------|------|
-| 1 | sender@example.com | Subject line | 2026-02-10 15:30 |
-
-これらのメール（N件）を<操作名>しますか？
-```
-
-#### 件数確認モード（「何件？」「ある？」「来てる？」等）
-
-```markdown
-## <ラベル/カテゴリ名>のメール（N件）
-
-| # | 送信者 | 件名 | 日時 |
-|---|--------|------|------|
-| 1 | sender@example.com | Subject line | 2026-02-10 15:30 |
-```
-
-確認質問は出さない（Step 3に進まないため）。
-
-#### 共通ルール
-
-| 項目 | ルール |
-|------|--------|
-| 全件表示 | **全メールを1件ずつテーブルに表示する。「〜等」「〜など」で要約・省略しない** |
-| 日付 | RFC2822 → `YYYY-MM-DD HH:MM` |
-| 確認 | 操作実行モードでは **必ずユーザーの明示的な同意を得てから Step 3 に進む** |
-| 0件 | 見出しを **省略** し、「対象のメールはありません。」の1行のみで終了（モードに関係なく確認質問は出さない） |
-| 操作名 | 操作別パラメータ表の「操作名」列を使う |
-| 50件超 | デフォルト `--max 50` を超える可能性がある場合は `--max 200` 等に拡張するか、ユーザーに件数上限を確認する |
-| ラベル名表記（件数確認モードの見出し） | ユーザーの発話で使われた語彙を優先（「迷惑メール」「Social」「プロモーション」等）。発話に該当語彙がなければreference.mdの日本語表（「ソーシャル」「プロモーション」「迷惑メール」）を使う |
-
-### Step 3: 実行
-
-**スパム管理** — 各メッセージをゴミ箱に移動:
-
-Claude CodeのBashツールはzshの`eval`で実行されるため、`for...do...done`ループはパースエラーになる。`bash`ヒアドキュメントでラップすること:
+### Step 1: 一覧表示
 
 ```bash
-bash <<'SCRIPT'
-for id in <id1> <id2> <id3>; do
-  gws gmail users messages trash --params "{\"userId\":\"me\",\"id\":\"$id\"}" 2>/dev/null
-done
-SCRIPT
+python3 -B "<base>/scripts/gmail.py" search --query '<クエリ>' --max 50 --format table --heading '<見出し>'
 ```
 
-**カテゴリタブ整理** — ラベル一括変更:
+- 0 件ならスクリプトが「対象のメールはありません。」のみ出力するので、確認質問を出さず終了する。
+- **件数確認モード**: 出力テーブルをそのまま表示して終了（確認質問を出さない）。見出しはユーザー発話の語彙（「迷惑メール」「Social」等）を優先。
+- **操作実行モード**: 全件テーブルを省略せず表示し、「これらのメール（N件）を<操作名>しますか？」と確認する。
 
-Step 3-1: +triageの出力から全メッセージIDを収集
+### Step 2: 実行（明示同意後のみ）
 
-Step 3-2: batchModifyでラベル変更
 ```bash
-gws gmail users messages batchModify --params '{"userId":"me"}' --json '{"ids":["id1","id2",...],"removeLabelIds":["INBOX","UNREAD"]}'
+# スパムをゴミ箱へ移動（IDごとに成功/失敗を集計）
+python3 -B "<base>/scripts/gmail.py" trash <id1> <id2> ...
+
+# ラベル一括変更（100件ずつ自動分割して batchModify）
+python3 -B "<base>/scripts/gmail.py" modify --ids <id1> <id2> ... --remove INBOX --remove UNREAD --operation-name "アーカイブして既読に"
 ```
-
-**注意**: batchModifyの `ids` にはメッセージIDの配列を渡す。+triageの出力からIDを収集する。`addLabelIds` が必要な場合は JSON に追加。
-
-### 結果の表示
-
-成功時:
-
-```markdown
-## <操作名>完了
-
-- **対象件数**: N件
-- **処理成功**: N件
-- **結果**: 成功
-```
-
-一部失敗時:
-
-```markdown
-## <操作名>結果
-
-- **対象件数**: N件
-- **処理成功**: M件
-- **失敗**: K件
-- **結果**: 一部失敗（失敗したメッセージIDを報告）
-```
-
----
 
 ## 認証エラー時
 
-認証トークンエラー（401 `Failed to get token` や 403 `insufficientPermissions`）が発生した場合、**`gws auth login -s gmail` のような部分スコープでの再ログインは行わない**。以下の1手順で完結させる。
-
-### 再認証手順（これ一発で完結させる）
+認証エラー（`AUTH_ERROR` / exit 2：401 `Failed to get token` や 403 `insufficientPermissions`）が発生した場合、**エージェントは再認証コマンドを自動実行せず**、ユーザーへ以下の手順を提示して実行してもらう（対話ブラウザ OAuth が必要なため）。
 
 ```bash
 gws auth logout
 gws auth login --scopes https://www.googleapis.com/auth/spreadsheets,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/calendar,https://www.googleapis.com/auth/drive
 ```
 
-- `gws auth logout` が `credentials.enc` と `token_cache.json` の両方を削除し、認証状態を完全にリセットする
-- 続く `gws auth login --scopes ...` でブラウザ認証URLが出力されるので、ユーザーに開いて認証を完了してもらう
-- 認証はブラウザ操作を伴うため `!` プレフィックス（非対話シェル）では完結しない。通常のBashツール呼び出しでURLを提示し、ユーザーの完了報告を待つ
+**なぜ必ず「logout → フルスコープ login」のセットか**:
+- `gws auth login -s gmail` のような部分スコープ指定は他サービス（calendar / drive / spreadsheets）のスコープを上書きし、以後それらが 403 になるため禁止。
+- `gws auth logout` を挟まず再ログインすると、`gws auth status` が `token_valid: true` を返しても実 API が 403 のまま残る stale token 現象が起きる。
 
-### なぜ「logout → フルスコープでlogin」を毎回セットで行うか
-
-- `gws auth login -s gmail` は指定サービスのみでスコープを再構成するため、既存の他サービス（calendar/drive/spreadsheets等）のスコープが失われ、以後それらの操作が403になる
-- `gws auth logout` を挟まずに `--scopes` 指定で再ログインしても、ブラウザ同意が完了し `gws auth status` がスコープ正常・トークン有効（`token_valid: true`）と表示するにもかかわらず、実際のAPI呼び出しは403 insufficientPermissionsのままになるケースがある（stale tokenの可能性）。**`auth status` の表示だけでは正常性を判断できない**
-- この2パターンはどちらも中途半端な再ログインでは解消しないため、`logout` で完全リセットしてからフルスコープで入れ直すのが最も確実で手数が少ない
-
-### 認証状態の確認（参考。これだけで403解消の判断はしない）
+読み取り専用の認証状態確認（参考。403 解消判定には使わない）:
 
 ```bash
-gws auth status
+python3 -B "<base>/scripts/gmail.py" auth-status
 ```
-
----
-
-## 重要な制限事項
-
-1. **送信可能**: `gws gmail +send` で送信可能（必要に応じて別途スキル化）
-2. **完全削除不可**: スパム管理はゴミ箱への移動のみ。完全削除（expunge）はできない
-3. **添付ファイルダウンロード不可**: ファイル情報の表示のみ
-4. **本文取得は2ステップ**: `+triage` は概要のみ。本文が必要な場合は `messages get` で個別取得
-5. **スコープ一元管理**: readonly/modifyの区別なし。認証エラー時は上記「認証エラー時」節（logout→フルスコープでlogin）の手順で全操作対応
-
----
-
-## 技術仕様
-
-詳細な技術仕様（JSON出力構造、検索演算子など）は `~/.claude/skills/gmail/reference.md` を参照。
