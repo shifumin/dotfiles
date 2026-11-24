@@ -1,100 +1,34 @@
 ---
 name: toggle-language
-description: Claude Codeのペルソナ（Output Style）をトグルする（ON/OFF切り替え）。
-  「outputStyleトグル」「output style切り替え」「ペルソナ切り替え」「ペルソナをオフ」「ペルソナをオン」
-  「キャラをオフ」「キャラ設定をオフ」「素のClaude Codeに戻して」「toggle language」「toggle output style」などのリクエストで使用。
-  ペルソナを一時的に無効化して素のClaude Codeに戻したい場合、または再度有効化したい場合に必ずこのスキルを使う。
-  ※このスキルは outputStyle キーのみを操作する。language キー（応答言語設定）は変更しない。
+description: "Claude Code のペルソナ（Output Style）を ON/OFF トグルする。「outputStyleトグル」「ペルソナ切り替え/オフ/オン」「キャラ設定をオフ」「素のClaude Codeに戻して」「toggle language」等で使用。language キー（応答言語）は変更しない。"
 ---
+
 # Output Style トグル
 
-`~/.claude/settings.json`の`outputStyle`キーをON/OFFでトグルする。
-OFFにする際は現在の値をバックアップし、ONに戻す際はバックアップから復元する。
+`~/.claude/settings.json` の `outputStyle` キーを ON/OFF で切り替える（`language` キーは変更しないため、日本語応答は維持される）。反映は次の Claude Code セッションから。
 
-`language`キー（例: `"日本語"`）はペルソナとは別の役割（応答言語の指定）を持つため触らない。
-これにより、ペルソナをOFFにしても日本語応答は維持される。
+## 手順
 
-## 処理フロー
+1. 同梱スクリプトを実行する:
+   ```bash
+   bash <SKILL_DIR>/scripts/toggle.sh
+   ```
+   - symlink 保持のため `readlink -f` で実体を解決し、`mktemp` + `command mv -f` で原子的に書き換える
+   - バックアップ先は `~/.claude/.outputstyle_backup`（1 行プレーンテキスト）
+   - `ERROR: SETTINGS_NOT_FOUND` / `ERROR: NO_BACKUP` は仕様どおり exit 1 で終了するため、リトライせず標準出力の文字列で分岐して報告する
 
-以下のbashスクリプトを実行する:
+2. 標準出力に応じて報告する:
 
-```bash
-bash <<'SCRIPT'
-set -euo pipefail
+| 出力 | 報告内容 |
+|---|---|
+| `TOGGLED: OFF (backup: {value})` | `outputStyle ({value}) を OFF にしました。次のセッションから素の Claude Code に戻ります。` |
+| `TOGGLED: ON (restored: {value})` | `outputStyle ({value}) を ON に戻しました。次のセッションから反映されます。` |
+| `ERROR: SETTINGS_NOT_FOUND` | `~/.claude/settings.json` が見つからないため、Claude Code の初期設定を案内 |
+| `ERROR: NO_BACKUP` | 下記の手順を案内 |
+| その他のエラー（`jq` 失敗等） | `settings.json` の JSON 形式を確認するよう案内 |
 
-SETTINGS_FILE="${HOME}/.claude/settings.json"
-BACKUP_FILE="${HOME}/.claude/.outputstyle_backup"
+### `ERROR: NO_BACKUP` 時の案内
 
-if [[ ! -f "${SETTINGS_FILE}" ]]; then
-  echo "ERROR: SETTINGS_NOT_FOUND"
-  exit 1
-fi
-
-# シンボリックリンクを解決し、リンク先の実ファイルを書き換え対象にする。
-# ${SETTINGS_FILE} に mv で直接被せるとリンクが実ファイルに置き換わり、
-# dotfiles 管理のシンボリックリンクが切れる（実際に発生した）。
-REAL_SETTINGS="$(readlink -f "${SETTINGS_FILE}")"
-
-# outputStyle キーの値を取得（存在しなければ null）
-CURRENT=$(jq -r '.outputStyle // empty' "${REAL_SETTINGS}")
-
-if [[ -n "${CURRENT}" ]]; then
-  # ON -> OFF: バックアップしてからキーを削除
-  printf '%s' "${CURRENT}" > "${BACKUP_FILE}"
-  jq 'del(.outputStyle)' "${REAL_SETTINGS}" > "${REAL_SETTINGS}.tmp" \
-    && mv "${REAL_SETTINGS}.tmp" "${REAL_SETTINGS}"
-  echo "TOGGLED: OFF (backup: ${CURRENT})"
-else
-  # OFF -> ON: バックアップから復元
-  if [[ ! -f "${BACKUP_FILE}" ]]; then
-    echo "ERROR: NO_BACKUP"
-    exit 1
-  fi
-  RESTORED=$(cat "${BACKUP_FILE}")
-  jq --arg style "${RESTORED}" '.outputStyle = $style' "${REAL_SETTINGS}" > "${REAL_SETTINGS}.tmp" \
-    && mv "${REAL_SETTINGS}.tmp" "${REAL_SETTINGS}"
-  echo "TOGGLED: ON (restored: ${RESTORED})"
-fi
-SCRIPT
-```
-
-## 結果報告
-
-bashスクリプトの出力をパースして報告する。
-
-> **重要**: `ERROR: SETTINGS_NOT_FOUND` / `ERROR: NO_BACKUP` の場合、スクリプトは `set -e` + `exit 1` により**終了コード1で終わる（これは仕様）**。Bashツールが「失敗 / Exit code 1」と表示しても実行ミスではない。リトライせず、**標準出力の文字列を下表で判定**してエラー処理へ進むこと。
-
-| 出力 | 対応 |
-|------|------|
-| `TOGGLED: OFF (backup: {value})` | outputStyleをOFFにした。バックアップ値を含めて報告 |
-| `TOGGLED: ON (restored: {value})` | outputStyleをONに戻した。復元値を含めて報告 |
-| `ERROR: SETTINGS_NOT_FOUND` | エラー処理へ |
-| `ERROR: NO_BACKUP` | エラー処理へ |
-
-成功時の報告フォーマット:
-
-```
-TOGGLED: OFF の場合 → "outputStyle ({value}) をOFFにしました。次のセッションから素のClaude Codeに戻ります。"
-TOGGLED: ON の場合  → "outputStyle ({value}) をONに戻しました。次のセッションから反映されます。"
-```
-
-## エラー処理
-
-| エラーパターン | 対処 |
-|---------------|------|
-| `SETTINGS_NOT_FOUND` | `~/.claude/settings.json`が見つからない。Claude Codeの初期設定を案内 |
-| `NO_BACKUP` | 下記フォーマットで報告 |
-| `jq: error` | settings.jsonの形式が不正。ファイルの確認を案内 |
-
-NO_BACKUP の場合 → 以下を順に説明する:
-1. このスキルはトグル動作のため、outputStyleキーがない状態（=OFF）からONに戻そうとしバックアップを探したが存在しなかった
-2. **元の設定値が分かる場合**: `~/.claude/settings.json` に `outputStyle` を手動追加後、再度このスキルを呼び出せばOFFにできる
-3. **元の設定値が不明・不要な場合**: outputStyleが存在しない状態はすでにペルソナなしなので追加操作は不要
-
-## 補足
-
-- `language`キーはこのスキルの対象外。応答言語のみを切り替えたい場合は`settings.json`を直接編集する
-- バックアップは`~/.claude/.outputstyle_backup`に保存される（プレーンテキスト1行）
-- 反映タイミング: 次のClaude Codeセッションから（現在のセッションには影響しない）
-- シンボリックリンク保持: `~/.claude/settings.json`がdotfilesへのシンボリックリンクの場合、`readlink -f`で実ファイルを解決してから書き換える。リンクパスに`mv`で被せるとリンクが実ファイルに置き換わり、以降dotfiles側と設定が分岐する（このスキルが原因でリンクが切れた実績がある）
-- `jq`が失敗した場合、リンク先ディレクトリに`settings.json.tmp`が残る。dotfiles配下なら`git status`にuntrackedとして現れるので削除してよい
+1. `outputStyle` 未設定（OFF）状態から ON へ戻そうとしたがバックアップが存在しない旨を伝える
+2. 元の設定値が分かる場合: `~/.claude/settings.json` に `outputStyle` を手動追加すれば次回以降トグル可能
+3. 不要な場合: すでにペルソナなし状態のため追加操作は不要
