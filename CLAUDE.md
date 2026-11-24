@@ -1,25 +1,24 @@
 # CLAUDE.md
 
-> **Scope**: Project-level (this dotfiles repo only)
-> **Global settings**: `.claude/CLAUDE.md` (symlinked to `~/.claude/CLAUDE.md`, applies to all projects)
+> **Scope**: Project-level (`dotfiles` repo only)
+> **Global settings**: `.claude/CLAUDE.md` (symlinked to `~/.claude/CLAUDE.md`)
 
 ## Symlink Management
 
-Source of truth: `setup.sh` — defines all symlink targets.
-Do NOT manually create symlinks; always update `setup.sh`.
+`setup.sh` is the single source of truth for symlinks. Update `setup.sh` instead of creating symlinks manually.
 
 ## Prohibitions
 
 | Rule | Reason |
 |------|--------|
-| Do not add runtime/cache files to `.claude/` | Only managed files are in `claude_links` array; runtime data must remain local |
-| Do not duplicate workflow docs across files | Single source: `README.md` for humans, `.claude/rules/dotfiles.md` for Claude Code |
+| Keep runtime/cache files out of `.claude/` | Only managed files belong in `claude_links`; runtime data stays local |
+| Do not duplicate workflow docs across files | `README.md` is for humans; `.claude/rules/dotfiles.md` is for Claude Code |
 
 ## References
 
-| Topic | Location |
-|-------|----------|
-| Repository description & contents | `README.md` |
+| Topic | Path |
+|-------|------|
+| Repository overview | `README.md` |
 | Dotfiles editing workflow | `.claude/rules/dotfiles.md` |
 | Sheldon plugin management | `.config/sheldon/plugins.toml` |
 | Symlink definitions | `setup.sh` |

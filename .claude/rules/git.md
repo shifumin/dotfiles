@@ -2,4 +2,4 @@
 
 ## Commit Messages
 
-Do not append a `Claude-Session:` trailer. The URL does not resolve for local CLI sessions, so it adds no value to shared history; the commit body carries the reasoning instead. This is not controlled by the `attribution` setting in `settings.json` (which only suppresses the `Co-Authored-By` / `Generated with Claude Code` footer), so it must be stated here.
+Omit the `Claude-Session:` trailer. Its URL does not resolve for local CLI sessions; put reasoning in the commit body instead. The `attribution` setting in `settings.json` only suppresses `Co-Authored-By` / `Generated with Claude Code`, so this rule is stated here.
