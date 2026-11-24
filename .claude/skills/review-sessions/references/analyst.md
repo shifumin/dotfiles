@@ -1,53 +1,52 @@
 # Analyst brief (one batch of session digests)
 
-Each analyst subagent reads this file and follows the brief below the separator. The parent's prompt gives `BATCH_FILES`, `SESSIONS_DIR`, and `SKILLS_TSV`; substitute them for `{BATCH_FILES}`, `{SESSIONS_DIR}`, and `{SKILLS_TSV}`.
+Each analyst subagent reads this file and follows the brief below the separator. Substitute `BATCH_FILES`, `SESSIONS_DIR`, and `SKILLS_TSV` from the parent's prompt.
 
 ---
 
-You are reviewing past Claude Code and Codex sessions of one user to find where their skills should change. You only report; you edit nothing.
+You are reviewing past Claude Code and Codex sessions to find where the user's skills should change. Report findings only; edit nothing.
 
 ## Input
 
-- Session digests (read every one): {BATCH_FILES} under `{SESSIONS_DIR}`
-- Skill inventory: `{SKILLS_TSV}` (columns: scope, name, path, description)
+- Session digests (read every one): `{BATCH_FILES}` under `{SESSIONS_DIR}`
+- Skill inventory: `{SKILLS_TSV}` (columns: `scope`, `name`, `path`, `description`)
 
-A digest is a time-ordered list of lines:
+Digest line prefixes:
 
 | Prefix | Meaning |
 |--------|---------|
-| `U:` | user message (voice-transcribed Japanese; ignore transcription noise) |
-| `U-INTERRUPT` | the user stopped the agent mid-turn |
-| `A:` | assistant text, clipped |
-| `T:` | tool call: name and a clipped input. `T: Skill skill=x` means skill x was invoked |
-| `R-ERROR` / `R-ERROR?` / `R-REJECTED` | failed, possibly failed (Codex, heuristic), or user-rejected tool call |
-| `HARNESS:` | harness-injected turn (task notifications etc.), not the user |
+| `U:` | user message (often voice-transcribed Japanese; ignore transcription noise) |
+| `U-INTERRUPT` | user stopped the agent mid-turn |
+| `A:` | assistant text (clipped) |
+| `T:` | tool call: name and clipped input (`T: Skill skill=x` = skill invoked) |
+| `R-ERROR` / `R-ERROR?` / `R-REJECTED` | failed, possibly failed (Codex heuristic), or user-rejected tool call |
+| `HARNESS:` | harness-injected turn (task notification etc.), not the user |
 
-Lines are clipped. When a finding depends on detail the digest cut off, open the original transcript named in the digest header (`source:`) and read only the lines you need, e.g. `jq -c 'select(.timestamp >= "2026-11-17T03:40")' <source> | head -40`. Codex sources ending in `.zst` need `zstd -dc` first.
+When a finding depends on clipped detail, inspect the original transcript in the digest header (`source:`): e.g. `jq -c 'select(.timestamp >= "2026-11-17T03:40")' <source> | head -40` (pipe `.zst` sources through `zstd -dc`).
 
 ## What to look for
 
-1. **User corrections and frustration**: 「違う」「そうじゃなくて」「また」「さっきも言った」, a re-request of the same thing, `U-INTERRUPT`, `R-REJECTED`. Ask what the agent did that the user had to undo, and whether a skill's instructions led it there or failed to stop it.
-2. **Stumbles inside a skill run**: after `T: Skill skill=x`, errors, retries, the agent improvising a step the skill does not cover, or skipping one it does. Open the skill's SKILL.md (path in the inventory) and check whether the instructions are wrong, missing, or ambiguous on that point.
-3. **Repeated manual work**: the same kind of request or the same tool-call sequence appearing in several sessions (in your batch, or likely across batches) with no skill behind it. These are new-skill candidates. A one-off task is not a candidate, however long it was.
+1. **User corrections / frustration**: 「違う」「そうじゃなくて」「また」「さっきも言った」, repeated re-requests, `U-INTERRUPT`, `R-REJECTED`. Check whether a skill's instructions caused the mistake or failed to prevent it.
+2. **Stumbles inside a skill run**: after `T: Skill skill=x`, errors, retries, improvised steps, or skipped steps. Open the current `SKILL.md` (path in `{SKILLS_TSV}`) and verify whether it is wrong, missing, or ambiguous.
+3. **Repeated manual work**: the same request or tool sequence recurring across multiple sessions with no covering skill (new-skill candidate). Skip one-off tasks regardless of length.
 
 ## Judging a finding
 
-- Locate the cause before proposing a fix. A skill instruction that is wrong or missing → skill change. The model ignoring a clear instruction → usually not a skill change (say so, or propose a hook if it must be enforced). An environment problem (sandbox, network, auth) → a rule or memory, unless a skill's procedure walks into it.
-- Prefer the existing skill. Propose a new skill only when no skill in the inventory covers the job.
-- Check the skill as it is now. If the current SKILL.md already handles the problem (fixed after the session), drop the finding.
-- Keep findings that would recur. Skip one-time mistakes with no general lesson.
+- Locate the cause first: wrong/missing skill instruction → `skill-fix`; model ignoring a clear rule → usually not a skill change (or propose a hook if enforcement is required); environment issue (sandbox, network, auth) → rule/memory unless a skill walks into it.
+- Prefer fixing an existing skill over proposing a new one.
+- Drop findings already fixed in the current `SKILL.md`.
+- Keep only recurring issues with a general lesson.
 
-## Where a fix goes (scope)
+## Scope rules
 
-Use the inventory's scope for existing skills. For new skills:
-
-- `new-global`: useful across projects → dotfiles
-- `new-vault`: only meaningful inside the my-vault repository (Obsidian notes, diary, blog, money) → my-vault
-- `new-team`: tied to one work repository or team process (e.g. a work product's repository or a team workflow) → proposal only
+Use the inventory's `scope` for existing skills. For new skills:
+- `new-global`: useful across projects (dotfiles)
+- `new-vault`: specific to the personal Obsidian vault (notes, diary, blog, finances)
+- `new-team`: tied to a work repository or team workflow (proposal only)
 
 ## Output
 
-Return only this, in Japanese, one block per finding, most important first. If nothing qualifies, return `所見なし` and the number of sessions read.
+Return only the following in Japanese, one block per finding, highest impact first. If nothing qualifies, return `所見なし` and the count.
 
 ```
 ### <short title>
@@ -57,7 +56,7 @@ Return only this, in Japanese, one block per finding, most important first. If n
 - signal: correction | stumble | repetition
 - evidence: <digest file> [MM-DD HH:MM] — <one-line quote or paraphrase>（1件以上。複数セッションなら全部）
 - cause: <what in the skill (or its absence) produced the problem>
-- proposal: <the concrete change: which section, what to add or rewrite, or the new skill's trigger and steps>
+- proposal: <concrete edit: section + addition/rewrite, or new skill trigger and steps>
 - confidence: high | medium | low
 ```
 

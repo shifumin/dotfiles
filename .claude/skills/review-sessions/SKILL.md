@@ -1,62 +1,60 @@
 ---
 name: review-sessions
-description: 直近の Claude Code と Codex の全セッション（全プロジェクト、既定は7日）を精査し、自作スキルの改善点と新規スキル候補を見つけて、承認されたものを反映する。ユーザーの訂正・不満、スキル実行中の躓き、繰り返される手作業を兆候として拾い、サブエージェントで並列に分析する。「セッションを振り返って」「1週間のセッションを精査」「スキルの改善点を探して」「新しく作るべきスキルある？」「review-sessions」などのリクエストで使用。1セッションだけの振り返り（`k`）ではなく、期間内の全セッションを横断して見たいときに使う。
+description: "直近のClaude Code・Codex全セッション（既定7日）を並列分析し、自作スキルの改善点と新規スキル候補を抽出・承認後に反映する。「セッション振り返り」「1週間のセッション精査」「スキル改善点」「新規スキル候補」「review-sessions」等で使用。単一セッション振り返り（k）とは別。"
 ---
 
 # 期間内の全セッションからスキルの改善点を探す
 
-セッションの記録には、スキルの指示が足りなかった箇所（ユーザーの訂正、実行中の躓き）と、まだスキルになっていない繰り返し作業が残っている。このスキルはそれを期間単位でまとめて拾い、ユーザーが承認したものだけをスキルに反映する。
-
-`k`（Kaizen）は今のセッション1つが対象で、スキル以外も同じ重みで見る。こちらは期間内の全セッションが対象で、スキルが中心になる。
+期間内の全セッションからユーザーの訂正・スキル実行中の躓き・繰り返される手作業を横断抽出し、承認された改善点だけを自作スキルへ反映する（1セッション振り返りの `k` とは別）。
 
 ## 引数
 
 | 引数 | 意味 |
 |------|------|
-| なし | 直近7日 |
-| `14d` など | 直近 N 日 |
+| なし | 直近 7 日（`7d`） |
+| `14d` 等 | 直近 N 日 |
 | `2026-11-01` | その日の 0:00 以降 |
 
-## 置き場所と扱い
+## scope と扱い
 
-所見の扱いは、直す対象がどこにあるかで決まる。
-
-| scope | 置き場所 | 扱い |
-|-------|----------|------|
-| own-global / new-global | `~/ghq/github.com/shifumin/dotfiles/.claude/skills/` | 承認されたら作成・改善まで行う |
-| own-vault / new-vault | `~/ghq/github.com/shifumin/my-vault/.claude/skills/` | 承認されたら作成・改善まで行う |
-| vendored | dotfiles / my-vault にある上流のコピー | 直接は直さない。上流への報告か、自作スキルでの上書きを提案する |
-| team / new-team / external | 業務リポジトリのスキル、`~/.agents/skills`（組織配布のスキルほか）、プラグイン | 提案だけ |
-| rules / hook / memory | AGENTS.md、`.claude/rules/`、hooks、auto memory | スキルより適切なときに提案する |
-
-dotfiles と my-vault はユーザーの承認だけで変えられるので反映まで進める。チームや組織のスキルは他の人の合意が要るので、提案に留める。
+| scope | 対象 | 扱い |
+|-------|------|------|
+| `own-global` / `new-global` | dotfiles の `.claude/skills/` | 承認後に作成・改善まで反映 |
+| `own-vault` / `new-vault` | 個人 vault（`my-vault`）の `.claude/skills/` | 承認後に作成・改善まで反映 |
+| `vendored` | 上流コピーのスキル | 直接編集せず上流報告 or 自作上書きを提案 |
+| `team` / `new-team` / `external` | 業務リポジトリ・`~/.agents/skills`・インストール済みプラグイン | 提案のみ |
+| `rules` / `hook` / `memory` | `AGENTS.md`・`.claude/rules/`・hooks・auto memory | スキルより適切なときに提案 |
 
 ## Phase 1 — 抽出
 
-システムプロンプトの「Scratchpad directory」を `SP` に書き写し、`SINCE` に引数（なければ `7d`）を入れて実行する。`python3` はシェル関数でラップされていて失敗することがあるので、`/usr/bin/env python3` で呼ぶ。
+`SINCE` に引数（既定 `7d`）を入れて実行する。`python3` のシェル関数ラップを避けるため `/usr/bin/env python3 -B -I` で呼ぶ。
 
 ```bash
-SP="<システムプロンプトの Scratchpad directory>" SINCE="7d" bash <<'SCRIPT'
+SINCE="7d" bash <<'SCRIPT'
 set -eu
-SKILL_DIR="$HOME/ghq/github.com/shifumin/dotfiles/.claude/skills/review-sessions"
-OUT="$SP/review-sessions-$(date +%Y%m%d-%H%M%S)"
-/usr/bin/env python3 -I "$SKILL_DIR/scripts/extract_sessions.py" --since "$SINCE" --out "$OUT"
-PROJECT_ARGS=()
-while IFS= read -r project; do
-  PROJECT_ARGS+=(--project-dir "$HOME/ghq/github.com/$project")
-done < <(awk -F'\t' 'NR>1{print $(3)}' "$OUT/index.tsv" | sort -u)
-/usr/bin/env python3 -I "$SKILL_DIR/scripts/list_skills.py" --out "$OUT/skills.tsv" ${PROJECT_ARGS[@]+"${PROJECT_ARGS[@]}"}
+SKILL_DIR="$(/usr/bin/env python3 -c '
+import os
+for base in ("~/.claude/skills/review-sessions", "~/.agents/skills/review-sessions"):
+    p = os.path.expanduser(base + "/SKILL.md")
+    if os.path.exists(p):
+        print(os.path.dirname(os.path.realpath(p)))
+        break
+')"
+test -n "$SKILL_DIR"
+OUT="$(mktemp -d "${TMPDIR:-/tmp}/review-sessions-XXXXXX")"
+/usr/bin/env python3 -B -I "$SKILL_DIR/scripts/extract_sessions.py" --since "$SINCE" --out "$OUT"
+/usr/bin/env python3 -B -I "$SKILL_DIR/scripts/list_skills.py" --index "$OUT/index.tsv" --out "$OUT/skills.tsv"
+echo "SKILL_DIR=$SKILL_DIR"
 echo "OUT=$OUT"
 SCRIPT
 ```
 
-`extract_sessions.py` は、各セッションから兆候に関わる部分（ユーザー発言、アシスタントの文、ツール呼び出し、失敗・拒否された結果）だけを抜いたダイジェストを `OUT/sessions/` に書く。会話のないセッション、Codex の guardian とサブエージェントのスレッド、`review-sessions` 自身を実行したセッションは除く。ダイジェストはプロジェクト順に、1バッチ約120KBで `OUT/batches.tsv` にまとめられる。
-
-出力のセッション数とプロジェクト内訳を、1行でユーザーに伝える。
+- `extract_sessions.py` は会話のないセッション・Codex サブエージェント・`review-sessions` 自身の実行を除き、1バッチ約 120KB で `OUT/batches.tsv` へ分割する
+- 出力されたセッション数・プロジェクト内訳を 1 行でユーザーへ報告する（セッション 0 件ならその旨を伝えて終了）
 
 ## Phase 2 — 並列分析
 
-`batches.tsv` の1行につきサブエージェントを1体（Claude Code では Agent ツール、`general-purpose`）起動する。全バッチを1つのメッセージでまとめて起動し、並列に走らせる。プロンプトには本文を埋め込まず、次だけを渡す。
+`OUT/batches.tsv` の 1 行につきサブエージェントを 1 体、全バッチ一括で並列起動する（Claude Code は Agent ツール `general-purpose`、他エージェントは対応するサブエージェント起動ツール）。プロンプトにダイジェストや `analyst.md` 本文を埋め込まず、次だけを渡す:
 
 ```
 Read <SKILL_DIR>/references/analyst.md and follow the brief below its separator line.
@@ -65,49 +63,46 @@ SESSIONS_DIR=<OUT>/sessions
 SKILLS_TSV=<OUT>/skills.tsv
 ```
 
-親はダイジェストも analyst.md の本文も自分で読まない。コンテキストを集約と検証に残すためだ。
+親エージェントはダイジェストも `analyst.md` も読まない（コンテキストを集約・検証に残す）。
 
 ## Phase 3 — 集約と検証
 
-全員の結果がそろってから行う。
+全サブエージェントの完了後に実施する:
 
-1. **統合する**: 同じ対象・同じ原因の所見を1件にまとめ、evidence を足し合わせる。複数バッチで出た繰り返し作業は、ここで初めて新規スキル候補の強さが分かる
-2. **今の状態と照らす**: own-global / own-vault の skill-fix は、対象の SKILL.md を読み、所見がまだ当てはまるかを確かめる。セッションの後に直っていれば落とす（`git -C <repo> log --since=<セッション日> -- <skill dir>` が手がかりになる）
-3. **新規スキル候補を確かめる**: skills.tsv に同じ仕事をするスキルがないかを見る。あれば既存スキルの skill-fix に組み替える
-4. **並べる**: 根拠のセッション数が多いもの、ユーザーの訂正が絡むものを上に置く。根拠が1セッションだけで confidence が low のものは落とす
+1. **統合**: 同一対象・同一原因の所見をまとめ、複数バッチの evidence を合算する
+2. **最新状態と照合**: `own-global` / `own-vault` の `skill-fix` は現行の `SKILL.md` を読み、すでに解消済みなら落とす（`git -C <repo> log --since=<セッション日> -- <skill dir>` も参考にする）
+3. **既存スキルとの重複確認**: 新規スキル候補が `OUT/skills.tsv` の既存スキルでカバーできるなら `skill-fix` へ組み替える
+4. **優先順位付け**: 根拠セッション数が多いもの・ユーザー訂正が絡むものを上位に置く。1 セッションのみかつ `confidence: low` は落とす
 
-## Phase 4 — 報告（チャット）
-
-出力はチャットだけにする。ファイルには残さない。
+## Phase 4 — 報告（チャットのみ・ファイル出力なし）
 
 ```
 ## 対象
 期間・セッション数（ツール別・プロジェクト別）・バッチ数
 
-## 反映できる提案（dotfiles / my-vault）
+## 反映できる提案（dotfiles / personal vault）
 | # | 判断 | 種類 | 対象 | 内容 | なぜ（根拠） |
-（判断は やる / 見送る。やるものを優先度順に上へ。種類は 既存改善 / 新規スキル / ルール・hook。根拠はセッション数と代表例1つ）
+（判断: やる / 見送る。やるものを優先度順に上へ。種類: 既存改善 / 新規スキル / ルール・hook）
 
 ## 提案のみ（チーム・組織・上流）
-対象ごとに1〜2行。どこに出せばよいか（リポジトリ、上流）も添える
+対象ごとに 1〜2 行＋提出先
 
 ## 見送ったもの
-件数と理由の要約だけ（直っていた、一回限り、など）
+件数と理由の要約
 ```
 
-所見がなければ、読んだセッション数とともにそう伝える。
+所見がなければ、読んだセッション数とともにその旨を報告して終了する。
 
 ## Phase 5 — 承認と反映
 
-判断は修正コストではなく効果で決める（AGENTS.md の Principle 3）。ユーザーには「やると判断したものを全部反映していいか」を1回だけ確認し、外したいものがあれば番号で受ける。
+判断は修正コストではなく効果で行う（`AGENTS.md` Principle 3）。「やると判断したものを全部反映していいか」を **1 回だけ**確認し、除外したい番号があれば受ける。
 
-承認されたものを、1件ずつ次の手順で反映する。
+承認分を反映する手順:
+1. 既存改善・新規作成は簡潔な文言を保つ（`AGENTS.md`「Rules and skills」）。評価ループや before/after は依頼時のみ
+2. 編集・配置ルール:
+   - シンボリックリンク先の `~/.claude/skills/...` ではなく、`OUT/skills.tsv` にあるリポジトリ実体パスを編集する
+   - dotfiles で新規スキル追加時: `.claude/skills/<name>/` 作成後、`./setup.sh`（サンドボックス外）でリンク
+   - 個人 vault で追加・改名・削除時: `.claude/skills/<name>/` 変更後、`.agents/sync-skills.sh` を実行して `.agents/` も一緒にコミット
+3. コミット前にユーザー確認を取り、今回変えたファイルだけを明示パスでステージ・Conventional Commits でコミットし、push は `push` スキルで行う
 
-1. 既存スキルの改善も新規作成も skill-creator の書き方に従う（`k` と同じ）。評価ループと before/after は頼まれたときだけ行う。文言は短く保つ（AGENTS.md の「Rules and skills」）
-2. 置き場所の規則に従う
-   - dotfiles の新規スキル: `.claude/skills/<name>/` に作り、`./setup.sh` でリンクする（スキルはディレクトリを作るだけで自動リンクされる）。`~/.claude/skills/` はサンドボックスで書き込み不可なので、`setup.sh` はサンドボックス外で実行する
-   - my-vault のスキル: `.claude/skills/<name>/` が唯一の正本。追加・改名・削除をしたら `.agents/sync-skills.sh` を実行し、`.agents/` も一緒にコミットする（my-vault の AGENTS.md「Skills」）
-   - Write / Edit はシンボリックリンクを通して書けないので、`~/.claude/skills/...` ではなくリポジトリのパスを編集する
-3. コミットは、ユーザーの確認を取ってから、今回変えたファイルだけをパス指定で行う。既存の未コミット差分には触れない。メッセージは Conventional Commits（例: `feat(skills): add <name>`）。push は push スキルで行う（公開リポジトリの検査が入る）
-
-最後に、反映したものを「対象・変えたこと・なぜ」の表で報告する。見送ったものと、ユーザーに頼むこと（環境の修正など）も添える。
+最後に反映結果を「対象・変えたこと・なぜ」の表で報告し、見送り分とユーザー側対応事項を添える。
