@@ -1,104 +1,56 @@
 ---
 name: reviewing-pr
-description: PRをレビューし、変更内容の要約と改善点を報告する。
-  「PRレビュー」「PRを見て」「review-pr」「PRをレビューして」などのリクエストで使用。
+description: "PR をレビューし、変更内容の要約・問題点・Before/After 修正案を報告する。「PRレビュー」「PRを見て」「review-pr」「PRをレビューして」等で使用。対象外: 指摘への対応・返信（review-pr-comments）。"
 ---
 
-# Reviewing PR
+# PR レビュー
 
-PR URLを受け取り、変更内容を分析してレビュー結果を報告する。
+PR URL（省略時は現在ブランチの PR、無ければユーザーへ確認）を受け取り、変更内容を分析してレビュー結果を報告する。
 
-PR URLを引数で受け取る。省略時はAskUserQuestionで確認。
+## 1. PR 情報・diff・既存コメントの取得
 
----
-
-## 処理フロー
-
-### 1. PR情報の取得
-
-URL `https://github.com/<owner>/<repo>/pull/<number>` からowner/repo/numberを抽出。
-
-並列実行:
+PR 操作用 MCP ツール（`pull_request_read`）が使える環境ではそちらを優先する。CLI 環境では以下を並列実行する:
 
 ```bash
-# PR基本情報
-gh pr view <number> --repo <owner>/<repo> --json title,body,state,author,createdAt,url,headRefName,baseRefName
-
-# 変更ファイル情報
-gh pr view <number> --repo <owner>/<repo> --json files,additions,deletions,changedFiles
-
-# PR diff
+gh pr view <number> --repo <owner>/<repo> \
+  --json title,body,state,author,createdAt,url,headRefName,baseRefName,files,additions,deletions,changedFiles
 gh pr diff <number> --repo <owner>/<repo>
-
-# 既存のレビューコメント（bot・人間の両方）
-gh api repos/<owner>/<repo>/pulls/<number>/comments --jq '.[] | {user: .user.login, path, line, body, html_url}'
+gh api --paginate "repos/<owner>/<repo>/pulls/<number>/comments" \
+  --jq '.[] | {user: .user.login, path, line, body, html_url}'
+gh api --paginate "repos/<owner>/<repo>/pulls/<number>/reviews" \
+  --jq '.[] | select(.body != "") | {user: .user.login, state, body, html_url}'
 ```
 
-既存のコメントと同じ指摘は、新しい指摘として数えない。
+- diff が途中で切れた場合は `gh api` で個別ファイルの差分を取る
+- 既存コメント（人間・bot）と同じ指摘は新規の指摘として数えない
 
-### 2. 変更ファイルの読み込み
+## 2. 変更ファイルとプロジェクト規約の確認
 
-以下に該当するファイルは**Readツールで全文を読み込む**:
+ローカルクローン（`~/ghq/github.com/<owner>/<repo>` または `ghq list | grep <repo>`）があれば以下をファイル読み取りツールで読む（無ければ diff のみでレビューし、その旨を報告する）:
 
-| 条件 | 理由 |
-|------|------|
-| 新規追加ファイル | diffだけでは全体像が不明 |
-| 変更100行以上 | diffがtruncateされる可能性 |
-| diffが途中で切れている | 正確な変更把握に必要 |
+- 新規追加ファイル・変更 100 行以上のファイル・diff が途切れたファイルの全文
+- リポジトリの `AGENTS.md` / `CLAUDE.md`（固有の規約・レビュー観点をチェック対象に追加）
 
-**対象リポジトリのローカルパスの特定**:
-1. `gh repo view <owner>/<repo> --json name -q .name` でリポジトリ名を取得
-2. `~/ghq/github.com/<owner>/<repo>` にローカルクローンがあるか確認
-3. ない場合は `ghq list | grep <repo>` で検索
-4. 見つからない場合はdiffのみでレビュー（Readできない旨を報告）
+## 3. レビュー観点
 
-### 3. レビュー観点チェック
+### 全 PR 必須
 
-#### 必須チェック（全PR）
+- **description 整合性**: PR の意図と実装差分が一致しているか
+- **ロジック**: 条件分岐・境界値・エッジケースの正確性
+- **セキュリティ**: SQLi・XSS・CSRF・認証/認可漏れ・秘密情報のハードコード
+- **エラーハンドリング**: 異常系の漏れ・握りつぶし
 
-| 観点 | チェック内容 |
-|------|-------------|
-| description整合性 | PRのdescriptionに書かれた意図とコード変更が一致しているか |
-| ロジックの正確性 | 条件分岐、境界値、エッジケースの処理が正しいか |
-| セキュリティ | SQLi、XSS、CSRF、認証漏れ、秘密情報のハードコード |
-| エラーハンドリング | 異常系の考慮漏れ、握りつぶし |
+### 言語別（該当時のみ）
 
-#### 言語別チェック（該当時のみ）
+- **Ruby / Rails**: N+1（eager load 漏れ）、クエリ定義の `scope` 使用、migration の up/down・インデックス・不可逆変更
+- **TypeScript / React**: 不要な `any` や型アサーション、hooks 依存配列・無限レンダリング、セマンティック HTML・a11y
 
-**Ruby/Rails**:
+### 推奨
 
-| 観点 | チェック内容 |
-|------|-------------|
-| N+1問題 | ループ内でのAR呼び出し、eager load未使用 |
-| scope使用 | クエリ定義は`scope`を使用しているか（クラスメソッドではなく） |
-| migration | up/down整合性、インデックス適切性、不可逆変更の有無 |
+- 責務分離（SRP）、パフォーマンス（不要な再計算・非効率クエリ・リーク）、変更に対応するテストの有無
+- 改善提案を AI 実装コストを理由に省かない。スコープ外・既存の気づきは「不要」ではなく未判断の参考情報として分ける
 
-**TypeScript/React**:
-
-| 観点 | チェック内容 |
-|------|-------------|
-| 型安全性 | `any`の不要な使用、型アサーションの妥当性 |
-| hooks | 依存配列の正確性、無限レンダリングリスク |
-| a11y | セマンティックHTML、ラベル、キーボード操作 |
-
-#### 推奨チェック
-
-| 観点 | チェック内容 |
-|------|-------------|
-| SRP違反 | 1つの変更が複数の責務を持っていないか |
-| パフォーマンス | 不要な再計算、非効率なクエリ、メモリリーク |
-| テスト | 変更に対応するテストが追加・更新されているか |
-
-### 4. プロジェクト固有ルールの確認
-
-対象リポジトリのローカルクローンが存在する場合:
-
-1. `CLAUDE.md`をReadで確認し、プロジェクト固有のコーディング規約・レビュー観点を把握
-2. 該当するルールがあればレビュー観点に追加
-
----
-
-## 出力フォーマット
+## 4. 出力フォーマット
 
 ```markdown
 ## PR情報
@@ -108,29 +60,29 @@ gh api repos/<owner>/<repo>/pulls/<number>/comments --jq '.[] | {user: .user.log
 - **ブランチ**: {head} → {base}
 
 ## やりたいこと / やったこと
-{descriptionから抽出した要約}
+{description からの要約}
 
 ## 変更内容のまとめ
 ### `{path/to/file}`
-**変更行**: L{start}-L{end}
-**変更概要**: {概要}
+- **変更行**: L{start}-L{end}
+- **変更概要**: {概要}
 
 ## 良い点
-- {実装の優れている点}
+- {優れている点}
 
 ## 修正が必要な点
 ### 1. {問題の概要}
-**ファイル**: `{path/to/file}:{line}`
-**問題点**: {影響の説明}
+- **ファイル**: `{path/to/file}:{line}`
+- **問題点**: {影響}
 
 **Before**:
 ```{lang}
-{現在のコード}
+{実ファイルから正確に引用した現在コード}
 ```
 
 **After**:
 ```{lang}
-{修正後のコード}
+{修正案}
 ```
 
 ## description整合性
@@ -143,38 +95,16 @@ gh api repos/<owner>/<repo>/pulls/<number>/comments --jq '.[] | {user: .user.log
 - [ ] N+1問題（該当なし）
 
 ## 総評
-{全体の評価}
+{評価・新規指摘件数}
 **承認推奨**: ✅ 承認可 / ⚠️ 条件付き / ❌ 要修正
 ```
 
-**出力ルール**:
+- 問題なしの項目は「修正が必要な点」に書かない
+- 既存コメントと重複する指摘は「修正が必要な点」から外し、末尾に「既存コメントと重複」として投稿者とリンクだけ並べる
+- 行番号は実ファイルで確認した値のみ使い、パスはリポジトリルート相対にする
+- コード修正案は Before / After の両方を記載する（設計方針・テスト戦略などコード外の指摘は文章で説明）
 
-| ルール | 詳細 |
-|--------|------|
-| 問題なし項目 | 「修正が必要な点」に記載しない |
-| 既存コメントとの重複 | 「修正が必要な点」に入れず、末尾に「既存コメントと重複」として投稿者とリンクだけ並べる。総評に新規の指摘件数を書く |
-| 行番号 | Readツールで確認した正確な行番号のみ記載 |
-| コードパス | リポジトリルートからの相対パスを使用 |
-| 言語別チェック | 該当言語がない場合はスキップ |
-| Before/After | 修正提案時は必ずBefore（現在のコード）とAfter（修正後のコード）を両方記載する。Beforeは該当箇所の実際のコードをReadツールで確認して正確に引用すること。コード以外の修正（設計方針・テスト戦略の変更等）はBefore/Afterではなく文章で説明する |
+## エラー処理・使い分け
 
----
-
-## エラー処理
-
-| エラーパターン | 対処 |
-|---------------|------|
-| PR番号・リポジトリが不正 | URLの形式を確認し、ユーザーに再入力を依頼 |
-| アクセス権なし（HTTP 404） | `gh auth status`で認証確認を案内 |
-| ローカルクローンなし | diffのみでレビュー。Readできなかった旨を報告 |
-| diffがtruncate | `gh api`で個別ファイルのdiffを取得 |
-
----
-
-## 他スキルとの使い分け
-
-| 操作 | 使用先 |
-|------|--------|
-| PRの全体レビュー | **このスキル** |
-| レビューコメントへの対応 | `/review-pr-comments` |
-| commit + push | `/push` |
+- PR 未発見 / 404: URL 形式と `gh auth status` を案内
+- レビュー指摘への対応・返信は `review-pr-comments`、commit + push は `push` を使う

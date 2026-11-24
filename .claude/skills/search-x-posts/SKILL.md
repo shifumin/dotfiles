@@ -1,132 +1,55 @@
 ---
 name: search-x-posts
-description: X (Twitter) のポストをxAI Grok APIで検索する。
-  「Xで検索」「ポストを検索」「ツイートを探して」「〜のXのポスト」
-  「x search」などのリクエストで使用。
+description: "X (Twitter) のポストを xAI Grok API（xsearch CLI）で検索する。「Xで検索」「ポストを検索」「ツイートを探して」「〜のXのポスト」「x search」等で使用。"
 ---
 
-# Xポスト検索
+# X ポスト検索
 
-xsearch CLIを使用してX (Twitter) のポストを検索する。
-
-## 共通設定
-
-スクリプトパス: `~/ghq/github.com/shifumin/xsearch/`
-
-実行: `mise exec --cd ~/ghq/github.com/shifumin/xsearch -- ruby xsearch.rb [options] [QUERY]`
-
-## 処理フロー
-
-1. ユーザー入力から検索意図を解釈
-2. 自然言語をxsearchのオプションとクエリに変換
-3. xsearch.rbを実行
-4. 出力をMarkdown形式に整形して表示
-
-## 自然言語からオプションへの変換
-
-### ユーザー指定
-
-| 自然言語表現 | オプション |
-|-------------|-----------|
-| 「shifuminのポスト」「@userの投稿」 | `--user @handle` |
-| 「shifuminとrubyistのポスト」 | `--user @shifumin --user @rubyist` |
-| 「botを除外」「〜以外のポスト」 | `--exclude @handle` |
-| 「bot1とbot2を除外」 | `--exclude @bot1 --exclude @bot2` |
-
-注意: `--user`と`--exclude`は同時使用不可。両方指定された場合はユーザーに確認する。
-
-ハンドル名の`@`は省略されていても補完する（「shifumin」→`@shifumin`）。
-
-### 日付指定
-
-| 自然言語表現 | オプション |
-|-------------|-----------|
-| 「今週のポスト」 | `--from`を今週月曜日のYYYY-MM-DDに変換 |
-| 「先週のポスト」 | `--from`を先週月曜日、`--to`を先週日曜日に変換 |
-| 「今月のポスト」 | `--from`を今月1日に変換 |
-| 「先月のポスト」 | `--from`/`--to`を先月の期間に変換 |
-| 「2月1日以降」「2/1から」 | `--from 2026-02-01` |
-| 「2月14日まで」「〜2/14」 | `--to 2026-02-14` |
-| 「2月1日〜2月14日」 | `--from 2026-02-01 --to 2026-02-14` |
-
-**重要**: 相対日付（「今週」「先月」等）や年省略の日付（「2/20」）を変換する前に、`date`コマンドで現在日付を確認すること。
-
-### メディア理解
-
-| 自然言語表現 | オプション |
-|-------------|-----------|
-| 「画像付きで」「画像も含めて」 | `--images` |
-| 「動画付きで」「動画も含めて」 | `--videos` |
-| 「画像と動画を含めて」 | `--images --videos` |
-
-### システムプロンプト
-
-明示的に出力形式や追加の指示がある場合のみ使用:
-
-| 自然言語表現 | オプション |
-|-------------|-----------|
-| 「時系列でまとめて」 | `--system-prompt '時系列でまとめてください。'` |
-| 「箇条書きでまとめて」 | `--system-prompt '箇条書きでまとめてください。'` |
-
-通常は指定不要（デフォルトで日本語回答される）。
-
-### クエリ
-
-オプション以外の検索意図がクエリ文字列になる。フィルタ（`--user`, `--exclude`, `--from`, `--to`）が指定されていればクエリは省略可能。
-
-| 入力例 | クエリ |
-|--------|--------|
-| 「RubyのポストをXで検索」 | `Ruby` |
-| 「shifuminのRailsに関するポスト」 | `Rails`（`--user @shifumin`と組み合わせ） |
-| 「今週のAI関連のXのポスト」 | `AI`（`--from`と組み合わせ） |
-| 「shifuminの最近のポスト」 | 省略（`--user @shifumin`のみ） |
-| 「今月のポストを見せて」 | 省略（`--from`のみ） |
+`xsearch` CLI を使って X (Twitter) のポストを検索し、結果を Markdown で整形して報告する。
 
 ## 実行コマンド
 
 ```bash
 mise exec --cd ~/ghq/github.com/shifumin/xsearch -- ruby xsearch.rb \
-  [--user @HANDLE] \
-  [--exclude @HANDLE] \
+  [--user @HANDLE ...] \
+  [--exclude @HANDLE ...] \
   [--from YYYY-MM-DD] \
   [--to YYYY-MM-DD] \
-  [--images] \
-  [--videos] \
+  [--images] [--videos] \
   [--system-prompt 'PROMPT'] \
+  [--model MODEL] \
   [QUERY]
 ```
 
-## 出力の整形
+## オプション変換ルール
 
-xsearchの出力はテキスト形式のため、以下のMarkdown形式に変換:
+- **ユーザー (`--user` / `--exclude`)**: 複数指定可（`@` は省略可）。`--user` と `--exclude` は同時指定不可のため、両方求められたらユーザーへ確認する
+- **期間 (`--from` / `--to`)**: 相対日付（「今週」「先月」等）や年省略日付（「2/20」等）は必ず `date` コマンドで現在日付を確認してから `YYYY-MM-DD` へ変換する
+- **メディア**: 画像・動画の内容も含める依頼時のみ `--images` / `--videos` を付与
+- **出力指示 (`--system-prompt`)**: 時系列・箇条書き等の指定がある場合のみ付与（既定で日本語回答される）
+- **クエリ (`QUERY`)**: フィルタ（`--user` / `--exclude` / `--from` / `--to`）が 1 つ以上あれば省略可。クエリもフィルタも無ければ確認する
+
+## 出力フォーマット
+
+`xsearch` の出力テキストと引用元 URL を次へ整形する（フィルタ未使用時は「フィルタ」行を省略、0 件時は該当なしを報告）:
 
 ```markdown
 ## Xポスト検索結果
 
-**検索クエリ**: QUERY
+**検索クエリ**: {QUERY}
 **フィルタ**: ユーザー: @handle / 期間: YYYY-MM-DD 〜 YYYY-MM-DD
 
 {検索結果テキスト}
 
 ### 引用元
 1. [URL1](URL1)
-2. [URL2](URL2)
 ```
-
-| 項目 | ルール |
-|------|--------|
-| 検索条件 | 使用したオプションを「フィルタ」行にまとめて表示 |
-| 検索結果テキスト | xsearchの出力テキスト部分をそのまま表示 |
-| 引用元 | URLをMarkdownリンクに変換 |
-| フィルタなし | 「フィルタ」行を省略 |
-| 結果なし | 「該当するポストが見つかりませんでした」 |
 
 ## エラー処理
 
-| エラーパターン | 原因 | 対処 |
-|---------------|------|------|
-| `XAI_API_KEY が設定されていません` | 環境変数未設定 | `~/ghq/github.com/shifumin/xsearch/mise.local.toml`にAPIキーを設定するよう案内 |
-| `検索クエリを指定してください` | クエリもフィルタも未指定 | 検索キーワードまたはフィルタ（`--user`, `--from`等）を指定するようユーザーに確認 |
-| `allowed_x_handles と excluded_x_handles は同時に使用できません` | --userと--excludeの同時指定 | どちらか一方を使うようユーザーに確認 |
-| `API error (401)` | APIキーが無効 | APIキーの再確認を案内（https://console.x.ai） |
-| `API error (429)` | レートリミット | しばらく待ってからリトライ |
+| エラー | 対処 |
+|---|---|
+| `XAI_API_KEY が設定されていません` | `~/ghq/github.com/shifumin/xsearch/mise.local.toml` への設定を案内 |
+| `API error (401)` | `https://console.x.ai` で API キーの再確認を案内 |
+| `API error (429)` | レートリミットのため少し待ってから再試行 |
+| クエリ・フィルタ未指定 / `--user` と `--exclude` 併用 | ユーザーへ条件の確認を依頼 |
