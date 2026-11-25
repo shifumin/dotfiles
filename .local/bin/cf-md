@@ -1,0 +1,77 @@
+#!/bin/bash
+# cf-md: Cloudflare Browser Rendering の /markdown API で URL を Markdown にして stdout へ出す
+#
+# Usage: cf-md <URL>
+#
+# 認証情報は環境変数 CLOUDFLARE_BR_API_TOKEN / CLOUDFLARE_BR_ACCOUNT_ID を優先し、
+# 未設定なら 1Password (op read) から取得する。トークンは argv やログに出さない
+# （curl へは -K - で stdin から渡す）。
+set -euo pipefail
+
+readonly OP_ITEM="op://Personal/Cloudflare Browser Rendering"
+readonly RATE_LIMIT_WAIT=11
+
+die() {
+  echo "cf-md: $*" >&2
+  exit 1
+}
+
+if [[ $# -ne 1 || -z "$1" || "$1" == "-h" || "$1" == "--help" ]]; then
+  echo "usage: cf-md <URL>" >&2
+  exit 2
+fi
+url="$1"
+
+for cmd in curl jq; do
+  command -v "$cmd" >/dev/null 2>&1 || die "$cmd not found"
+done
+
+# 環境変数が空なら 1Password から読む（エラー出力は捨てて短いメッセージだけ出す）
+read_secret() {
+  local env_value="$1" field="$2"
+  if [[ -n "$env_value" ]]; then
+    printf '%s' "$env_value"
+    return
+  fi
+  command -v op >/dev/null 2>&1 || die "op not found and \$CLOUDFLARE_BR_* not set"
+  op read "$OP_ITEM/$field" 2>/dev/null || die "failed to read $field from 1Password"
+}
+
+token="$(read_secret "${CLOUDFLARE_BR_API_TOKEN:-}" credential)"
+account="$(read_secret "${CLOUDFLARE_BR_ACCOUNT_ID:-}" account_id)"
+[[ -n "$token" ]] || die "empty API token"
+[[ -n "$account" ]] || die "empty account ID"
+
+endpoint="https://api.cloudflare.com/client/v4/accounts/$account/browser-rendering/markdown"
+body="$(jq -nc --arg url "$url" '{url: $url}')"
+
+tmp="$(mktemp -t cf-md)"
+trap 'command rm -f "$tmp"' EXIT
+
+# HTTP ステータスを返す。レスポンス本文は $tmp に書く
+request() {
+  printf 'header = "Authorization: Bearer %s"\n' "$token" |
+    curl -sS -K - \
+      --max-time 120 \
+      -X POST "$endpoint" \
+      -H "Content-Type: application/json" \
+      --data-binary "$body" \
+      -o "$tmp" \
+      -w '%{http_code}' ||
+    die "request failed"
+}
+
+status="$(request)"
+if [[ "$status" == "429" ]]; then
+  echo "cf-md: rate limited (429), retrying in ${RATE_LIMIT_WAIT}s" >&2
+  sleep "$RATE_LIMIT_WAIT"
+  status="$(request)"
+fi
+
+if [[ "$status" == "200" ]] && jq -e '.success == true and (.result | type == "string")' "$tmp" >/dev/null 2>&1; then
+  jq -r '.result' "$tmp"
+  exit 0
+fi
+
+msg="$(jq -r '[.errors[]?.message] | join("; ")' "$tmp" 2>/dev/null || true)"
+die "HTTP $status${msg:+: $msg}"

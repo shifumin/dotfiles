@@ -28,6 +28,7 @@ file_links=(
   ".default-npm-packages"
   ".gemrc"
   ".gitconfig"
+  ".local/bin/cf-md"
   ".obsidian.vimrc"
   ".pryrc"
   ".rspec"
