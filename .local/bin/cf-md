@@ -45,7 +45,7 @@ account="$(read_secret "${CLOUDFLARE_BR_ACCOUNT_ID:-}" account_id)"
 endpoint="https://api.cloudflare.com/client/v4/accounts/$account/browser-rendering/markdown"
 body="$(jq -nc --arg url "$url" '{url: $url}')"
 
-tmp="$(mktemp -t cf-md)"
+tmp="$(mktemp "${TMPDIR:-/tmp}/cf-md.XXXXXX")"
 trap 'command rm -f "$tmp"' EXIT
 
 # HTTP ステータスを返す。レスポンス本文は $tmp に書く
