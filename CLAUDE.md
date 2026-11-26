@@ -1,26 +1,14 @@
 # CLAUDE.md
 
-> **Scope**: Project-level (`dotfiles` repo only)
-> **Global settings**: `.claude/CLAUDE.md` (symlinked to `~/.claude/CLAUDE.md`)
+> Project-level rules for the `dotfiles` repo only (global Claude Code settings live in `.claude/CLAUDE.md`).
 
-## Symlink Management
+## Symlinks & New Files
 
-`setup.sh` is the single source of truth for symlinks. Update `setup.sh` instead of creating symlinks manually.
+- `setup.sh` is the single source of truth for symlinks; never create symlinks manually.
+- To add a managed file: place it at its target relative path, register it in `setup.sh` (`dir_links`, `file_links`, or `claude_links`), run `./setup.sh`, and commit both.
+- Exceptions: custom skills under `.claude/skills/<name>/` are auto-linked by `./setup.sh` (do not add them to an array); third-party skills go in `.claude/skills.txt`.
 
-## Prohibitions
+## Hygiene
 
-| Rule | Reason |
-|------|--------|
-| Keep runtime/cache files out of `.claude/` | Only managed files belong in `claude_links`; runtime data stays local |
-| Do not duplicate workflow docs across files | `README.md` is for humans; `.claude/rules/dotfiles.md` is for Claude Code |
-
-## References
-
-| Topic | Path |
-|-------|------|
-| Repository overview | `README.md` |
-| Dotfiles editing workflow | `.claude/rules/dotfiles.md` |
-| Agent rule/persona generator | `.codex/build-agents.sh` |
-| Global gitignore rules | `.config/git/ignore` |
-| Sheldon plugin management | `.config/sheldon/plugins.toml` |
-| Symlink definitions | `setup.sh` |
+- Keep runtime/cache files out of `.claude/` (only managed files belong in `claude_links`).
+- After editing `AGENTS.md` or `.claude/output-styles/emma.md`, run `.codex/build-agents.sh` and commit the generated files (`.codex/AGENTS.md`, `.gemini/config/GEMINI.md`).
