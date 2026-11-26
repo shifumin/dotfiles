@@ -5,10 +5,11 @@
 #
 # 認証情報は環境変数 CLOUDFLARE_BR_API_TOKEN / CLOUDFLARE_BR_ACCOUNT_ID を優先し、
 # 未設定なら 1Password (op read) から取得する。トークンは argv やログに出さない
-# （curl へは -K - で stdin から渡す）。
+# （curl へは -K - で stdin から渡す）。連続呼び出し時は前回実行から最低 10 秒空ける。
 set -euo pipefail
 
 readonly OP_ITEM="op://Personal/Cloudflare Browser Rendering"
+readonly MIN_INTERVAL=10
 readonly RATE_LIMIT_WAIT=11
 
 die() {
@@ -48,19 +49,44 @@ body="$(jq -nc --arg url "$url" '{url: $url}')"
 tmp="$(mktemp "${TMPDIR:-/tmp}/cf-md.XXXXXX")"
 trap 'command rm -f "$tmp"' EXIT
 
-# HTTP ステータスを返す。レスポンス本文は $tmp に書く
-request() {
-  printf 'header = "Authorization: Bearer %s"\n' "$token" |
-    curl -sS -K - \
-      --max-time 120 \
-      -X POST "$endpoint" \
-      -H "Content-Type: application/json" \
-      --data-binary "$body" \
-      -o "$tmp" \
-      -w '%{http_code}' ||
-    die "request failed"
+last_file="${TMPDIR:-/tmp}/cf-md-${UID}.last"
+
+throttle() {
+  [[ -r "$last_file" ]] || return 0
+  local last now elapsed wait_sec
+  last="$(cat "$last_file" 2>/dev/null || true)"
+  [[ "$last" =~ ^[0-9]+$ ]] || return 0
+  now="$(date +%s)"
+  elapsed=$((now - last))
+  if (( elapsed >= 0 && elapsed < MIN_INTERVAL )); then
+    wait_sec=$((MIN_INTERVAL - elapsed))
+    echo "cf-md: waiting ${wait_sec}s to respect rate limit" >&2
+    sleep "$wait_sec"
+  fi
 }
 
+mark_last() {
+  date +%s > "$last_file" 2>/dev/null || true
+}
+
+# HTTP ステータスを返す。レスポンス本文は $tmp に書く
+request() {
+  local code
+  code="$(
+    printf 'header = "Authorization: Bearer %s"\n' "$token" |
+      curl -sS -K - \
+        --max-time 120 \
+        -X POST "$endpoint" \
+        -H "Content-Type: application/json" \
+        --data-binary "$body" \
+        -o "$tmp" \
+        -w '%{http_code}'
+  )" || die "request failed"
+  mark_last
+  printf '%s' "$code"
+}
+
+throttle
 status="$(request)"
 if [[ "$status" == "429" ]]; then
   echo "cf-md: rate limited (429), retrying in ${RATE_LIMIT_WAIT}s" >&2
