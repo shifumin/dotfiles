@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> Project-level rules for the `dotfiles` repo only (global Claude Code settings live in `.claude/CLAUDE.md`).
+> Project-level rules for the `dotfiles` repo only (global rules live in `AGENTS.md`, symlinked to `~/.claude/CLAUDE.md`).
 
 ## Symlinks & New Files
 

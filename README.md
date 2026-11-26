@@ -58,7 +58,7 @@ cd dotfiles
 
 ### Coding Agents (shared)
 
-- `AGENTS.md` - Global rules shared by Claude Code, Codex, and Antigravity (single source of truth; linked into T3 Code's Antigravity config)
+- `AGENTS.md` - Global rules shared by Claude Code, Codex, and Antigravity (single source of truth; symlinked to `~/.claude/CLAUDE.md` and T3 Code's Antigravity config)
 - `.claude/output-styles/emma.md` - Persona single source of truth (used directly by Claude Code; embedded into Codex and Antigravity by `.codex/build-agents.sh`)
 - `.codex/AGENTS.md` - **Generated** from `AGENTS.md` and `emma.md` (symlinked to `~/.codex/AGENTS.md`); never edit it directly
 - `.gemini/config/GEMINI.md` - **Generated** from `emma.md` (linked into T3 Code's Antigravity config); never edit it directly
@@ -69,16 +69,13 @@ After editing `AGENTS.md` or `.claude/output-styles/emma.md`, run `.codex/build-
 
 ### Claude Code
 
-- `.claude/CLAUDE.md` - Global settings (symlinked to `~/.claude/CLAUDE.md`, applied to all projects)
-- `.claude/rules/` - Context-specific rules (coding, dotfiles, git, shell, skills)
+- `.claude/rules/` - Context-specific rules (concise, dotfiles, git, shell, skills)
 - `.claude/skills/` - Custom skills
 - `.claude/skills.txt` - Third-party skill manifest (auto-installed on setup)
 - `.claude/settings.json` - Permissions and hooks configuration
 - `.claude/hooks/` - PreToolUse hooks (`mise-exec-guard.sh`)
 - `.claude/output-styles/` - Output styles
 - `.claude/statusline.py` - Status line script
-
-> `.claude/CLAUDE.md` serves a dual role: it is a file in this repo AND the user's global Claude Code settings. Changes here affect behavior across all projects.
 
 ### Other
 
@@ -96,7 +93,6 @@ After editing `AGENTS.md` or `.claude/output-styles/emma.md`, run `.codex/build-
 ├── ghostty/     # Ghostty terminal
 └── herdr/       # Herdr (terminal multiplexer for coding agents)
 .claude/
-├── CLAUDE.md       # Global Claude Code settings (→ ~/.claude/CLAUDE.md)
 ├── hooks/          # PreToolUse hooks
 ├── output-styles/  # Output styles (emma.md is persona SSOT)
 ├── rules/          # Context-specific rules

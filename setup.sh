@@ -45,7 +45,6 @@ file_links=(
 # .claude/にはClaude Codeのランタイムデータ（cache, sessions等）があるため
 # ディレクトリ丸ごとではなく管理対象のみ個別にリンクする
 claude_links=(
-  ".claude/CLAUDE.md"
   ".claude/settings.json"
   ".claude/statusline.py"
   ".claude/hooks"
@@ -154,6 +153,7 @@ echo "=== dotfiles setup ==="
 for item in "${dir_links[@]}" "${file_links[@]}" "${claude_links[@]}"; do
   link_item "$item"
 done
+link_path "$DOTFILES_DIR/AGENTS.md" "$HOME/.claude/CLAUDE.md"
 
 # ── .claude/skills/ の自作スキル個別リンク ──
 # skills/を丸ごとリンクすると gh skill install が置くサードパーティ実体と共存できないため
