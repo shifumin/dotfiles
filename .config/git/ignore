@@ -1,5 +1,6 @@
 # Global gitignore — scope deliberately limited to OS junk + personal agent-tool files and artifacts.
-# Language- and framework-specific patterns belong in each project's own .gitignore.
+# Language- and framework-specific patterns belong in each project's own .gitignore (push back if asked to add them here).
+# Prefer anchored (/Foo) or escape-explicit (Icon\r) patterns; never add a bare Finder `Icon` rule (matches recursively and case-insensitively on macOS, e.g. public/icon/).
 # Reference: https://github.com/github/gitignore/blob/main/Global/macOS.gitignore
 
 # macOS general

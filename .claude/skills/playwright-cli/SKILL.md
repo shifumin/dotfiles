@@ -386,3 +386,10 @@ playwright-cli show --annotate
 * **Tracing** [references/tracing.md](references/tracing.md)
 * **Video recording** [references/video-recording.md](references/video-recording.md)
 * **Inspecting element attributes** [references/element-attributes.md](references/element-attributes.md)
+
+## Local Flag Rules
+
+- Never pass `--persistent` or `--headed` to pages that require no login (profile startup can time out).
+- Real Chrome / company SSO (AI sessions, Google Docs/Sheets): use `attach --cdp=chrome`.
+- Cloudflare / queue-it workarounds: use plain Chromium `--persistent`, never `--browser=chrome`.
+- General auth sites needing Playwright: use `--persistent --headed`.

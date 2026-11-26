@@ -20,5 +20,7 @@
 |-------|------|
 | Repository overview | `README.md` |
 | Dotfiles editing workflow | `.claude/rules/dotfiles.md` |
+| Agent rule/persona generator | `.codex/build-agents.sh` |
+| Global gitignore rules | `.config/git/ignore` |
 | Sheldon plugin management | `.config/sheldon/plugins.toml` |
 | Symlink definitions | `setup.sh` |
