@@ -69,7 +69,7 @@ After editing `AGENTS.md` or `.claude/output-styles/emma.md`, run `.codex/build-
 
 ### Claude Code
 
-- `.claude/rules/` - Context-specific rules (concise, dotfiles, git, shell, skills)
+- `.claude/rules/` - Context-specific rules (dotfiles, git, shell, skills)
 - `.claude/skills/` - Custom skills
 - `.claude/skills.txt` - Third-party skill manifest (auto-installed on setup)
 - `.claude/settings.json` - Permissions and hooks configuration
