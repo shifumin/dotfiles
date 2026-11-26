@@ -83,7 +83,7 @@ After editing `AGENTS.md` or `.claude/output-styles/emma.md`, run `.codex/build-
 ### Other
 
 - `.default-npm-packages` - Default npm packages
-- `.local/bin/cf-md` - `cf-md <URL>` prints a page as Markdown via Cloudflare Browser Rendering (token from `CLOUDFLARE_BR_*` env or 1Password)
+- `.local/bin/cf-md` - `cf-md <URL>` prints a page as Markdown via Cloudflare Browser Rendering (token from `CLOUDFLARE_BR_*` env, `~/.config/cf-md/env`, or 1Password)
 
 ## Directory Structure
 
