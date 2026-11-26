@@ -3,12 +3,16 @@
 #
 # Usage: cf-md <URL>
 #
-# 認証情報は環境変数 CLOUDFLARE_BR_API_TOKEN / CLOUDFLARE_BR_ACCOUNT_ID を優先し、
-# 未設定なら 1Password (op read) から取得する。トークンは argv やログに出さない
-# （curl へは -K - で stdin から渡す）。連続呼び出し時は前回実行から最低 10 秒空ける。
+# 認証情報は次の優先順で取得する:
+#   1. 環境変数 CLOUDFLARE_BR_API_TOKEN / CLOUDFLARE_BR_ACCOUNT_ID
+#   2. ${XDG_CONFIG_HOME:-$HOME/.config}/cf-md/env (chmod 600 推奨)
+#   3. 1Password CLI (op read)
+# トークンは argv やログに出さない（curl へは -K - で stdin から渡す）。
+# 連続呼び出し時は前回実行から最低 10 秒空ける。
 set -euo pipefail
 
 readonly OP_ITEM="op://Personal/Cloudflare Browser Rendering"
+readonly ENV_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/cf-md/env"
 readonly MIN_INTERVAL=10
 readonly RATE_LIMIT_WAIT=11
 
@@ -27,14 +31,47 @@ for cmd in curl jq; do
   command -v "$cmd" >/dev/null 2>&1 || die "$cmd not found"
 done
 
-# 環境変数が空なら 1Password から読む（エラー出力は捨てて短いメッセージだけ出す）
+# ENV_FILE から未設定の認証変数だけ安全に読む（source せず KEY=VALUE のみ解析）
+load_env_file() {
+  [[ -f "$ENV_FILE" && -r "$ENV_FILE" ]] || return 0
+  local line key val
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%$'\r'}"
+    [[ -z "$line" || "$line" == \#* ]] && continue
+    line="${line#export }"
+    [[ "$line" == *=* ]] || continue
+    key="${line%%=*}"
+    val="${line#*=}"
+    key="${key#"${key%%[![:space:]]*}"}"
+    key="${key%"${key##*[![:space:]]}"}"
+    if [[ ${#val} -ge 2 ]]; then
+      if [[ "${val:0:1}" == "'" && "${val:${#val}-1:1}" == "'" ]]; then
+        val="${val:1:${#val}-2}"
+      elif [[ "${val:0:1}" == '"' && "${val:${#val}-1:1}" == '"' ]]; then
+        val="${val:1:${#val}-2}"
+      fi
+    fi
+    case "$key" in
+      CLOUDFLARE_BR_API_TOKEN)
+        [[ -n "${CLOUDFLARE_BR_API_TOKEN:-}" ]] || CLOUDFLARE_BR_API_TOKEN="$val"
+        ;;
+      CLOUDFLARE_BR_ACCOUNT_ID)
+        [[ -n "${CLOUDFLARE_BR_ACCOUNT_ID:-}" ]] || CLOUDFLARE_BR_ACCOUNT_ID="$val"
+        ;;
+    esac
+  done < "$ENV_FILE"
+}
+
+load_env_file
+
+# 環境変数・ENV_FILE が空なら 1Password から読む（エラー出力は捨てて短いメッセージだけ出す）
 read_secret() {
   local env_value="$1" field="$2"
   if [[ -n "$env_value" ]]; then
     printf '%s' "$env_value"
     return
   fi
-  command -v op >/dev/null 2>&1 || die "op not found and \$CLOUDFLARE_BR_* not set"
+  command -v op >/dev/null 2>&1 || die "op not found and credentials not set in env or $ENV_FILE"
   op read "$OP_ITEM/$field" 2>/dev/null || die "failed to read $field from 1Password"
 }
 
