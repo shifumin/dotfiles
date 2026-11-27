@@ -4,10 +4,12 @@
 #   gh skill install <source> <skill-name> --agent claude-code --scope user
 #   gh skill install <source> <skill-name> --agent universal --scope user
 # Update: gh skill update (scans both locations; --dry-run to preview)
-# Format: <source> <skill-name | repo-path/SKILL.md[@tag-or-sha]>
+# Format: <source> <skill-name | repo-path/SKILL.md[@tag-or-sha]> [universal]
+# Optional 3rd column "universal" installs only into ~/.agents/skills (e.g. when Claude Code already has the official plugin).
 # Pin (@sha) is used when the repo's latest GitHub Release lags behind main (e.g. mizchi/skills, mattpocock/skills)
 # herdr is vendored in .claude/skills/herdr from `herdr --skill` (the copy bundled with the installed binary, so it matches the local CLI); update = .claude/sync-herdr-skill.sh (setup.sh runs it)
 # japanese-tech-writing is a single-file gist SKILL.md (gh skill cannot install gists); vendored in .claude/skills/japanese-tech-writing from https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d (update = manual diff vs gist)
+anthropics/skills skill-creator@e4bb5d960d87126ff3b3a8af1a104b7db67560ba universal
 mattpocock/skills productivity/grilling@6654f6b60cd9d5be8b54c6fafe44346dabeb3b76
 mizchi/skills meta/empirical-prompt-tuning/SKILL.md@5aaf2d126a04a8b079fd5184eb1860f232afffd3
 yusukebe/ax ax

@@ -274,8 +274,7 @@ if [[ -f "$skills_file" ]]; then
       line="$(echo "$line" | xargs)"
       [[ -z "$line" ]] && continue
 
-      source_repo="${line%% *}"
-      skill_ref="${line##* }"
+      read -r source_repo skill_ref target_scope _ <<< "$line"
       # skill_ref は名前 / リポジトリ内パス(…/SKILL.md) / @タグ・SHA付き のいずれにも対応
       skill_base="${skill_ref%@*}"
       skill_base="${skill_base%/SKILL.md}"
@@ -284,11 +283,23 @@ if [[ -f "$skills_file" ]]; then
       want_ref=""
       [[ "$skill_ref" == *@* ]] && want_ref="${skill_ref##*@}"
 
+      if [[ "$target_scope" == "universal" ]]; then
+        install_agents=("universal")
+        install_paths=("$HOME/.agents/skills/$skill_name")
+      else
+        install_agents=("claude-code" "universal")
+        install_paths=("$HOME/.claude/skills/$skill_name" "$HOME/.agents/skills/$skill_name")
+      fi
+
       install_reason=""
-      if [[ ! -e "$HOME/.claude/skills/$skill_name/SKILL.md" || ! -e "$HOME/.agents/skills/$skill_name/SKILL.md" ]]; then
-        install_reason="not installed"
-      elif [[ -n "$want_ref" ]]; then
-        for install_path in "$HOME/.claude/skills/$skill_name" "$HOME/.agents/skills/$skill_name"; do
+      for install_path in "${install_paths[@]}"; do
+        if [[ ! -e "$install_path/SKILL.md" ]]; then
+          install_reason="not installed"
+          break
+        fi
+      done
+      if [[ -z "$install_reason" && -n "$want_ref" ]]; then
+        for install_path in "${install_paths[@]}"; do
           have_ref="$(printf '%s\n' "$installed_refs" | awk -F'\t' -v p="$install_path" '$1 == p { print $2; exit }')"
           if [[ "$have_ref" != "$want_ref" ]]; then
             install_reason="ref ${have_ref:-unknown} -> $want_ref"
@@ -301,8 +312,9 @@ if [[ -f "$skills_file" ]]; then
         echo "SKIP (already installed): $skill_name"
       else
         echo "INSTALL: $skill_name from $source_repo ($install_reason)"
-        gh skill install "$source_repo" "$skill_ref" --agent claude-code --scope user --force
-        gh skill install "$source_repo" "$skill_ref" --agent universal --scope user --force
+        for agent in "${install_agents[@]}"; do
+          gh skill install "$source_repo" "$skill_ref" --agent "$agent" --scope user --force
+        done
       fi
     done < "$skills_file"
   else
