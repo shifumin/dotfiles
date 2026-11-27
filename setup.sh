@@ -216,40 +216,8 @@ fi
 # T3 Code (AntigravitySkills.ts) は厳格な YAML パーサでフロントマターを読み、
 # クォートなしの ": " や name 欠落があるとスキル一覧から静かに落とすため事前検証する
 if command -v ruby &>/dev/null; then
-  ruby -ryaml -e '
-    errors = 0
-    ARGV.each do |root|
-      next unless Dir.exist?(root)
-      Dir.glob(File.join(root, "*", "SKILL.md")).sort.each do |p|
-        dir = File.basename(File.dirname(p))
-        txt = File.read(p, encoding: "UTF-8")
-        s = txt.index("---")
-        e = s ? txt.index("---", s + 3) : nil
-        if !s || !e
-          warn "SKILL FRONTMATTER ERROR: #{p}: missing frontmatter"
-          errors += 1
-          next
-        end
-        begin
-          doc = YAML.safe_load(txt[(s + 3)...e].strip)
-          name = doc.is_a?(Hash) ? doc["name"] : nil
-          desc = doc.is_a?(Hash) ? doc["description"] : nil
-          if !name.is_a?(String) || name.strip.empty? || name != dir
-            warn "SKILL FRONTMATTER ERROR: #{p}: name (#{name.inspect}) must match dir (#{dir})"
-            errors += 1
-          end
-          if !desc.is_a?(String) || desc.strip.empty?
-            warn "SKILL FRONTMATTER ERROR: #{p}: missing description"
-            errors += 1
-          end
-        rescue => ex
-          warn "SKILL FRONTMATTER ERROR: #{p}: #{ex.message.lines.first.strip}"
-          errors += 1
-        end
-      end
-    end
-    exit(errors == 0 ? 0 : 1)
-  ' "$DOTFILES_DIR/.claude/skills" "$DOTFILES_DIR/.gemini/skills"
+  "$DOTFILES_DIR/scripts/validate-skill-frontmatter.sh" \
+    "$DOTFILES_DIR/.claude/skills" "$DOTFILES_DIR/.gemini/skills"
 fi
 
 # ── サードパーティスキルのインストール ──
