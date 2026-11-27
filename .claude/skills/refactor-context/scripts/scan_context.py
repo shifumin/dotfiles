@@ -10,7 +10,7 @@ Scans:
   - Global ~/.claude/ and ~/.gemini/ instructions, rules, output-styles, and skills
   - Workspace (and repo roots under --extra-root): AGENTS.md, CLAUDE.md, CLAUDE.local.md,
     .claude/{rules,agent_docs,skills,commands,output-styles}, .gemini/skills
-  - ~/.claude/projects/*/memory/*.md (including MEMORY.md size and link integrity)
+  - Checks ~/.claude/projects/*/memory/ for index/contamination hints (delegates cleanup to memory-inventory)
 Skips generated files marked with "GENERATED FILE".
 """
 
@@ -174,6 +174,38 @@ def parse_skill_description(fm: str) -> tuple[str, bool]:
     return "", False
 
 
+def collect_memory_hints(claude_home: Path) -> list[dict[str, Any]]:
+    """Summarize memory directories that have index or prose signals for memory-inventory."""
+    projects_dir = claude_home / "projects"
+    if not projects_dir.is_dir():
+        return []
+    hints: list[dict[str, Any]] = []
+    for proj_dir in sorted(projects_dir.iterdir()):
+        mem_dir = proj_dir / "memory"
+        if not mem_dir.is_dir():
+            continue
+        signals: list[str] = []
+        idx_signals = check_memory_dir(mem_dir)
+        for s_list in idx_signals.values():
+            signals.extend(s_list)
+
+        prose_flagged = 0
+        for p in sorted(mem_dir.glob("*.md")):
+            if p.name.startswith(".") or p.name == "MEMORY.md":
+                continue
+            text = p.read_text(encoding="utf-8", errors="replace")
+            _, body = strip_fences_and_frontmatter(text)
+            prose = clean_prose_for_signals(body)
+            if STRONG_EMPHASIS_RE.search(prose) or DIARY_PHRASE_RE.search(prose):
+                prose_flagged += 1
+        if prose_flagged:
+            signals.append(f"prose_signals({prose_flagged}files)")
+
+        if signals:
+            hints.append({"mem_dir": str(mem_dir.resolve()), "signals": signals})
+    return hints
+
+
 def check_memory_dir(mem_dir: Path) -> dict[Path, list[str]]:
     """Return index-level signals (limits, broken links, orphan files) for a memory directory."""
     extra: dict[Path, list[str]] = {}
@@ -262,7 +294,6 @@ def collect_candidates(
     extra_roots: list[Path],
     claude_home: Path,
     gemini_home: Path,
-    include_memory: bool,
 ) -> list[tuple[str, Path]]:
     found: list[tuple[str, Path]] = []
     seen: set[Path] = set()
@@ -302,16 +333,6 @@ def collect_candidates(
     for root in extra_roots:
         for repo_dir in discover_repo_roots(root):
             collect_repo_context(repo_dir, add)
-
-    # 3. Claude project memories
-    if include_memory and (claude_home / "projects").is_dir():
-        for proj_dir in sorted((claude_home / "projects").iterdir()):
-            mem_dir = proj_dir / "memory"
-            if not mem_dir.is_dir():
-                continue
-            for p in sorted(mem_dir.glob("*.md")):
-                if not p.name.startswith("."):
-                    add("memory", p)
 
     return found
 
@@ -422,19 +443,13 @@ def main(argv: list[str] | None = None) -> int:
     workspace = Path(args.workspace).expanduser().resolve() if args.workspace else None
     extra_roots = [Path(r).expanduser().resolve() for r in args.extra_root]
 
-    candidates = collect_candidates(workspace, extra_roots, claude_home, gemini_home, not args.no_memory)
-
-    extra_signals: dict[Path, list[str]] = {}
-    if not args.no_memory and (claude_home / "projects").is_dir():
-        for proj_dir in sorted((claude_home / "projects").iterdir()):
-            mem_dir = proj_dir / "memory"
-            if mem_dir.is_dir():
-                extra_signals.update(check_memory_dir(mem_dir))
+    candidates = collect_candidates(workspace, extra_roots, claude_home, gemini_home)
+    memory_hints = [] if args.no_memory else collect_memory_hints(claude_home)
 
     git_helper = GitHelper()
     results = []
     for kind, path in candidates:
-        res = analyze_file(kind, path, since_ts, extra_signals, git_helper)
+        res = analyze_file(kind, path, since_ts, {}, git_helper)
         if res is not None:
             results.append(res)
 
@@ -451,6 +466,7 @@ def main(argv: list[str] | None = None) -> int:
                     "changed": changed_count,
                     "flagged": flagged_count,
                     "items": shown,
+                    "memory_hints": memory_hints,
                 },
                 ensure_ascii=False,
                 indent=2,
@@ -458,19 +474,24 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
 
-    print(f"SUMMARY: mode={mode_label} scanned={len(results)} changed={changed_count} flagged={flagged_count}")
+    print(
+        f"SUMMARY: mode={mode_label} scanned={len(results)} changed={changed_count} "
+        f"flagged={flagged_count} memory_hints={len(memory_hints)}"
+    )
     if not shown:
         print("CLEAN: 対象に新規変更・汚染シグナルはありません")
-        return 0
+    else:
+        for r in shown:
+            flags = []
+            if r["changed"]:
+                flags.append("CHANGED")
+            flags.extend(r["signals"])
+            repo_part = f" repo={r['repo']}" if r["repo"] else ""
+            flag_str = " | ".join(flags) if flags else "-"
+            print(f"[{r['kind']}] {r['path']} ({r['lines']}L/{r['bytes']}B{repo_part}) :: {flag_str}")
 
-    for r in shown:
-        flags = []
-        if r["changed"]:
-            flags.append("CHANGED")
-        flags.extend(r["signals"])
-        repo_part = f" repo={r['repo']}" if r["repo"] else ""
-        flag_str = " | ".join(flags) if flags else "-"
-        print(f"[{r['kind']}] {r['path']} ({r['lines']}L/{r['bytes']}B{repo_part}) :: {flag_str}")
+    for hint in memory_hints:
+        print(f"MEMORY_HINT: {hint['mem_dir']} :: {' | '.join(hint['signals'])} (run memory-inventory)")
     return 0
 
 
