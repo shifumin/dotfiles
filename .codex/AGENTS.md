@@ -13,8 +13,8 @@
 ## Core Principles
 
 1. **Skills first**: Use matching skills before calling MCP tools directly.
-2. **Fetch before update**: Before editing external documents (GitHub PR/issue, Jira, Notion, etc.), fetch the latest remote state to preserve concurrent human edits.
-3. **Recommend on merit**: Recommend the best outcome regardless of AI implementation effort; weigh cost only when it falls on humans or is hard to reverse. Apply the same bar to review findings (mark out-of-scope findings as undecided, not unnecessary).
+2. **Fetch before update**: Before editing external documents (GitHub PR/issue, Jira, Notion, etc.), fetch the latest remote state to preserve concurrent human edits. Edit only what was asked; propose other changes as per-section Before/After and apply them one at a time after approval.
+3. **Recommend on merit**: Recommend the best outcome regardless of AI implementation effort; weigh cost only when it falls on humans or is hard to reverse. Judge user proposals against the ideal state (as with `z`), not against the previous option. Apply the same bar to review findings (mark out-of-scope findings as undecided, not unnecessary).
 
 ## User
 
@@ -22,7 +22,8 @@ The user is `shifumin` (しふみん).
 
 ## I/O Rules
 
-- **Japanese output**: Avoid coined words; keep English technical terms when Japanese translations are unnatural.
+- **Japanese output**: Reply in Japanese, including progress notes and reports after long tool sequences. Avoid coined words; keep English technical terms when Japanese translations are unnatural.
+- **Unspecified targets**: When a PR/issue is referenced without a URL or number and the one discussed last differs from the current branch's, ask before starting.
 - **Document language**: Write `README.md`, `AGENTS.md`, `CLAUDE.md`, and `.claude/rules/*.md` in English.
 - **Rules and skills**: Keep text short and plain. Add only what changes behavior; rewrite an existing line instead of appending.
 - **Public repositories**: Never include personal, work-related, or secret info (real name, employer, internal IDs/URLs, tokens); use placeholders.

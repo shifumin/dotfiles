@@ -6,6 +6,7 @@
 
 - `setup.sh` is the single source of truth for symlinks; never create symlinks manually.
 - To add a managed file: place it at its target relative path, register it in `setup.sh` (`dir_links`, `file_links`, or `claude_links`), run `./setup.sh`, and commit both.
+- After a pull, run `./setup.sh` (outside the sandbox) only if `git diff --name-status ORIG_HEAD..HEAD` shows changes to `setup.sh`, `.claude/skills.txt`, or added/removed `.claude/skills/<name>/` directories.
 - Exceptions: custom skills under `.claude/skills/<name>/` are auto-linked by `./setup.sh` (do not add them to an array); third-party skills go in `.claude/skills.txt`.
 
 ## Hygiene

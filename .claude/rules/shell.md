@@ -2,7 +2,11 @@
 
 ## Bash tool runs via zsh eval
 
-`for...done` and `while...done` fail with `parse error near 'done'`. Wrap loops in `bash <<'SCRIPT' ... SCRIPT`.
+`for`/`while` loops, shell functions, multi-line pipelines, and commands stored in variables (`$P args`; zsh does not word-split) fail under zsh eval. Wrap them in `bash <<'SCRIPT' ... SCRIPT`.
+
+## Non-ASCII scripts
+
+Do not pass scripts containing Japanese via stdin (`python3 - <<'PY'` fails with `Non-UTF-8 code`). Write them to a scratchpad file and run that (`mise exec -- ruby <file>` or `python3 -I <file>`). In the sandbox, tools like `diff` cannot open `/dev/fd` paths, so `<(...)` arguments and `... | diff -` fail; use temp files or `$(...)` comparisons.
 
 ## Sandbox and git writes
 
