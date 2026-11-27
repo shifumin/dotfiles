@@ -8,7 +8,7 @@ scope values:
   own-vault   my-vault/.claude/skills (used only in personal vault; editable on user approval)
   vendored    upstream copies inside dotfiles/vault; report upstream or override locally
   team        a project repository's skills (proposal only)
-  external    ~/.agents/skills and installed Claude Code plugins (proposal only)
+  external    ~/.agents/skills and enabled Claude Code plugins (proposal only)
 """
 
 from __future__ import annotations
@@ -29,6 +29,7 @@ DEFAULT_VAULT_ROOT = Path(os.environ["REVIEW_SESSIONS_VAULT"]) if os.environ.get
 DEFAULT_VAULT_SKILLS = DEFAULT_VAULT_ROOT / ".claude" / "skills"
 DEFAULT_EXTERNAL_SKILLS = HOME / ".agents" / "skills"
 DEFAULT_PLUGINS_JSON = HOME / ".claude" / "plugins" / "installed_plugins.json"
+DEFAULT_SETTINGS_JSON = HOME / ".claude" / "settings.json"
 
 # Upstream copies vendored into dotfiles or personal vault.
 VENDORED = {
@@ -65,19 +66,24 @@ def parse_description(skill_md: Path) -> str:
 
     desc_parts: list[str] = []
     in_desc = False
+    is_block = False
     for line in fm_lines:
         if not in_desc:
             m = re.match(r"^description:\s*(.*)$", line)
             if m:
                 val = m.group(1).strip()
-                if val in ("|", ">", "|-", ">-", "|+", ">+"):
+                if val in ("|", ">", "|-", ">-", "|+", ">+") or not val:
                     in_desc = True
-                elif val:
-                    desc_parts.append(val)
-                    in_desc = True
+                    is_block = True
                 else:
+                    desc_parts.append(val)
+                    # Single-line quoted string closed on the same line: stop immediately.
+                    if len(val) >= 2 and val[0] == val[-1] and val[0] in ('"', "'"):
+                        break
                     in_desc = True
         else:
+            if not is_block and not line.startswith((" ", "\t")):
+                break
             if re.match(r"^[A-Za-z0-9_-]+:", line):
                 break
             desc_parts.append(line.strip())
@@ -127,7 +133,23 @@ def load_cwds_from_index(index_path: Path) -> list[Path]:
     return cwds
 
 
-def collect_installed_plugins(plugins_json: Path) -> list[tuple[str, str, str, str]]:
+def load_enabled_plugins(settings_json: Path) -> set[str] | None:
+    if not settings_json.is_file():
+        return None
+    try:
+        data = json.loads(settings_json.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    enabled = data.get("enabledPlugins") if isinstance(data, dict) else None
+    if not isinstance(enabled, dict):
+        return None
+    return {k for k, v in enabled.items() if v}
+
+
+def collect_installed_plugins(
+    plugins_json: Path,
+    enabled_plugins: set[str] | None = None,
+) -> list[tuple[str, str, str, str]]:
     if not plugins_json.is_file():
         return []
     try:
@@ -138,22 +160,23 @@ def collect_installed_plugins(plugins_json: Path) -> list[tuple[str, str, str, s
     if not isinstance(plugins, dict):
         return []
 
-    install_paths: list[Path] = []
-    seen_installs: set[str] = set()
-    for entries in plugins.values():
+    rows: list[tuple[str, str, str, str]] = []
+    seen_skill_names: set[str] = set()
+    for plugin_id, entries in sorted(plugins.items()):
+        if enabled_plugins is not None and plugin_id not in enabled_plugins:
+            continue
         if not isinstance(entries, list):
             continue
-        for entry in entries:
-            if not isinstance(entry, dict):
-                continue
-            raw_path = entry.get("installPath")
-            if isinstance(raw_path, str) and raw_path and raw_path not in seen_installs:
-                seen_installs.add(raw_path)
-                install_paths.append(Path(raw_path))
-
-    rows: list[tuple[str, str, str, str]] = []
-    for install_path in install_paths:
-        rows.extend(collect_skills(install_path / "skills", lambda _n: "external"))
+        # Prefer user-scoped entry, then latest updated entry, to avoid duplicate versions.
+        valid_entries = [e for e in entries if isinstance(e, dict) and isinstance(e.get("installPath"), str) and e["installPath"]]
+        valid_entries.sort(key=lambda e: str(e.get("lastUpdated", "")), reverse=True)
+        valid_entries.sort(key=lambda e: 0 if e.get("scope") == "user" else 1)
+        for entry in valid_entries:
+            install_path = Path(entry["installPath"])
+            for row in collect_skills(install_path / "skills", lambda _n: "external"):
+                if row[1] not in seen_skill_names:
+                    seen_skill_names.add(row[1])
+                    rows.append(row)
     return rows
 
 
@@ -174,14 +197,19 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--vault-skills", default=str(DEFAULT_VAULT_SKILLS), help=argparse.SUPPRESS)
     ap.add_argument("--external-skills", default=str(DEFAULT_EXTERNAL_SKILLS), help=argparse.SUPPRESS)
     ap.add_argument("--plugins-json", default=str(DEFAULT_PLUGINS_JSON), help=argparse.SUPPRESS)
-    ap.add_argument("--owner-root", default=str(DEFAULT_OWNER_ROOT), help=argparse.SUPPRESS)
+    ap.add_argument("--settings-json", default=str(DEFAULT_SETTINGS_JSON), help=argparse.SUPPRESS)
     args = ap.parse_args(argv)
 
     dotfiles_skills = Path(args.dotfiles_skills)
     vault_skills = Path(args.vault_skills)
     external_skills = Path(args.external_skills)
     plugins_json = Path(args.plugins_json)
-    owner_root = Path(args.owner_root)
+    settings_json = Path(args.settings_json)
+
+    own_roots = [
+        root for root in (dotfiles_skills.parent.parent, vault_skills.parent.parent)
+        if root.is_dir()
+    ]
 
     rows = collect_skills(dotfiles_skills, lambda n: "vendored" if n in VENDORED else "own-global")
     rows += collect_skills(vault_skills, lambda n: "vendored" if n in VENDORED else "own-vault")
@@ -200,13 +228,14 @@ def main(argv: list[str] | None = None) -> int:
         if resolved in scanned_projects:
             continue
         scanned_projects.add(resolved)
-        if owner_root.is_dir() and is_under(resolved, owner_root):
+        if any(is_under(resolved, root) for root in own_roots):
             continue
         for sub in (".claude/skills", ".agents/skills"):
             rows += [r for r in collect_skills(resolved / sub, lambda _n: "team") if r[2] not in own_paths]
 
     rows += [r for r in collect_skills(external_skills, lambda _n: "external") if r[2] not in own_paths]
-    rows += [r for r in collect_installed_plugins(plugins_json) if r[2] not in own_paths]
+    enabled_plugins = load_enabled_plugins(settings_json)
+    rows += [r for r in collect_installed_plugins(plugins_json, enabled_plugins) if r[2] not in own_paths]
 
     seen: set[str] = set()
     unique: list[tuple[str, str, str, str]] = []
