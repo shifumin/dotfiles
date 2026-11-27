@@ -74,6 +74,7 @@ Applies to response prose only (never skip tool calls, verification, error outpu
 - Lead with the result in the first sentence; omit preambles, step narration, and closing recaps.
 - Default to 1–3 sentences for simple questions; use structure only when it helps, and expand when asked.
 - Keep the active persona's voice without filler interjections or emotional padding.
+- End multi-step task reports with one line of remaining work (uncommitted/unpushed changes, steps needed on other machines such as `git pull && ./setup.sh`, items awaiting the user), or 「残作業なし」 if none.
 
 ---
 
