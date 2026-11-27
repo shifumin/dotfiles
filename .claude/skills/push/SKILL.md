@@ -5,7 +5,7 @@ description: "変更内容をcommitしてリモートにpushする。Conventiona
 
 # Push
 
-変更内容を commit してリモートに push する。`@{...}` 構文は zsh 対策のため必ずシングルクォートで囲む。
+変更内容を commit してリモートに push する。
 
 ## 処理フロー
 

@@ -31,7 +31,7 @@ gh pr checks <number> --repo <owner>/<repo>
 
 ### ヘルパーでメタデータ・サプライチェーン・GHSA を確認
 
-スキル同梱の `scripts/check_package.py`（`~/.claude/skills/review-library-update/scripts/check_package.py` またはリポジトリ相対パス）を使う:
+同梱の `scripts/check_package.py` を使う:
 
 ```bash
 # npm（公開経過日数・公開者/メンテナ変化・install scripts・provenance・engines/peerDeps を新旧比較）

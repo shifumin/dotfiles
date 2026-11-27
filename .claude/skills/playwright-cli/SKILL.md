@@ -392,4 +392,4 @@ playwright-cli show --annotate
 - Never pass `--persistent` or `--headed` to pages that require no login (profile startup can time out).
 - Real Chrome / company SSO (AI sessions, Google Docs/Sheets): use `attach --cdp=chrome`.
 - Cloudflare / queue-it workarounds: use plain Chromium `--persistent`, never `--browser=chrome`.
-- General auth sites needing Playwright: use `--persistent --headed`.
+- General auth sites needing Playwright: use `--persistent`, adding `--headed` for the first login or after a login redirect ([references/auth-workflow.md](references/auth-workflow.md)).
