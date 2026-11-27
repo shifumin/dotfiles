@@ -76,6 +76,17 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$HOME/.claude/hooks/herdr-tab-title.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
