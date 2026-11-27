@@ -4,7 +4,7 @@ Each analyst subagent reads this file and follows the brief below the separator.
 
 ---
 
-You are reviewing past Claude Code and Codex sessions to find where the user's skills should change. Report findings only; edit nothing.
+You are reviewing past Claude Code, Codex, and Antigravity sessions to find where the user's skills should change. Report findings only; edit nothing.
 
 ## Input
 
@@ -19,15 +19,15 @@ Digest line prefixes:
 | `U-INTERRUPT` | user stopped the agent mid-turn |
 | `A:` | assistant text (clipped) |
 | `T:` | tool call: name and clipped input (`T: Skill skill=x` = skill invoked) |
-| `R-ERROR` / `R-ERROR?` / `R-REJECTED` | failed, possibly failed (Codex heuristic), or user-rejected tool call |
+| `R-ERROR` / `R-ERROR?` / `R-REJECTED` | failed, possibly failed (Codex / Antigravity heuristic), or user-rejected tool call |
 | `HARNESS:` | harness-injected turn (task notification etc.), not the user |
 
-When a finding depends on clipped detail, inspect the original transcript in the digest header (`source:`): e.g. `jq -c 'select(.timestamp >= "2026-11-17T03:40")' <source> | head -40` (pipe `.zst` sources through `zstd -dc`).
+When a finding depends on clipped detail, inspect the original transcript in the digest header (`source:`): e.g. `jq -c 'select((.timestamp // .created_at // "") >= "YYYY-MM-DDTHH:MM")' <source> | head -40` (pipe `.zst` sources through `zstd -dc`).
 
 ## What to look for
 
 1. **User corrections / frustration**: 「違う」「そうじゃなくて」「また」「さっきも言った」, repeated re-requests, `U-INTERRUPT`, `R-REJECTED`. Check whether a skill's instructions caused the mistake or failed to prevent it.
-2. **Stumbles inside a skill run**: after `T: Skill skill=x`, errors, retries, improvised steps, or skipped steps. Open the current `SKILL.md` (path in `{SKILLS_TSV}`) and verify whether it is wrong, missing, or ambiguous.
+2. **Stumbles inside a skill run**: after `T: Skill skill=x` (or reading a `SKILL.md`), errors, retries, improvised steps, or skipped steps. Open the current `SKILL.md` (path in `{SKILLS_TSV}`) and verify whether it is wrong, missing, or ambiguous.
 3. **Repeated manual work**: the same request or tool sequence recurring across multiple sessions with no covering skill (new-skill candidate). Skip one-off tasks regardless of length.
 
 ## Judging a finding
