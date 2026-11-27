@@ -28,11 +28,11 @@ description: "GitHub へのコメント・返信（PR レビュー指摘返信�
 
 ### 2. 投稿先を読む
 
-スレッドなら全体、PR コメントなら関連する前後コメントを読む。相手が使っている呼び名（機能名・クラス名・チケット）を控え、表記を揃える。
+スレッドなら全体、PR / Issue コメントなら関連する前後コメントを読む。相手が使っている呼び名（機能名・クラス名・チケット）を控え、表記を揃える。
 
 ### 3. 本人の過去コメントを読む
 
-同梱スクリプトで本人の過去コメントを 5〜10 件取得する（`gh api user` で毎回 login を取得し、同じ PR → 同じ相手 → 最近の PR の順に優先収集）。
+同梱スクリプトで本人の過去コメントを 5〜10 件取得する（`gh api user` で毎回 login を取得し、同じ PR / Issue → 同じ相手 → 最近参加した PR の順に優先収集）。
 
 ```bash
 python3 -B <SKILL_DIR>/scripts/fetch_my_comments.py \
@@ -42,8 +42,8 @@ python3 -B <SKILL_DIR>/scripts/fetch_my_comments.py \
   [--limit 10]
 ```
 
-- 相手の種類（人か bot か）と返信の種類（対応した・見送る・質問回答）が近いものを重視する
-- 過去コメントが 0 件または少ない場合は、共通ルールと対象リポジトリの既存コメントの雰囲気に合わせる
+- 相手の種類（人か bot か）と返信の種類（対応した・見送る・質問回答・Approve/動作確認）が近いものを重視する
+- 過去コメントが 0 件または少ない場合は、`AGENTS.md` のルールと対象リポジトリの既存コメントの雰囲気に合わせる
 
 ### 4. 文体を抽出する
 
@@ -58,7 +58,7 @@ python3 -B <SKILL_DIR>/scripts/fetch_my_comments.py \
 
 ### 5. 文面を書く
 
-手順 4 の文体に、`AGENTS.md`（I/O Rules → Posts as the user: 文末「。」なし・改行区切り）と次のルールを重ねる。
+手順 4 の文体に、`AGENTS.md` の「Posts as the user」ルールと次のルールを重ねる。
 
 - 対応コミットは短い SHA のリンクで示す（`[abc1234](https://github.com/<owner>/<repo>/pull/<n>/commits/<full_sha>)`）。未 push ならリンク欄をプレースホルダのまま提示し、push 後に差し替えてから投稿する（プレースホルダのまま投稿しない）
 - 見送る場合は根拠（コード・仕様・データ）を添えて理由を書く
@@ -71,10 +71,11 @@ python3 -B <SKILL_DIR>/scripts/fetch_my_comments.py \
 
 ### 7. 投稿して読み返す（投稿モード・承認後のみ）
 
-PR 操作用の MCP ツール（`pull_request_respond` 等）が利用できる環境ではそちらを優先する。`gh` CLI で投稿する場合は、改行やバッククォートの破損を防ぐため `mktemp` ファイル経由で `-F body=@"$BODY_FILE"` を渡し、終了後に削除する。
+PR 操作用の MCP ツール（`pull_request_respond` 等）が利用できる環境では、PR への返信・コメントにそちらを優先する。Issue コメント（Issue 用 MCP ツールが無い場合）や MCP 非対応環境では `gh` CLI を使い、改行やバッククォートの破損を防ぐため `mktemp` ファイル経由で `-F body=@"$BODY_FILE"` を渡す。
 
 ```bash
 BODY_FILE=$(mktemp "${TMPDIR:-/tmp}/gh-comment.XXXXXX.md")
+trap 'command rm -f "$BODY_FILE"' EXIT
 cat >| "$BODY_FILE" <<'EOF'
 <承認済み本文>
 EOF
@@ -83,8 +84,6 @@ EOF
 gh api "repos/<owner>/<repo>/pulls/<n>/comments/<root_comment_id>/replies" -F "body=@$BODY_FILE"
 # PR / Issue へのコメント
 gh api "repos/<owner>/<repo>/issues/<n>/comments" -F "body=@$BODY_FILE"
-
-command rm -f "$BODY_FILE"
 ```
 
 - スレッド返信の REST エンドポイントはルートコメント ID を要求する（返信コメントの ID を渡すと失敗するため、スレッド先頭のコメント ID を使う）
