@@ -28,7 +28,7 @@ from typing import Any
 DEFAULT_STATE_FILE = Path.home() / ".cache" / "refactor-context" / "last-audit.txt"
 FENCE_RE = re.compile(r"^[ \t]*(`{3,}|~{3,})")
 INLINE_CODE_RE = re.compile(r"`[^`\n]+`")
-QUOTED_LIST_RE = re.compile(r"(?:「[^」]{1,20}」[・、,/\s]*){3,}")
+QUOTED_SPAN_RE = re.compile(r"「[^」\n]{1,40}」")
 
 DATE_RE = re.compile(r"\b20\d{2}-\d{2}-\d{2}\b")
 DIARY_PHRASE_RE = re.compile(
@@ -36,9 +36,9 @@ DIARY_PHRASE_RE = re.compile(
     re.I,
 )
 STRONG_EMPHASIS_RE = re.compile(
-    r"(激しく|突破不能|全滅|一発で|時間を溶かす|厳禁|絶対禁止|圧倒的|絶対(?!パス|URL|日付|値))"
+    r"(激しく|突破不能|全滅|一発で|時間を溶かす|厳禁|絶対禁止|圧倒的|絶対(?!パス|URL|日付|値|上限|下限))"
 )
-TOOL_LEAK_RE = re.compile(r"\b(AskUserQuestion|WebFetch)\b|(Read|Edit|Write)ツール|\bscratchpad\b")
+TOOL_LEAK_RE = re.compile(r"\b(AskUserQuestion|WebFetch)\b|(Read|Edit|Write) ?ツール|\bscratchpad\b")
 MEMORY_LINK_RE = re.compile(r"\]\(([^)#]+\.md)\)")
 
 
@@ -78,11 +78,11 @@ def strip_fences_and_frontmatter(text: str) -> tuple[str, str]:
 
 
 def clean_prose_for_signals(body: str) -> str:
-    """Drop inline code and multi-item quoted negative-example enumerations to avoid false positives."""
+    """Drop inline code and 「」-quoted examples (trigger phrases, negative examples) to avoid false positives."""
     cleaned_lines: list[str] = []
     for line in body.splitlines():
         s = INLINE_CODE_RE.sub("", line)
-        s = QUOTED_LIST_RE.sub("", s)
+        s = QUOTED_SPAN_RE.sub("", s)
         cleaned_lines.append(s)
     return "\n".join(cleaned_lines)
 
