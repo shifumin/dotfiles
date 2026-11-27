@@ -1,6 +1,6 @@
 ---
 name: refactor-context
-description: "agent 向けコンテキスト文書（Skill / Memory / Rule / AGENTS.md / Output Style）を外部視点で精査し、語彙汚染・冗長・重複・AI進化で自明化した記述・スコープのねじれ・スクリプトのバグを除いて再設計する（Gemini 専用）。引数指定の単発改善と、引数なし／「定期監査」「コンテキスト汚染チェック」の横断差分監査に対応。"
+description: "agent 向けコンテキスト文書（Skill / Memory / Rule / AGENTS.md / Output Style）を外部視点で精査し、語彙汚染・冗長・重複・AI進化で自明化した記述・スコープのねじれ・スクリプトのバグを除いて再設計する。引数指定の単発改善と、引数なし／「定期監査」「コンテキスト汚染チェック」の横断差分監査に対応。"
 ---
 
 # コンテキスト文書の診断と再設計
