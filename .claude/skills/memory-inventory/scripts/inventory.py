@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import os
 import re
 import shutil
 import subprocess
@@ -27,7 +26,7 @@ INLINE_CODE_RE = re.compile(r"`[^`]*`")
 
 def encode_project_path(project_path: Path) -> str:
     resolved = str(project_path.resolve())
-    return re.sub(r"[/.]", "-", resolved)
+    return re.sub(r"[^A-Za-z0-9-]", "-", resolved)
 
 
 def resolve_mem_dir(mem_dir: str | None, project: str | None) -> Path:
@@ -67,6 +66,12 @@ def topic_files(mem_dir: Path) -> list[Path]:
     )
 
 
+def strip_matching_quotes(value: str) -> str:
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in ('"', "'"):
+        return value[1:-1]
+    return value
+
+
 def parse_markdown(path: Path) -> tuple[dict[str, str], str]:
     """Return (frontmatter key->value map, body text)."""
     text = path.read_text(encoding="utf-8", errors="replace")
@@ -83,7 +88,7 @@ def parse_markdown(path: Path) -> tuple[dict[str, str], str]:
                     if m:
                         key, val = m.group(1), m.group(2).strip()
                         if val and key not in fm:
-                            fm[key] = val.strip("\"'")
+                            fm[key] = strip_matching_quotes(val)
                 break
 
     body = "\n".join(lines[body_start:])
@@ -124,6 +129,10 @@ def cmd_backup(args: argparse.Namespace) -> int:
     slug = mem_dir.parent.name.lstrip("-") or "memory"
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     backup_path = dest_root / f"memory-backup-{slug}-{stamp}"
+    counter = 1
+    while backup_path.exists():
+        backup_path = dest_root / f"memory-backup-{slug}-{stamp}_{counter}"
+        counter += 1
     shutil.copytree(mem_dir, backup_path)
 
     print(f"MEM_DIR={mem_dir}")
@@ -169,7 +178,6 @@ def cmd_measure(args: argparse.Namespace) -> int:
         index_links.add(target)
 
     type_counts: Counter[str] = Counter()
-    missing_modified: list[str] = []
     orphans: list[str] = []
     name_mismatches: list[str] = []
     thin_files: list[str] = []
@@ -181,15 +189,15 @@ def cmd_measure(args: argparse.Namespace) -> int:
     for path in topics:
         fm, body = parse_markdown(path)
         topic_bodies[path.name] = body
-        mod = fm.get("modified", "")[:10] or "-"
+        stat_info = path.stat()
+        mtime_date = datetime.fromtimestamp(stat_info.st_mtime).strftime("%Y-%m-%d")
+        mod = fm.get("modified", "")[:10] or mtime_date
         mtype = fm.get("type", "(none)")
         name = fm.get("name", "")
         if name:
             known_names[name] = path.name
 
         type_counts[mtype] += 1
-        if mod == "-":
-            missing_modified.append(path.name)
         if path.name not in index_links:
             orphans.append(path.name)
         if name != path.stem:
@@ -197,7 +205,7 @@ def cmd_measure(args: argparse.Namespace) -> int:
 
         non_empty_body_lines = sum(1 for ln in body.splitlines() if ln.strip())
         body_bytes = len(body.strip().encode("utf-8"))
-        byte_size = path.stat().st_size
+        byte_size = stat_info.st_size
         if non_empty_body_lines <= args.thin_lines and body_bytes <= args.thin_bytes:
             thin_files.append(f"{path.name} ({non_empty_body_lines} 行 / 本文 {body_bytes} B)")
         rows.append((mod, mtype, non_empty_body_lines, byte_size, path.name))
@@ -236,7 +244,6 @@ def cmd_measure(args: argparse.Namespace) -> int:
         for item in items:
             print(f"  - {item}")
 
-    print_section("modified 欠落", sorted(missing_modified))
     print_section(f"薄いファイル (本文 <= {args.thin_lines} 行 かつ <= {args.thin_bytes} B)", sorted(thin_files))
     print_section("孤児ファイル (MEMORY.md 未掲載)", sorted(orphans))
     print_section("name 不一致", sorted(name_mismatches))
@@ -253,20 +260,22 @@ def cmd_dump(args: argparse.Namespace) -> int:
         print("(no topic files)")
         return 0
     for idx, path in enumerate(topics):
-        _, body = parse_markdown(path)
+        fm, body = parse_markdown(path)
         if idx > 0:
             print()
-        print(f"=== {path.name} ===")
+        mtype = fm.get("type", "(none)")
+        name = fm.get("name", "(missing)")
+        print(f"=== {path.name} [type={mtype} name={name}] ===")
+        if fm.get("description"):
+            print(f"description: {fm['description']}")
         print(body.strip())
     return 0
 
 
 def cmd_archive(args: argparse.Namespace) -> int:
     mem_dir = resolve_mem_dir(args.mem_dir, args.project)
-    archive_dir = mem_dir / "_archive"
-    archive_dir.mkdir(exist_ok=True)
-    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-
+    targets: list[Path] = []
+    seen: set[str] = set()
     for raw_name in args.files:
         name = Path(raw_name).name
         if raw_name != name or name in ("", ".", "..", "MEMORY.md") or name.startswith("."):
@@ -276,7 +285,16 @@ def cmd_archive(args: argparse.Namespace) -> int:
         if not src.is_file():
             print(f"ERROR: file not found in {mem_dir}: {name}", file=sys.stderr)
             return 1
-        dst = archive_dir / name
+        if name not in seen:
+            seen.add(name)
+            targets.append(src)
+
+    archive_dir = mem_dir / "_archive"
+    archive_dir.mkdir(exist_ok=True)
+    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+
+    for src in targets:
+        dst = archive_dir / src.name
         if dst.exists():
             dst = archive_dir / f"{src.stem}_{stamp}{src.suffix}"
             counter = 1
@@ -307,7 +325,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_measure.add_argument("--thin-bytes", type=int, default=500, help="Max body bytes for thin files (default: 500)")
     p_measure.set_defaults(func=cmd_measure)
 
-    p_dump = sub.add_parser("dump", help="Dump bodies of all topic files")
+    p_dump = sub.add_parser("dump", help="Dump metadata and bodies of all topic files")
     add_common(p_dump)
     p_dump.set_defaults(func=cmd_dump)
 
