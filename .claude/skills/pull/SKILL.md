@@ -5,7 +5,7 @@ description: "リモートの最新変更を現在のブランチに取り込む
 
 # Pull
 
-リモートの最新変更を現在のブランチに取り込む。`@{...}` 構文は zsh 対策のため必ずシングルクォートで囲む。
+リモートの最新変更を現在のブランチに取り込む。
 
 ## 処理フロー
 
@@ -80,6 +80,7 @@ SCRIPT
 
 - **成功**: ステップ 5 へ進む
 - **コンフリクト発生**: **自動解決を試みず、stash を残したまま** ユーザーへ報告する（`git stash list` で残存を確認し、pull 自体は完了済みであること・`git stash pop` / `drop` はユーザー判断であることを伝える）
+  - ユーザーが upstream 側の採用を承認したら `git checkout HEAD -- <file>` で戻す（stash pop では `--theirs` が stash 側を指すため使わない）。`git diff HEAD -- <file>` が空になったのを確認してから `git stash drop` する
 
 ### 5. 結果報告
 
@@ -89,6 +90,7 @@ SCRIPT
 - 変更されたファイル数（`git diff ORIG_HEAD..HEAD --stat`）
 - 自動 stash → pop を行った場合はその旨
 - コンフリクトを自動解決した場合は対象ファイルと判断内容
+- リポジトリの `CLAUDE.md` / `AGENTS.md` に pull 後の手順（dotfiles の `./setup.sh` 等）があれば従い、その結果
 
 ## エラー処理と安全策
 

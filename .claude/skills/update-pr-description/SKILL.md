@@ -27,9 +27,9 @@ PR 操作用 MCP ツール（`pull_request_read` / `pull_request_update`）が�
 4. **承認を取る**: 変わる箇所を before / after で提示し、承認を得る。
 5. **最新本文を再取得して反映する**（同時編集保護: `AGENTS.md` Principle 2）:
    - 更新直前にリモート本文を再取得し、手順 1 から人手の編集が入っていればその差分を保ったまま今回の変更を統合する
-   - 承認済み本文を `"$BODY_FILE"` に書いて更新し、読み返して一致を検証したあと一時ファイルを削除する（末尾改行の差は許容）:
+   - 承認済み本文を `"$BODY_FILE"` に書いて更新し、読み返して一致を検証したあと一時ファイルを削除する。比較は `$(...)` で末尾改行を落として行う（パイプで `diff -` に渡す形やプロセス置換 `<(...)` はサンドボックスで失敗する）。更新直前の再取得も同じ形で手順 1 の本文と比べる:
      ```bash
      gh pr edit [<number>] --body-file "$BODY_FILE"
-     gh pr view [<number>] --json body
+     [ "$(gh pr view [<number>] --json body -q .body)" = "$(cat "$BODY_FILE")" ] && echo MATCH
      command rm -f "$BODY_FILE"
      ```

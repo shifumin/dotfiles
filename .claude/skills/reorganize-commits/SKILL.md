@@ -50,12 +50,15 @@ git log --oneline --no-merges "$BASE..HEAD"
 
 - 対象コミット数と base を提示する。件数が不自然に多い（3 桁等）場合は base 誤判定を疑って止める。
 - `git log --merges "$BASE..HEAD"` に出力があれば、再構成後に履歴が直線になる旨を先に伝える。
+- push 済みコミットも含めて `$BASE..HEAD` 全体を組み直すのが既定。force push を避けるために勝手に範囲を狭めない。人のレビューが始まっている場合に限り、`BASE=$(git rev-parse "origin/$BRANCH")` で未 push 分だけを整理する案を提示し、承認されたら手順 10 を通常の `git push` にする。
+- 整理済みの履歴の末尾に修正コミットが少し足されただけなら、全体を組み直さず手順 4 の後に fixup で混ぜる: `git reset --soft HEAD~N && git reset` → `git blame <修正前のSHA> -- <file>` で混ぜ先を決める → 混ぜ先ごとに `git add -- <files> && git commit --fixup=<sha>` → `GIT_SEQUENCE_EDITOR=: git rebase -q -i --autosquash "$BASE"` → 手順 8 へ。
 
 ## 3. レビューコメントの確認
 
 ```bash
-gh pr view --json reviews,comments,reviewThreads -q \
-  '"reviews: \(.reviews | length) / threads: \(.reviewThreads | length) / comments: \(.comments | length)"' 2>/dev/null || true
+gh pr view --json reviews,comments -q \
+  '"reviews: \(.reviews | length) / comments: \(.comments | length)"' 2>/dev/null || true
+gh api "repos/{owner}/{repo}/pulls/$(gh pr view --json number -q .number)/comments" -q length 2>/dev/null || true
 ```
 
 （PR 読み取り専用ツールがある環境ではそれを使ってもよい。）1 件以上あれば「force push でインラインコメントの行紐付きが崩れ得るが進めるか」を確認する。
@@ -80,7 +83,7 @@ fi
 ```
 
 - リモートに未取り込みのコミットがある場合は止めてユーザーに確認する。
-- `$BACKUP` は検証と復旧に使い、最後にブランチ名を伝えて削除（`git branch -D "$BACKUP"`）はユーザーに任せる。
+- `$BACKUP` は検証と復旧に使い、手順 10 の push 一致確認後に削除する。同じブランチの古い `backup/${BRANCH}-*` があれば件数を伝える。
 
 ## 5. index を解除して変更一覧を得る
 
@@ -94,6 +97,7 @@ git diff --name-status "$BASE" "$BACKUP"
 
 - `git reset "$BASE"` で作業ツリーを最終状態のまま残し、ブランチで新規追加されたファイルだけを `-z` 経由で `git add -N` する（`git add -N .` は無関係な未追跡ファイルを巻き込むため禁止）。
 - 途中で打ち消し合った変更はこの時点で差分に現れず自動除去される。
+- 全体の組み直しを `git rebase -i` で代用しない（コンフリクト解決が要り、tree 一致が崩れやすい）。
 
 ## 6. 分割単位を決める
 
@@ -125,8 +129,8 @@ git commit -m "..."
   EOF
   git commit -F "$MSG" && command rm -f "$MSG"
   ```
-- 元メッセージは意図を拾うヒントに留め、まとめた後の diff を見て「なぜそうしたか」を新しく書く。
-- **1 ファイルに複数意図が混在するとき**: そのコミット時点であるべき内容へ編集して `git add` する。互いに依存する hunk は引き離さず、迷えばファイル単位に寄せる。hunk 分割したファイルは最後に `git checkout "$BACKUP" -- <file>` で最終状態へ戻し、`git status --porcelain -uno 2>/dev/null` で取りこぼしが無いか確認する。
+- 元メッセージは意図を拾うヒントに留め、まとめた後の diff を見て「なぜそうしたか」を新しく書く。タイトル・本文の言語、文字数、必須トレーラーは元メッセージを引き継がず、手順 6 の規約に合わせる（手順 9 の前に `git log --format=%s "$BASE..HEAD"` で確認）。
+- **1 ファイルに複数意図が混在するとき**: そのコミット時点であるべき内容へ編集して `git add` する。互いに依存する hunk は引き離さず、迷えばファイル単位に寄せる。分割したファイルはそのコミットの直後に `git show "$BACKUP:<file>" >| <file>` で作業ツリーだけ最終状態へ戻す（`git checkout "$BACKUP" -- <file>` は index も書き換え、次のコミットに最終版が混ざるため使わない）。各コミット前に `git diff --cached --quiet && { echo "nothing staged"; exit 1; }` で空ステージを検出し、最後に `git status --porcelain -uno 2>/dev/null` で取りこぼしが無いか確認する。
 - **pre-commit フック（husky / lint-staged + mise）**: `node` 不在等で失敗したら `mise exec -- git commit ...` へ切り替える（サンドボックス制約がある環境では解除して実行）。
 
 ## 8. tree 一致を検証する（必須）
@@ -166,10 +170,17 @@ push 完了後、一致を確認して完了報告する:
 
 失敗時はリモートに別変更が入った可能性を伝え、勝手に押し切らない。
 
-## 失敗時の復旧
-
-どの段階でも backup ブランチから 1 コマンドで戻せる（force push 後も同じ手順＋再度 `--force-with-lease`）:
+一致を確認できたら backup を削除し、SHA を完了報告に書く:
 
 ```bash
-git reset --hard "$BACKUP"
+echo "backup: $BACKUP = $(git rev-parse "$BACKUP")"
+git branch -D "$BACKUP"
+```
+
+## 失敗時の復旧
+
+push 前は backup ブランチ、push 後は完了報告の SHA から戻せる（force push 後は再度 `--force-with-lease`）:
+
+```bash
+git reset --hard "$BACKUP"   # 削除後は git reset --hard <報告した SHA>
 ```

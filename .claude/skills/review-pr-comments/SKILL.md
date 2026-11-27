@@ -1,6 +1,6 @@
 ---
 name: review-pr-comments
-description: "PRレビューコメント・レビュー本文の指摘を分析し修正必要性と方針を提案、承認後に返信・resolveまで行う。「レビューコメント対応」「PRコメント対応」「未解決の指摘を精査」「must/imo/askを判定」「review-pr-comments」等で使用。"
+description: "PRレビューコメント・レビュー本文の指摘を分析し修正必要性と方針を提案、承認後に返信・resolveまで行う。レビュアー側で指摘が直ったかの確認にも対応。「レビューコメント対応」「PRコメント対応」「未解決の指摘を精査」「must/imo/askを判定」「指摘が直ったか確認」「CodeRabbit対応の妥当性」「review-pr-comments」等で使用。"
 ---
 
 # Review PR Comments
@@ -13,6 +13,7 @@ PR レビューの指摘を精査し、修正必要性の判断と方針を提�
 | レビュー URL（`#pullrequestreview-<id>`） | そのレビュー配下の全コメント＋レビュー本文の指摘 |
 | PR URL のみ | 未解決レビュースレッド全件＋レビュー本文の未返信指摘 |
 | 貼り付けた指摘（`must`/`imo`/`nits`/`ask` 等） | 貼られた指摘全件（ラベルの妥当性も判定） |
+| PR URL ＋「対応確認」「直っているか」（レビュアー側） | 自分と bot のスレッドが最新 head で妥当に直ったか（§6） |
 
 入力が無ければユーザーに確認する。複数件は 1 件ずつ分析し、一覧表でまとめて報告する。
 
@@ -24,6 +25,13 @@ URL 入力時は同梱スクリプト `scripts/pr_comments.py`（全ページネ
 python3 -B <SKILL_DIR>/scripts/pr_comments.py fetch "<URL>"
 gh pr diff <number> --repo <owner>/<repo>
 ```
+
+| URL | 主な出力キー |
+|---|---|
+| PR | `unresolved_threads` / `resolved_thread_count`（解決済みは件数のみ） / `reviews_with_body` / `issue_comments` |
+| `#pullrequestreview-` | `review` / `threads` / `issue_comments` |
+| `#discussion_r` | `thread` / `target_comment` |
+| `#issuecomment-` | `target_comment` / `issue_comments` |
 
 - **レビュー本文の見落とし防止**: 差分の外の指摘（`Outside diff range comments` / `Nitpick comments` 等）は行コメントにならず `reviews_with_body` にだけ載る。本文内の指摘も 1 件ずつ対象にし、見出しを引用した返信コメントが `issue_comments` に後続しているかで返信済みを判定する
 - **outdated コメント**: `line` が `null` の場合は `original_line` と `original_commit_id` を使う
@@ -98,6 +106,13 @@ gh pr diff <number> --repo <owner>/<repo>
   ```bash
   python3 -B <SKILL_DIR>/scripts/pr_comments.py resolve "<thread_id>"
   ```
+- **再確認**: 修正 push・返信・resolve の後に PR URL で `fetch` をやり直し、未解決スレッド数、未返信のレビュー本文の指摘、bot（CodeRabbit 等）のレビューが pending かを 1〜3 行で報告する（pending なら完了後に再確認すると伝える）。マージ可否まで問われたら `check-pr-readiness` を使う
+
+## 6. レビュアー側の対応確認
+
+1. `fetch` で自分と bot のスレッドを取り、指摘時の commit から最新 head までの差分を指摘ごとに照合する
+2. 各指摘を「対応済み / 一部対応 / 未対応 / 対応方針が不適切」で判定し、bot スレッドは作成者の返信の妥当性も判定する
+3. 未返信・未 resolve の一覧を添えて表で報告し、承認後に `draft-github-comment` で返信する
 
 ## エラー処理・使い分け
 

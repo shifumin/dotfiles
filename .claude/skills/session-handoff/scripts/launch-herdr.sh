@@ -103,12 +103,14 @@ fi
 
 PROMPT_EXIT=0
 PROMPT_ERR=$(herdr agent prompt "$NAME" "$(cat "$HANDOFF_FILE")" --wait --timeout 180000 2>&1) || PROMPT_EXIT=$?
-echo "pane=$PANE agent=$NAME kind=$KIND file=$HANDOFF_FILE"
+SUMMARY="pane=$PANE agent=$NAME kind=$KIND file=$HANDOFF_FILE"
 
 if [ "$PROMPT_EXIT" -ne 0 ]; then
   printf 'herdr agent prompt exited with %d (do not re-send without checking output below):\n%s\n' "$PROMPT_EXIT" "$PROMPT_ERR" >&2
   herdr agent read "$NAME" --source recent-unwrapped --lines 40 | tail -25 || true
+  echo "$SUMMARY"
   exit "$PROMPT_EXIT"
 fi
 
-herdr agent read "$NAME" --source recent-unwrapped --lines 40 | tail -25
+herdr agent read "$NAME" --source recent-unwrapped --lines 40 | tail -25 || echo "herdr agent read failed; check the pane directly" >&2
+echo "$SUMMARY"
