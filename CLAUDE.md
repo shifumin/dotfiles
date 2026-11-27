@@ -12,4 +12,3 @@
 ## Hygiene
 
 - Keep runtime/cache files out of `.claude/` (only managed files belong in `claude_links`).
-- After editing `AGENTS.md` or `.claude/output-styles/emma.md`, run `.codex/build-agents.sh` and commit the generated files (`.codex/AGENTS.md`, `.gemini/config/GEMINI.md`).
