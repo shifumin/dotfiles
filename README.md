@@ -76,6 +76,8 @@ After editing `AGENTS.md` or `.claude/output-styles/emma.md`, run `.codex/build-
 - `.claude/output-styles/` - Output styles
 - `.claude/statusline.py` - Status line script
 
+`settings.json` is shared by every machine, and Claude Code has no user-wide local override. To turn off plugins on one machine only, put them in that machine's managed settings (not tracked here), e.g. `{"enabledPlugins": {"slack@claude-plugins-official": false}}` in `/Library/Application Support/ClaudeCode/managed-settings.json` (root-owned, created with `sudo`). Keep `"channelsEnabled": true` in that file so Discord channels keep working once a managed source exists.
+
 ### Other
 
 - `.default-npm-packages` - Default npm packages
