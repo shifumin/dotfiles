@@ -78,6 +78,14 @@ After editing `AGENTS.md` or `.claude/output-styles/emma.md`, run `.codex/build-
 
 `settings.json` is shared by every machine, and Claude Code has no user-wide local override. To turn off plugins on one machine only, put them in that machine's managed settings (not tracked here), e.g. `{"enabledPlugins": {"slack@claude-plugins-official": false}}` in `/Library/Application Support/ClaudeCode/managed-settings.json` (root-owned, created with `sudo`). Keep `"channelsEnabled": true` in that file so Discord channels keep working once a managed source exists.
 
+### Launcher
+
+- `.config/tinycast/settings.json` - Tinycast settings: preferences, app and clipboard shortcuts, window management (shortcuts, gap, cycling, layouts, rooms, custom sizes)
+
+Tinycast reads and writes this file only while Settings → Backup → Sync settings file is on. On a new Mac, run `./setup.sh` first, then turn that switch on and choose Import when Tinycast asks about the existing file (Replace overwrites the repo copy with that Mac's current settings).
+
+The file does not hold custom commands, quicklinks, or snippets. Move those with a backup: Settings → Backup → export the ticked items as a `.tinycast` file, then import it on the other Mac. Custom commands point to absolute script paths, so clone their repositories with `ghq get` first. Extensions and API keys never go into a backup; reinstall extensions and sign in again on each Mac.
+
 ### Other
 
 - `.default-npm-packages` - Default npm packages
@@ -92,6 +100,7 @@ After editing `AGENTS.md` or `.claude/output-styles/emma.md`, run `.codex/build-
 ├── sheldon/     # Zsh plugin manager
 ├── nvim/        # Neovim (dein.vim)
 ├── ghostty/     # Ghostty terminal
+├── tinycast/    # Tinycast launcher settings
 └── herdr/       # Herdr (terminal multiplexer for coding agents)
 .claude/
 ├── hooks/          # PreToolUse hooks

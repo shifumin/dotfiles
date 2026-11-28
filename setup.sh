@@ -24,6 +24,7 @@ file_links=(
   ".codex/AGENTS.md"
   ".config/git/ignore"
   ".config/herdr/config.toml"
+  ".config/tinycast/settings.json"
   ".default-gems"
   ".default-npm-packages"
   ".gemrc"

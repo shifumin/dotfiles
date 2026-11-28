@@ -1,0 +1,347 @@
+{
+  "general": {
+    "launcherShortcut": "cmd+space",
+    "showInMenuBar": true,
+    "automaticallyCheckForUpdates": true,
+    "popToRootSeconds": 90,
+    "escapeKeyBehavior": "navigateBackOrClose",
+    "autoSwitchInputSource": null,
+    "supportReminders": true,
+    "language": "en"
+  },
+  "appearance": {
+    "theme": "system",
+    "animations": true,
+    "iconStyle": "system",
+    "interfaceSize": "standard",
+    "compactMode": false,
+    "compactBarCommands": [
+      "command:clipboard-history",
+      "command:search-emoji",
+      "command:search-files",
+      "command:search-quicklinks"
+    ],
+    "followCursorAcrossDisplays": true,
+    "dragToReposition": false
+  },
+  "hyperKey": {
+    "key": "none",
+    "includesShift": true,
+    "quickPress": "none",
+    "secureInputCompatibility": false
+  },
+  "calculator": {
+    "numberStyle": "system"
+  },
+  "search": {
+    "showsSuggestions": true,
+    "sensitivity": "medium"
+  },
+  "applications": {
+    "enabled": true,
+    "searchScopes": [
+      "/Applications",
+      "/Applications/Utilities",
+      "/System/Applications",
+      "/System/Applications/Utilities",
+      "/System/Library/CoreServices/Applications",
+      "/System/Volumes/Preboot/Cryptexes/App/System/Applications",
+      "/System/Library/CoreServices/Finder.app",
+      "~/Applications"
+    ],
+    "apps": {
+      "com.1password.1password": {
+        "shortcut": "option+shift+1",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.amazon.Lassen": {
+        "shortcut": "option+k",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.anthropic.claudefordesktop": {
+        "shortcut": "option+shift+l",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.anysphere.sand": {
+        "shortcut": "option+x",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.apple.ActivityMonitor": {
+        "shortcut": "ctrl+option+shift+a",
+        "alias": "ac",
+        "showInLauncher": true
+      },
+      "com.apple.AppStore": {
+        "shortcut": "ctrl+option+shift+cmd+a",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.apple.Music": {
+        "shortcut": "option+shift+m",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.apple.Preview": {
+        "shortcut": "option+p",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.apple.finder": {
+        "shortcut": "option+f",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.apple.systempreferences": {
+        "shortcut": "option+cmd+,",
+        "alias": "sys",
+        "showInLauncher": true
+      },
+      "com.google.Chrome": {
+        "shortcut": "option+a",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.gyazo.mac": {
+        "shortcut": "option+shift+g",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.meta.endo": {
+        "shortcut": "option+m",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.mitchellh.ghostty": {
+        "shortcut": "option+g",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.openai.codex": {
+        "shortcut": "option+h",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.spotify.client": {
+        "shortcut": "option+y",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.t3tools.t3code": {
+        "shortcut": "option+t",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.tinyspeck.slackmacgap": {
+        "shortcut": "option+s",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "com.todesktop.230313mzl4w4u92": {
+        "shortcut": "option+e",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "company.thebrowser.Browser": {
+        "shortcut": "option+shift+a",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "md.obsidian": {
+        "shortcut": "option+o",
+        "alias": null,
+        "showInLauncher": true
+      },
+      "notion.id": {
+        "shortcut": "option+n",
+        "alias": null,
+        "showInLauncher": true
+      }
+    }
+  },
+  "systemSettings": {
+    "enabled": true,
+    "panes": {}
+  },
+  "systemActions": {
+    "enabled": true,
+    "actions": {}
+  },
+  "commands": {
+    "builtInEnabled": true,
+    "builtIn": {},
+    "enabled": true,
+    "showInLauncher": true
+  },
+  "quicklinks": {
+    "enabled": true,
+    "showInLauncher": true,
+    "opensNewWindow": false,
+    "passesSelectedText": false,
+    "confirmsBeforeDelete": true,
+    "commands": {}
+  },
+  "appleShortcuts": {
+    "enabled": false
+  },
+  "ai": {
+    "enabled": false,
+    "webSearch": false,
+    "choices": true,
+    "expandsReasoning": false,
+    "usageMenuBar": false,
+    "usageAlerts": true,
+    "systemPrompt": "",
+    "systemPromptEnabled": true,
+    "retentionDays": "forever",
+    "opensTo": "recent",
+    "newChatAfterMinutes": 5,
+    "toolRounds": 25,
+    "commands": {}
+  },
+  "quickActions": {
+    "targetLanguage": "",
+    "commands": {}
+  },
+  "dictation": {
+    "mode": "toggle",
+    "shortcut": null,
+    "playsSounds": true,
+    "model": "redux",
+    "microphone": null,
+    "destination": "paste",
+    "adaptsCapitalization": true,
+    "liveInsertion": false,
+    "releaseAfterMinutes": 1,
+    "language": null
+  },
+  "fileSearch": {
+    "enabled": false,
+    "scopes": [
+      "~"
+    ],
+    "includesHiddenFiles": false,
+    "ignorePatterns": [],
+    "removedDefaultPatterns": [],
+    "showInLauncher": false,
+    "commands": {}
+  },
+  "notes": {
+    "enabled": false,
+    "rendersMarkdown": true,
+    "showsFormattingBar": true,
+    "showsInMenuBar": false,
+    "folder": null,
+    "commands": {}
+  },
+  "snippets": {
+    "showInLauncher": true,
+    "folder": null,
+    "defaultAction": "paste",
+    "commands": {}
+  },
+  "navigation": {
+    "enabled": false,
+    "menuSearchShowsAppleMenu": false,
+    "menuSearchDisabledApps": [],
+    "commands": {}
+  },
+  "windowManagement": {
+    "enabled": true,
+    "showInLauncher": true,
+    "gap": 0,
+    "cycle": "sizes",
+    "wrapDisplays": true,
+    "keepProportions": true,
+    "layoutsShowInLauncher": true,
+    "roomsShowInLauncher": true,
+    "shortcuts": {
+      "left-half": "option+shift+left",
+      "right-half": "option+shift+right",
+      "top-half": null,
+      "bottom-half": null,
+      "top-left-quarter": null,
+      "top-right-quarter": null,
+      "bottom-left-quarter": null,
+      "bottom-right-quarter": null,
+      "first-three-fourths": null,
+      "last-three-fourths": null,
+      "first-third": null,
+      "center-third": null,
+      "last-third": null,
+      "first-two-thirds": null,
+      "last-two-thirds": null,
+      "maximize": "option+shift+up",
+      "almost-maximize": null,
+      "reasonable-size": null,
+      "maximize-height": null,
+      "maximize-width": null,
+      "center": null,
+      "center-half": "option+shift+down",
+      "center-two-thirds": null,
+      "make-larger": null,
+      "make-smaller": null,
+      "restore": null,
+      "move-left": null,
+      "move-right": null,
+      "move-up": null,
+      "move-down": null,
+      "move-to-left-edge": null,
+      "move-to-right-edge": null,
+      "move-to-top-edge": null,
+      "move-to-bottom-edge": null,
+      "next-display": "ctrl+option+up",
+      "previous-display": null,
+      "toggle-fullscreen": null,
+      "previous-space": null,
+      "next-space": null
+    },
+    "aliases": {},
+    "customSizes": [],
+    "layouts": [],
+    "rooms": [],
+    "commands": {}
+  },
+  "clipboard": {
+    "enabled": true,
+    "retentionDays": 90,
+    "defaultAction": "paste",
+    "disabledApps": [
+      "com.apple.keychainaccess",
+      "com.apple.Passwords"
+    ],
+    "commands": {
+      "clipboard-history": {
+        "shortcut": "option+shift+c",
+        "alias": null,
+        "showInLauncher": true
+      }
+    }
+  },
+  "emoji": {
+    "skinTone": "none",
+    "gridColumns": 8,
+    "commands": {}
+  },
+  "calendar": {
+    "showInLauncher": true,
+    "launcherLimit": 5,
+    "span": "todayAndTomorrow",
+    "joinWindowMinutes": 5,
+    "autoJoinConfirms": true,
+    "autoJoinNamedProvidersOnly": false,
+    "meetingBrowser": null,
+    "menuBar": "disabled",
+    "menuBarUpcomingEvents": "today",
+    "menuBarLinkedEventsOnly": true,
+    "menuBarHidesWhenEmpty": false,
+    "hideCurrentEventAfterMinutes": "never",
+    "commands": {}
+  },
+  "extensions": {
+    "showInLauncher": true
+  }
+}
